@@ -1,0 +1,117 @@
+@import "custom/fonts/fonts";
+@import "./node_modules/bootstrap/scss/functions";
+@import "./node_modules/bootstrap/scss/variables";
+@import "variables";
+@import "./node_modules/bootstrap/scss/mixins.scss";
+@import "custom/structure/general";
+@import "custom/structure/topbar";
+@import "custom/structure/page-head";
+@import "custom/structure/footer";
+@import "custom/structure/right-sidebar";
+@import "custom/structure/vertical";
+@import "custom/structure/horizontal-nav";
+@import "custom/structure/layouts";
+@import "custom/components/avatar";
+@import "custom/components/alerts";
+@import "custom/components/accordion";
+@import "custom/components/helper";
+@import "custom/components/preloader";
+@import "custom/components/modals";
+@import "custom/components/forms";
+@import "custom/components/widgets";
+@import "custom/components/demos";
+@import "custom/components/print";
+@import "custom/plugins/custom-scrollbar";
+@import "custom/plugins/calendar";
+@import "custom/plugins/range-slider";
+@import "custom/plugins/sweatalert2";
+@import "custom/plugins/alertify";
+@import "custom/plugins/choices";
+@import "custom/plugins/switch";
+@import "custom/plugins/gridjs";
+@import "custom/plugins/colorpicker";
+@import "custom/plugins/datepicker";
+@import "custom/plugins/form-editors";
+@import "custom/plugins/form-upload";
+@import "custom/plugins/form-wizard";
+@import "custom/plugins/apexcharts";
+@import "custom/plugins/chartjs";
+@import "custom/plugins/toasts";
+@import "custom/plugins/lightbox";
+@import "custom/plugins/google-map";
+@import "custom/plugins/vector-maps";
+@import "custom/plugins/leaflet-maps";
+@import "custom/pages/authentication";
+@import "custom/pages/email";
+@import "custom/pages/chat";
+@import "custom/pages/ecommerce";
+@import "custom/pages/coming-soon";
+@import "custom/pages/timeline";
+@import "custom/pages/extras-pages";
+@import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
+
+
+
+.modal-button-s{position: relative;text-align: right;}
+.list_table{width: 100%;}
+.list_table thead tr th{color:#082a3e;padding: 0.75rem 0.75rem;font-weight: 600;}
+.list_table thead tr th:first-child{min-width: 20px;width: 38px;display: flex;}
+.list_table thead tr th:last-child{display: flex;}
+.list_table thead input{font-size: 13px;color: #082a3e;background-color:#fff;border-color:#e2e5e8;-webkit-appearance: none;-moz-appearance: none;appearance: none;background-color: #fff;border: 1px solid #d2d6dc;border-radius: 5px;font-size: 14px;line-height: 1.45;outline: none;padding: 5px 13px;}
+.list_table thead tr th:first-child input{cursor: pointer;--bs-form-check-bg:#fff;width: 1em;height: 1em;margin-top: 0.3em;vertical-align: top;background-color: var(--bs-form-check-bg);padding: 0;appearance: auto;}
+.list_table thead tr th select{padding: 5px 13px;color: #082a3e;border-color: #e2e5e8;background-color: #fff;border: 1px solid #d2d6dc;border-radius: 5px;font-size: 14px;line-height: 1.45;}
+.list_table tbody tr td{padding: 0.75rem 0.75rem;border: 0 solid #eff0f2;border-bottom-width: 1px;}
+.list_table thead tr th div{margin-top: 5px;}
+.list_table thead tr th div div{margin-top: 0px;}
+.list_table tbody tr td button{background: #3980c0;padding: 0.25rem 0.5rem;border: 0;color: #fff;font-size: 14px;border-radius: 4px;}
+.pagination{padding: 0.75rem 0.75rem;align-items: center;display: flex;justify-content: space-between;}
+.pagination button{padding: 5px 8px;border-radius: 5px;margin: 0 2px;border: 1px solid #eff0f2;background: #88b2d9;color: #fff;font-size: 18px;}
+.pagination button:disabled {background: rgb(136 178 217 / 50%) !important;}
+.pagination input{font-size: 13px;color: #082a3e;background-color:#fff;border-color:#e2e5e8;-webkit-appearance: none;-moz-appearance: none;appearance: none;background-color: #fff;border: 1px solid #d2d6dc;border-radius: 5px;font-size: 14px;line-height: 1.45;outline: none;padding: 5px 13px;}
+.pagination select{padding: 5px 13px;color: #082a3e;border-color: #e2e5e8;background-color: #fff;border: 1px solid #d2d6dc;border-radius: 5px;font-size: 14px;line-height: 1.45;}
+.pagination span{margin-left: 15px;margin-right: 15px;}
+.list_table thead tr{background-color: #f8f9fa;}
+form.dropzone{position: relative;}
+form.img__upload input{position: absolute;left: 0;right: 0;top: 0;bottom: 0;cursor: pointer;opacity: 0;}
+.past_img{position: relative;border-radius: 10px;border: 1px solid;height: 100%;
+    object-fit: cover;}
+.past_img span{position: absolute;}
+.past_img img{width: 100%;
+    border-radius: 10px;
+    height: 190px;
+    object-fit: cover;}
+form.img__upload{margin-bottom: 25px;}
+.past_img span{right: 10px;font-size: 20px;top: 10px;background: #88b2d9;text-align: center;display: flex;justify-content: center;align-items: center;padding: 0 12px 5px;border-radius: 50px;color: #fff;cursor: pointer;}
+.img_opc .col-sm-2{padding-top: 7px;padding-bottom: 8px;}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.857rem;
+    color: #ea5455;
+  }
+  .dropdown-user{
+    position: absolute;
+    inset: 0px 0px auto auto;
+    margin: 0px;
+    transform: translate(0px, 72px);
+  }
+
+  @media only screen and (max-width: 1550px){
+    .list_table thead input{max-width: 160px;}
+}
+@media only screen and (max-width: 1420px){
+    .list_table thead input{max-width: 140px;}
+    .list_table thead tr th select{max-width: 140px;}
+}
+@media only screen and (max-width: 1340px){
+    .list_table thead input{max-width: 125px;}
+    .list_table thead tr th select{max-width: 125px;}
+}
+@media only screen and (max-width: 1260px){
+    .list_table thead input{max-width: 120px;}
+    .list_table thead tr th select{max-width: 120px;}
+    .list_table thead tr th{padding: 0.50rem 0.50rem;}
+    .list_table tbody tr td{padding: 0.50rem 0.50rem;}
+}
