@@ -7,7 +7,10 @@ import DesignListV2 from "../components/design/designListV2";
 import UploadDesign from "../components/design/uploadDesign";
 import AddDesigner from "../components/designer/addDesigner";
 import DesignerList from "../components/designer/designerList";
-
+import CategoryList from "../components/designCategory/CategoryList";
+import CategoryForm from "../components/designCategory/CategoryForm";
+import TagList from "../components/tag/TagList";
+import TagForm from "../components/tag/TagForm";
 
 
 
@@ -18,8 +21,10 @@ export const privateRoutes = [
   { path: "/upload-design", Component: UploadDesign },
   { path: "/designer-list", Component: DesignerList },
   { path: "/add-designer", Component: AddDesigner },
-
-
+  { path: "/category-list", Component: CategoryList },
+  { path: "/category-form", Component: CategoryForm },
+  { path: "/tag-list", Component: TagList },
+  { path: "/tag-form", Component: TagForm },
   // { path: "/course-list", Component: CourseList },
   // { path: "/course-form", Component: CourseForm },
   // { path: "/course-view/:id", Component: CourseView },

@@ -1,11 +1,17 @@
 import React, { useState } from "react";
 import Logosm from "../assets/images/logo-sm.svg";
 import Avatar1 from '../assets/images/users/avatar-1.jpg'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function HeaderComponent() {
+  const navigate = useNavigate()
   const [openMenu,setOpenMenu] = useState(false)
   
+  const handleLogout = () => {
+    localStorage.clear()
+    navigate('/')
+  }
+
   return (
     <header id="page-topbar" className="isvertical-topbar">
       <div className="navbar-header">
@@ -132,7 +138,7 @@ function HeaderComponent() {
                 <i className="bx bx-lock text-muted font-size-18 align-middle me-1"></i>{" "}
                 <span className="align-middle">Lock screen</span>
               </a> */}
-              <Link className="dropdown-item" to="/login">
+              <Link className="dropdown-item" to="" onClick={handleLogout}>
                 <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
                 <span className="align-middle">Logout</span>
               </Link>

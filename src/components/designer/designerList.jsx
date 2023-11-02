@@ -2,23 +2,82 @@ import React, { useEffect, useState } from "react";
 import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../design/Filter";
 import DataTable from "../design/DataTable";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useDeleteDesignerMutation, useDesignerListMutation } from "../../service";
+import { getDesigner } from "../../redux/designerSlice";
+import toast from "react-hot-toast";
+import VerifyDeleteModal from "../common/VerifyDeleteModal";
 
 
 function DesignerList() {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [reqDesigner,resDesigner] = useDesignerListMutation()
+  const [reqDelete, resDelete] = useDeleteDesignerMutation();
   const designerList = useSelector((state) => state?.designerState.designerList)
   console.log('designerList',designerList);
+  const [showModal, setShowModal] = useState(false);
+  const [modalDetails, setModalDetails] = useState(null);
 
-  const handleDownload = (e, st) => {
+  useEffect(() => {
+    reqDesigner({
+      page: 0,
+      limit: 0,
+      search: "",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (resDesigner?.isSuccess) {
+      dispatch(getDesigner(resDesigner?.data?.data?.docs));
+    }
+  }, [resDesigner]);
+
+  const onEditAction = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st.row.original);
+    navigate("/add-designer", {
+      state: {
+        designerID: st?.row?.original?._id,
+        isEdit:true
+      },
+    });
   };
+
+  const handleDelete = (e, st) => {
+    e.preventDefault();
+    console.log("sssss", st?.row?.original);
+    setModalDetails({
+      title: st?.row?.original?.name,
+      id: st?.row?.original?._id,
+    });
+    setShowModal(true);
+  };
+
+  useEffect(() => {
+    if (resDelete?.isSuccess) {
+      toast.success(resDelete?.data?.message, {
+        position: "top-center",
+      });
+      reqDesigner({
+        page: 0,
+        limit: 0,
+        search: "",
+      });
+      setShowModal(false);
+      setModalDetails(null);
+    }
+  }, [resDelete]);
 
   const columns = [
     {
-      Header: "Name",
-      accessor: "name",
+      Header: "First Name",
+      accessor: "firstName",
+      Filter: TextSearchFilter,
+      filter: "rankedMatchSorter",
+    },
+    {
+      Header: "Last Name",
+      accessor: "lastName",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
     },
@@ -28,16 +87,23 @@ function DesignerList() {
       Filter: TextSearchFilter,
     },
     {
+      Header: "Phone",
+      accessor: "phone",
+      Filter: TextSearchFilter,
+    },
+    {
       Header: "Action",
       accessor: "action",
       Cell: (row) => (
         <div>
-          <button onClick={(e) => handleDownload(e, row)}>View</button>
+          <button onClick={(e) => onEditAction(e,row)}>Edit</button>
+          <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
         </div>
       ),
     },
   ];
   return (
+    <>
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -84,6 +150,13 @@ function DesignerList() {
         </div>
       </div>
     </div>
+    <VerifyDeleteModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        modalDetails={modalDetails}
+        confirmAction={reqDelete}
+      />
+      </>
   );
 }
 

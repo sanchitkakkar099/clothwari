@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                   <Component />
               }
             ></Route>
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/" element={<Navigate to="/login" />} />
             </>
           ))}
   </Routes>

@@ -39,14 +39,14 @@ function SidebarComponent() {
 
                 <li>
                     <Link to="/dashboard">
-                        <i className="bx bx-tachometer icon nav-icon"></i>
+                        {/* <i className="bx bx-tachometer icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-dashboards">Dashboard</span>                    
                     </Link>
                 </li>
 
                 <li>
                     <Link to="/design-list-v1">
-                        <i className="bx bx-store icon nav-icon"></i>
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-dashboards">View Design</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
@@ -54,7 +54,7 @@ function SidebarComponent() {
 
                 <li>
                     <Link to="/design-list-v2">
-                        <i className="bx bx-store icon nav-icon"></i>
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-dashboards">Upload Design</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
@@ -62,8 +62,24 @@ function SidebarComponent() {
 
                 <li>
                     <Link to="/designer-list">
-                        <i className="bx bx-store icon nav-icon"></i>
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-dashboards">Add Designer</span>
+                        {/* <span className="badge rounded-pill bg-success">5+</span> */}
+                    </Link>
+                </li>
+
+                <li>
+                    <Link to="/category-list">
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-dashboards">Category</span>
+                        {/* <span className="badge rounded-pill bg-success">5+</span> */}
+                    </Link>
+                </li>
+
+                <li>
+                    <Link to="/tag-list">
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-dashboards">Tag</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>

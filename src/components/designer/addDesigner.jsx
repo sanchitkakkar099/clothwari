@@ -3,24 +3,54 @@ import Select from "react-select";
 import { Controller, set, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch } from "react-redux";
-import { setDesignerList } from "../../redux/designerSlice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { handleValidatePhone } from "../../constant/formConstant";
+import { useDesignerByIdQuery, useSubmitDesignerMutation } from "../../service";
+import toast from "react-hot-toast";
 
 function AddDesigner() {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const location = useLocation();
+  const { state: locationState } = location;
+  const [reqDesigner, resDesigner] = useSubmitDesignerMutation();
+  const resDesignerById = useDesignerByIdQuery(locationState?.designerID, {
+    skip: !locationState?.designerID,
+  });
+
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
-    watch
   } = useForm();
+
+  useEffect(() => {
+    if (resDesignerById?.isSuccess && resDesignerById?.data?.data) {
+      reset({
+        _id: resDesignerById?.data?.data?._id,
+        firstName: resDesignerById?.data?.data?.firstName,
+        lastName: resDesignerById?.data?.data?.lastName,
+        email: resDesignerById?.data?.data?.email,
+        phone: resDesignerById?.data?.data?.phone,
+        onlyUpload: resDesignerById?.data?.data?.onlyUpload,
+      });
+    }
+  }, [resDesignerById]);
+
   const onNext = (state) => {
     console.log("state", state);
-    dispatch(setDesignerList(state))
-    navigate('/designer-list')
+    reqDesigner(state);
   };
+
+  useEffect(() => {
+    if (resDesigner?.isSuccess) {
+      toast.success(resDesigner?.data?.message, {
+        position: "top-center",
+      });
+      reset()
+      navigate("/designer-list");
+    }
+  }, [resDesigner?.isSuccess]);
   
 
    return (
@@ -77,25 +107,49 @@ function AddDesigner() {
                       <div className="row">
                       <div className="col-md-6">
                       <div className="mb-3">
-                        <Label className="form-label" for="name">
-                            Name
+                        <Label className="form-label" for="firstName">
+                            First Name
                         </Label>
                         <Controller
-                          id="name"
-                          name="name"
+                          id="firstName"
+                          name="firstName"
                           control={control}
-                          rules={{ required: "Name is required" }}
+                          rules={{ required: "First Name is required" }}
                           render={({ field }) => (
                             <Input
-                              placeholder="Entare Name"
+                              placeholder="Entare First Name"
                               className="form-control"
                               {...field}
                               type="text"
                             />
                           )}
                         />
-                        {errors.name && (
-                          <FormFeedback>{errors?.name?.message}</FormFeedback>
+                        {errors.firstName && (
+                          <FormFeedback>{errors?.firstName?.message}</FormFeedback>
+                        )}
+                      </div>
+                      </div>
+                      <div className="col-md-6">
+                      <div className="mb-3">
+                        <Label className="form-label" for="lastName">
+                            Last Name
+                        </Label>
+                        <Controller
+                          id="lastName"
+                          name="lastName"
+                          control={control}
+                          rules={{ required: "Last Name is required" }}
+                          render={({ field }) => (
+                            <Input
+                              placeholder="Entare Last Name"
+                              className="form-control"
+                              {...field}
+                              type="text"
+                            />
+                          )}
+                        />
+                        {errors.lastName && (
+                          <FormFeedback>{errors?.lastName?.message}</FormFeedback>
                         )}
                       </div>
                       </div>
@@ -108,7 +162,14 @@ function AddDesigner() {
                               id="email"
                               name="email"
                               control={control}
-                              rules={{ required: "Email is required" }}
+                              rules={{
+                                  required: "Email is required",
+                                  validate: {
+                                    matchPattern: (v) =>
+                                      /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(v) ||
+                                      "Email address must be a valid address",
+                                  },
+                                }}
                               render={({ field }) => (
                                 <Input
                                   placeholder="Entare Email"
@@ -125,7 +186,88 @@ function AddDesigner() {
                             )}
                           </div>
                         </div>
+                        {!locationState?.isEdit &&
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label className="form-label" for="password">
+                              Password
+                            </Label>
+                            <Controller
+                              id="password"
+                              name="password"
+                              control={control}
+                              rules={{ required: "Password is required" }}
+                              render={({ field }) => (
+                                <Input
+                                  placeholder="Entare Password"
+                                  className="form-control"
+                                  {...field}
+                                  type="text"
+                                />
+                              )}
+                            />
+                            {errors.password && (
+                              <FormFeedback>
+                                {errors?.password?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                        }
+                        <div className="col-md-6">
+                      <div className="mb-3">
+                        <Label className="form-label" for="phone">
+                            Phone
+                        </Label>
+                        <Controller
+                          id="phone"
+                          name="phone"
+                          control={control}
+                          rules={{ 
+                                validate: (value) => handleValidatePhone(value)
+                          }}
+                          render={({ field }) => (
+                            <Input
+                              placeholder="Entare Phone"
+                              className="form-control"
+                              {...field}
+                              type="text"
+                            />
+                          )}
+                        />
+                        {errors.phone && (
+                          <FormFeedback>{errors?.phone?.message}</FormFeedback>
+                        )}
                       </div>
+                      </div>
+                        
+                      <div className="col-md-6">
+                      <div className={locationState?.isEdit ? "py-1" : "py-5"}>
+                        
+                        <div class="form-check">
+                                                            
+                        <Controller
+                          id="onlyUpload"
+                          name="onlyUpload"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              className="form-check-input"
+                              {...field}
+                              type="checkbox"
+                              defaultChecked={field?.value}
+                            />
+                          )}
+                        />
+                        <Label className="form-check-label" for="onlyUpload">
+                          Only Upload
+                        </Label>
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      
+                      
                       <div className="row">
                         <div className="col text-end">
                           <a href="#" className="btn btn-danger m-1">

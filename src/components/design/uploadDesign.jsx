@@ -1,42 +1,154 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { Controller, set, useForm } from "react-hook-form";
+import { Controller,useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch } from "react-redux";
-import { setDesignList } from "../../redux/designSlice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useCategoryDropdownListQuery, useDesignUploadByIdQuery, useFileUploadMutation, useMultipleFileUploadMutation, useSubmitDesignUploadMutation, useTagDropdownListQuery } from "../../service";
+import toast from "react-hot-toast";
 
 function AddDesign() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [multipleDesign, setMultipleDesign] = useState([])
-  console.log('multipleDesign',multipleDesign);
+  const location = useLocation()
+  const { state: locationState } = location;
+  const [reqDesignUpload, resDesignUpload] = useSubmitDesignUploadMutation();
+  const resDesignById = useDesignUploadByIdQuery(locationState?.designID, {
+    skip: !locationState?.designID,
+  });
+  const resCategoryListDropdown = useCategoryDropdownListQuery();
+  const resTagListDropdown = useTagDropdownListQuery();
+
+  console.log('resCategoryListDropdown',resCategoryListDropdown);
+
+  const [reqFile] = useMultipleFileUploadMutation();
+  const [mainFiles, setMainFiles] = useState([])
+  const [thumbnailFiles, setThumbnailFiles] = useState([])
+  const [categoryDropdown, setCategoryDropdown] = useState([])
+  const [tagDropdown, setTagDropdown] = useState([])
+
+  console.log('mainFiles',mainFiles);
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
-    watch
+    setValue,
+    setError
   } = useForm();
-  const onNext = (state) => {
-    console.log("state", state);
-    dispatch(setDesignList({...state,designs_file:multipleDesign}))
-    navigate('/design-list-v2')
-  };
-  // console.log('file',watch('designs_file'),watch('designs_file') && Array.from(watch('designs_file'))?.map(el => URL.createObjectURL(el)));
+
+  useEffect(() => {
+    if (resDesignById?.isSuccess && resDesignById?.data?.data) {
+      console.log('resDesignById?.data?.data',resDesignById?.data?.data);
+      reset({
+        ...resDesignById.data.data,
+        image:resDesignById?.data?.data?.image && Array.isArray(resDesignById?.data?.data?.image) && resDesignById?.data?.data?.image?.length > 0 ? resDesignById?.data?.data?.image : [],
+        thumbnail:resDesignById?.data?.data?.thumbnail && Array.isArray(resDesignById?.data?.data?.thumbnail) && resDesignById?.data?.data?.thumbnail?.length > 0 ? resDesignById?.data?.data?.thumbnail : []
+      });
+      if(resDesignById?.data?.data?.image && Array.isArray(resDesignById?.data?.data?.image) && resDesignById?.data?.data?.image?.length > 0){
+        setMainFiles(resDesignById?.data?.data?.image)
+      }
+      if(resDesignById?.data?.data?.thumbnail && Array.isArray(resDesignById?.data?.data?.thumbnail) && resDesignById?.data?.data?.thumbnail?.length > 0){
+        setThumbnailFiles(resDesignById?.data?.data?.thumbnail)
+      }
+    }
+  }, [resDesignById]);
+
+  useEffect(() => {
+    if(resCategoryListDropdown?.isSuccess && resCategoryListDropdown?.data?.data){
+      setCategoryDropdown(resCategoryListDropdown?.data?.data)
+    }
+  },[resCategoryListDropdown])
+
+  useEffect(() => {
+    if(resTagListDropdown?.isSuccess && resTagListDropdown?.data?.data){
+      setTagDropdown(resTagListDropdown?.data?.data)
+    }
+  },[resTagListDropdown])
+  
  const handleFile  = (e,name) => {
-  console.log('eeeee',e.target.files,name);
-  if(e.target.files){
+  console.log('eeeee',name);
+  if(name === 'image' && e.target.files){
+    const formData = new FormData();
     const files = Array.from(e.target.files)
-    const fileUrls = files?.map(el => URL.createObjectURL(el))
-    setMultipleDesign([...multipleDesign, ...fileUrls])
+    for (let i = 0 ; i < files.length ; i++) {
+        console.log('files[i]',files[i]);
+        formData.append("file", files[i]);
+    }
+      const reqData = {
+        file: formData,
+        type: 1,
+      };
+      reqFile(reqData)
+        .then((res) => {
+          if (res?.data?.data) {
+            console.log("res?.data?.data", res?.data?.data, name);
+            setValue(name, res?.data?.data);
+            setError(name, "");
+            setMainFiles([...mainFiles, ...res?.data?.data])
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
   }
+  if(name === 'thumbnail' && e.target.files){
+    const formData = new FormData();
+    const files = Array.from(e.target.files)
+    for (let i = 0 ; i < files.length ; i++) {
+        console.log('files[i]',files[i]);
+        formData.append("file", files[i]);
+    }
+      const reqData = {
+        file: formData,
+        type: 1,
+      };
+      reqFile(reqData)
+        .then((res) => {
+          if (res?.data?.data) {
+            console.log("res?.data?.data", res?.data?.data, name);
+            setValue(name, res?.data?.data);
+            setError(name, "");
+            setThumbnailFiles([...thumbnailFiles, ...res?.data?.data])
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+  }
+  
  } 
   
  const removeFile = (e,name) => {
-  const filterUrls = multipleDesign?.filter(el => el !== name)
-  setMultipleDesign(filterUrls)
+  const filterUrls = mainFiles?.filter(el => el !== name)
+  setMainFiles(filterUrls)
  }
+
+ const removeThumbnailFile = (e,name) => {
+  const filterUrls = thumbnailFiles?.filter(el => el !== name)
+  setThumbnailFiles(filterUrls)
+ }
+
+  const onNext = (state) => {
+    console.log("state", state);
+    reqDesignUpload({
+      ...state,
+      category: state?.category?.value,
+      tag: state?.tag?.value,
+      image: mainFiles && Array.isArray(mainFiles) && mainFiles?.length > 0 ?  mainFiles?.map(el => el?._id)  : null,
+      thumbnail: thumbnailFiles && Array.isArray(thumbnailFiles) && thumbnailFiles?.length > 0 ?  thumbnailFiles?.map(el => el?._id)  : null,
+    });
+  };
+
+  useEffect(() => {
+    if (resDesignUpload?.isSuccess) {
+      toast.success(resDesignUpload?.data?.message, {
+        position: "top-center",
+      });
+      reset()
+      navigate("/design-list-v2");
+    }
+  }, [resDesignUpload?.isSuccess]);
 
    return (
     <div className="page-content">
@@ -49,7 +161,7 @@ function AddDesign() {
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Design</a>
+                    <a href="#!">Design</a>
                   </li>
                   <li className="breadcrumb-item active">Upload Design</li>
                 </ol>
@@ -88,6 +200,9 @@ function AddDesign() {
                 >
                   <div className="p-4 border-top">
                     <Form onSubmit={handleSubmit(onNext)}>
+                      
+                      <div className="row">
+                      <div className="col-md-6">
                       <div className="mb-3">
                         <Label className="form-label" for="name">
                           Design Name
@@ -110,41 +225,16 @@ function AddDesign() {
                           <FormFeedback>{errors?.name?.message}</FormFeedback>
                         )}
                       </div>
-                      <div className="row">
+                      </div>
+
                         <div className="col-md-6">
                           <div className="mb-3">
-                            <Label className="form-label" for="designe_code">
-                              Design Code
-                            </Label>
-                            <Controller
-                              id="designe_code"
-                              name="designe_code"
-                              control={control}
-                              rules={{ required: "Design Code is required" }}
-                              render={({ field }) => (
-                                <Input
-                                  placeholder="Entare Design Code"
-                                  className="form-control"
-                                  {...field}
-                                  type="text"
-                                />
-                              )}
-                            />
-                            {errors.designe_code && (
-                              <FormFeedback>
-                                {errors?.designe_code?.message}
-                              </FormFeedback>
-                            )}
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <Label className="form-label" for="designe_number">
+                            <Label className="form-label" for="designNo">
                               Design Number
                             </Label>
                             <Controller
-                              id="designe_number"
-                              name="designe_number"
+                              id="designNo"
+                              name="designNo"
                               control={control}
                               rules={{ required: "Design Number is required" }}
                               render={({ field }) => (
@@ -156,9 +246,9 @@ function AddDesign() {
                                 />
                               )}
                             />
-                            {errors.designe_number && (
+                            {errors.designNo && (
                               <FormFeedback>
-                                {errors?.designe_number?.message}
+                                {errors?.designNo?.message}
                               </FormFeedback>
                             )}
                           </div>
@@ -167,26 +257,19 @@ function AddDesign() {
                       <div className="row">
                         <div className="col-md-6">
                           <div className="mb-3">
-                            <Label for="varient" className="form-label">
-                              Varient
+                            <Label for="category" className="form-label">
+                              Category
                             </Label>
                             <Controller
-                              id="varient"
-                              name="varient"
+                              id="category"
+                              name="category"
                               control={control}
-                              rules={{ required: "Varient is required" }}
+                              rules={{ required: "Category is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable
                                   options={
-                                    [
-                                      {
-                                        label: "Electronic",
-                                        value: "Electronic",
-                                      },
-                                      { label: "Fashion", value: "Fashion" },
-                                      { label: "Fitness", value: "Fitness" },
-                                    ] || []
+                                    categoryDropdown|| []
                                   }
                                   className="react-select"
                                   classNamePrefix="select"
@@ -195,35 +278,28 @@ function AddDesign() {
                                 />
                               )}
                             />
-                            {errors.varient && (
+                            {errors.category && (
                               <FormFeedback>
-                                {errors?.varient?.message}
+                                {errors?.category?.message}
                               </FormFeedback>
                             )}
                           </div>
                         </div>
                         <div className="col-md-6">
                           <div className="mb-3">
-                            <Label for="product" className="form-label">
-                              Product
+                            <Label for="tag" className="form-label">
+                              Tag
                             </Label>
                             <Controller
-                              id="product"
-                              name="product"
+                              id="tag"
+                              name="tag"
                               control={control}
-                              rules={{ required: "Product is required" }}
+                              rules={{ required: "Tag is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable
                                   options={
-                                    [
-                                      {
-                                        label: "Electronic",
-                                        value: "Electronic",
-                                      },
-                                      { label: "Fashion", value: "Fashion" },
-                                      { label: "Fitness", value: "Fitness" },
-                                    ] || []
+                                    tagDropdown || []
                                   }
                                   className="react-select"
                                   classNamePrefix="select"
@@ -232,163 +308,9 @@ function AddDesign() {
                                 />
                               )}
                             />
-                            {errors.product && (
+                            {errors.tag && (
                               <FormFeedback>
-                                {errors?.product?.message}
-                              </FormFeedback>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <Label for="pattern" className="form-label">
-                              Pattern
-                            </Label>
-                            <Controller
-                              id="pattern"
-                              name="pattern"
-                              control={control}
-                              rules={{ required: "Pattern is required" }}
-                              render={({ field: { onChange, value } }) => (
-                                <Select
-                                  isClearable
-                                  options={
-                                    [
-                                      {
-                                        label: "Electronic",
-                                        value: "Electronic",
-                                      },
-                                      { label: "Fashion", value: "Fashion" },
-                                      { label: "Fitness", value: "Fitness" },
-                                    ] || []
-                                  }
-                                  className="react-select"
-                                  classNamePrefix="select"
-                                  onChange={onChange}
-                                  value={value ? value : null}
-                                />
-                              )}
-                            />
-                            {errors.pattern && (
-                              <FormFeedback>
-                                {errors?.pattern?.message}
-                              </FormFeedback>
-                            )}
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <Label for="color" className="form-label">
-                              Color
-                            </Label>
-                            <Controller
-                              id="color"
-                              name="color"
-                              control={control}
-                              rules={{ required: "Color is required" }}
-                              render={({ field: { onChange, value } }) => (
-                                <Select
-                                  isClearable
-                                  options={
-                                    [
-                                      {
-                                        label: "Electronic",
-                                        value: "Electronic",
-                                      },
-                                      { label: "Fashion", value: "Fashion" },
-                                      { label: "Fitness", value: "Fitness" },
-                                    ] || []
-                                  }
-                                  className="react-select"
-                                  classNamePrefix="select"
-                                  onChange={onChange}
-                                  value={value ? value : null}
-                                />
-                              )}
-                            />
-                            {errors.color && (
-                              <FormFeedback>
-                                {errors?.color?.message}
-                              </FormFeedback>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <Label for="weave" className="form-label">
-                              Weave
-                            </Label>
-                            <Controller
-                              id="weave"
-                              name="weave"
-                              control={control}
-                              rules={{ required: "Weave is required" }}
-                              render={({ field: { onChange, value } }) => (
-                                <Select
-                                  isClearable
-                                  options={
-                                    [
-                                      {
-                                        label: "Electronic",
-                                        value: "Electronic",
-                                      },
-                                      { label: "Fashion", value: "Fashion" },
-                                      { label: "Fitness", value: "Fitness" },
-                                    ] || []
-                                  }
-                                  className="react-select"
-                                  classNamePrefix="select"
-                                  onChange={onChange}
-                                  value={value ? value : null}
-                                />
-                              )}
-                            />
-                            {errors.weave && (
-                              <FormFeedback>
-                                {errors?.weave?.message}
-                              </FormFeedback>
-                            )}
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <Label for="blend" className="form-label">
-                              Blend
-                            </Label>
-                            <Controller
-                              id="blend"
-                              name="blend"
-                              control={control}
-                              rules={{ required: "Blend is required" }}
-                              render={({ field: { onChange, value } }) => (
-                                <Select
-                                  isClearable
-                                  options={
-                                    [
-                                      {
-                                        label: "Electronic",
-                                        value: "Electronic",
-                                      },
-                                      { label: "Fashion", value: "Fashion" },
-                                      { label: "Fitness", value: "Fitness" },
-                                    ] || []
-                                  }
-                                  className="react-select"
-                                  classNamePrefix="select"
-                                  onChange={onChange}
-                                  value={value ? value : null}
-                                />
-                              )}
-                            />
-                            {errors.blend && (
-                              <FormFeedback>
-                                {errors?.blend?.message}
+                                {errors?.tag?.message}
                               </FormFeedback>
                             )}
                           </div>
@@ -396,40 +318,15 @@ function AddDesign() {
                       </div>
 
                       <div className="mb-0">
-                        <Label className="form-label" for="article">
-                          Article
-                        </Label>
-                        <Controller
-                          id="article"
-                          name="article"
-                          control={control}
-                          rules={{ required: "Article is required" }}
-                          render={({ field }) => (
-                            <Input
-                              placeholder="Enter Article"
-                              className="form-control mb-3"
-                              {...field}
-                              type="textarea"
-                              rows="4"
-                            />
-                          )}
-                        />
-                        {errors.article && (
-                          <FormFeedback>
-                            {errors?.article?.message}
-                          </FormFeedback>
-                        )}
-                      </div>
-                      <div className="mb-0">
-                        <Label className="form-label" for="designs_file">
-                          Upload Design
+                        <Label className="form-label" for="image">
+                          Upload MainFile
                         </Label>
                         <div className="border-top">
                           <form action="#" className="dropzone img__upload">
                             <div className="fallback">
                               <Controller
-                                id="designs_file"
-                                name="designs_file"
+                                id="image"
+                                name="image"
                                 control={control}
                                 rules={{ required: "Design File is required" }}
                                 render={({ field: { onChange, value } }) => (
@@ -438,7 +335,7 @@ function AddDesign() {
                                     accept="image/png, image/gif, image/jpeg"
                                     onChange={(e) => {
                                       onChange(e.target.files);
-                                      handleFile(e, "designs_file");
+                                      handleFile(e, "image");
                                     }}
                                     multiple
                                   />
@@ -450,24 +347,24 @@ function AddDesign() {
                                 <i className="display-4 text-muted mdi mdi-cloud-upload"></i>
                               </div>
 
-                              <h4>Click to upload design.</h4>
+                              <h4>Click to upload main file.</h4>
                             </div>
                           </form>
-                          {errors.designs_file && (
+                          {errors.image && (
                             <FormFeedback>
-                              {errors?.designs_file?.message}
+                              {errors?.image?.message}
                             </FormFeedback>
                           )}
                           <div className="img_opc">
                             <div className="row">
-                            {multipleDesign && Array.isArray(multipleDesign) && 
-                              multipleDesign?.length > 0 && 
-                            multipleDesign?.map((el,i) => {
+                            {mainFiles && Array.isArray(mainFiles) && 
+                              mainFiles?.length > 0 && 
+                            mainFiles?.map((el,i) => {
                               return(
                                 <div className="col-sm-2" key={i}>
                                 <div className="past_img">
                                   <img
-                                    src={el}
+                                    src={el?.filepath}
                                     alt=""
                                   />
                                   <span onClick={(e) => removeFile(e,el)}>x</span>
@@ -540,6 +437,66 @@ function AddDesign() {
                                   <span>x</span>
                                 </div>
                               </div> */}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mb-0">
+                        <Label className="form-label" for="thumbnail">
+                          Upload Thumbnail
+                        </Label>
+                        <div className="border-top">
+                          <form action="#" className="dropzone img__upload">
+                            <div className="fallback">
+                              <Controller
+                                id="thumbnail"
+                                name="thumbnail"
+                                control={control}
+                                rules={{ required: "Design File is required" }}
+                                render={({ field: { onChange, value } }) => (
+                                  <Input
+                                    type="file"
+                                    accept="image/png, image/gif, image/jpeg"
+                                    onChange={(e) => {
+                                      onChange(e.target.files);
+                                      handleFile(e, "thumbnail");
+                                    }}
+                                    multiple
+                                  />
+                                )}
+                              />
+                            </div>
+                            <div className="dz-message needsclick">
+                              <div className="mb-3">
+                                <i className="display-4 text-muted mdi mdi-cloud-upload"></i>
+                              </div>
+
+                              <h4>Click to upload thumbnail file.</h4>
+                            </div>
+                          </form>
+                          {errors.thumbnail && (
+                            <FormFeedback>
+                              {errors?.thumbnail?.message}
+                            </FormFeedback>
+                          )}
+                          <div className="img_opc">
+                            <div className="row">
+                            {thumbnailFiles && Array.isArray(thumbnailFiles) && 
+                              thumbnailFiles?.length > 0 && 
+                            thumbnailFiles?.map((el,i) => {
+                              return(
+                                <div className="col-sm-2" key={i}>
+                                <div className="past_img">
+                                  <img
+                                    src={el?.filepath}
+                                    alt=""
+                                  />
+                                  <span onClick={(e) => removeThumbnailFile(e,el)}>x</span>
+                                </div>
+                              </div>
+                              )
+                            })}
                             </div>
                           </div>
                         </div>

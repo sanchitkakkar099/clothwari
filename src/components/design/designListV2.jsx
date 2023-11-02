@@ -2,95 +2,96 @@ import React, { useEffect, useState } from "react";
 import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "./Filter";
 import DataTable from "./DataTable";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useDeleteDesignUploadMutation, useDesignUploadListMutation } from "../../service";
+import { getDesignUpload } from "../../redux/designUploadSlice";
+import toast from "react-hot-toast";
+import VerifyDeleteModal from "../common/VerifyDeleteModal";
 
 
 function DesignListV2() {
   const navigate = useNavigate()
-  const [data, getData] = useState([]);
-  const URL = "https://jsonplaceholder.org/users";
-  const designList = useSelector((state) => state?.designState.designList)
-  console.log('designList',designList);
+  const dispatch = useDispatch()
+  const [reqDesign,resDesign] = useDesignUploadListMutation()
+  const [reqDelete, resDelete] = useDeleteDesignUploadMutation();
+  const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
+  console.log('designUploadList',designUploadList);
+  const [showModal, setShowModal] = useState(false);
+  const [modalDetails, setModalDetails] = useState(null);
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    reqDesign({
+      page: 0,
+      limit: 0,
+      search: "",
+    });
+  }, []);
 
-  // const fetchData = () => {
-  //   fetch(URL)
-  //     .then((res) => res.json())
-
-  //     .then((response) => {
-  //       console.log(response);
-  //       const response1 = response?.map((el) => ({
-  //         id: el?.id,
-  //         firstname: el?.firstname,
-  //         lastname: el?.lastname,
-  //         email: el?.email,
-  //         birthDate: el?.birthDate,
-  //         company: el?.company?.name,
-  //       }));
-  //       getData(response1);
-  //     });
-  // };
-
-  // console.log("data", data);
+  useEffect(() => {
+    if (resDesign?.isSuccess) {
+      dispatch(getDesignUpload(resDesign?.data?.data?.docs));
+    }
+  }, [resDesign]);
 
   const handleDownload = (e, st) => {
     e.preventDefault();
     console.log("sssss", st.row.original);
   };
 
+  const onEditAction = (e, st) => {
+    e.preventDefault();
+    navigate("/upload-design", {
+      state: {
+        designID: st?.row?.original?._id,
+      },
+    });
+  };
+
+  const handleDelete = (e, st) => {
+    e.preventDefault();
+    console.log("sssss", st?.row?.original);
+    setModalDetails({
+      title: st?.row?.original?.name,
+      id: st?.row?.original?._id,
+    });
+    setShowModal(true);
+  };
+
+  useEffect(() => {
+    if (resDelete?.isSuccess) {
+      toast.success(resDelete?.data?.message, {
+        position: "top-center",
+      });
+      reqDesign({
+        page: 0,
+        limit: 0,
+        search: "",
+      });
+      setShowModal(false);
+      setModalDetails(null);
+    }
+  }, [resDelete]);
+
   const columns = [
     {
-      Header: "Name",
+      Header: "Design Name",
       accessor: "name",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
     },
-    {
-      Header: "Design Code",
-      accessor: "designe_code",
-      Filter: TextSearchFilter,
-    },
-    {
-      Header: "Design Number",
-      accessor: "designe_number",
-      Filter: TextSearchFilter,
-    },
+    // {
+    //   Header: "Design Number",
+    //   accessor: "designe_number",
+    //   Filter: TextSearchFilter,
+    // },
     // {
     //   Header: "BirthDate",
     //   accessor: "birthDate",
     //   Filter: DateSearchFilter,
     // },
     {
-      Header: "Varient",
-      accessor: "varient.label",
-      Filter: DropdownFilter,
-    },
-    {
-      Header: "Product",
-      accessor: "product.label",
-      Filter: DropdownFilter,
-    },
-    {
-      Header: "Pattern",
-      accessor: "pattern.label",
-      Filter: DropdownFilter,
-    },
-    {
-      Header: "Color",
-      accessor: "color.label",
-      Filter: DropdownFilter,
-    },
-    {
-      Header: "Weave",
-      accessor: "weave.label",
-      Filter: DropdownFilter,
-    },
-    {
-      Header: "Blend",
-      accessor: "blend.label",
+      Header: "Category",
+      accessor: "category.label",
       Filter: DropdownFilter,
     },
     {
@@ -98,12 +99,14 @@ function DesignListV2() {
       accessor: "action",
       Cell: (row) => (
         <div>
-          <button onClick={(e) => handleDownload(e, row)}>Download</button>
+          <button onClick={(e) => onEditAction(e,row)}>Edit</button>
+          <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
         </div>
       ),
     },
   ];
   return (
+    <>
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -141,8 +144,8 @@ function DesignListV2() {
                   </div>
                 </div>
                 {/* <div id="table-ecommerce-orders"></div> */}
-                {/* {Array.isArray(designList) && designList?.length > 0 && ( */}
-                  <DataTable data={designList} columns={columns} />
+                {/* {Array.isArray(designUploadList) && designUploadList?.length > 0 && ( */}
+                  <DataTable data={designUploadList} columns={columns} />
                 {/* )} */}
               </div>
             </div>
@@ -150,6 +153,13 @@ function DesignListV2() {
         </div>
       </div>
     </div>
+    <VerifyDeleteModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        modalDetails={modalDetails}
+        confirmAction={reqDelete}
+      />
+      </>
   );
 }
 

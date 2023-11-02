@@ -8,15 +8,14 @@ export const designerSlice = createSlice({
   name: "designer",
   initialState: initState,
   reducers: {
-    setDesignerList: (state, { payload }) => {
-      console.log('payload',[...state?.designerList,payload],payload);
-      state.designerList = [...state?.designerList,payload];
+    getDesigner: (state, { payload }) => {
+      state.designerList = payload;
     },
   },
 });
 
 export const {
-  setDesignerList
+  getDesigner
 } = designerSlice.actions;
 
 export default designerSlice.reducer;

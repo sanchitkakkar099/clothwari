@@ -1,6 +1,46 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { getDesigner } from '../redux/designerSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useDesignUploadListMutation, useDesignerListMutation } from '../service';
+import { getDesignUpload } from '../redux/designUploadSlice';
 
 function DashboardComponent() {
+    const dispatch = useDispatch()
+    const [reqDesigner,resDesigner] = useDesignerListMutation()
+    const [reqDesign,resDesign] = useDesignUploadListMutation()
+
+    const designerList = useSelector((state) => state?.designerState.designerList)
+    const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
+
+
+    useEffect(() => {
+        reqDesigner({
+        page: 0,
+        limit: 0,
+        search: "",
+        });
+    }, []);
+
+    useEffect(() => {
+        if (resDesigner?.isSuccess) {
+        dispatch(getDesigner(resDesigner?.data?.data?.docs));
+        }
+    }, [resDesigner]);
+
+    useEffect(() => {
+        reqDesign({
+          page: 0,
+          limit: 0,
+          search: "",
+        });
+      }, []);
+    
+      useEffect(() => {
+        if (resDesign?.isSuccess) {
+          dispatch(getDesignUpload(resDesign?.data?.data?.docs));
+        }
+      }, [resDesign]);
+
   return (
     <div className="page-content">
     <div className="container-fluid">
@@ -30,7 +70,7 @@ function DashboardComponent() {
                                     </span>
                                 </div>
                                 <p className="text-muted mt-4 mb-0">Design</p>
-                                <h4 className="mt-1 mb-0">0 </h4>
+                                <h4 className="mt-1 mb-0">{designUploadList && Array.isArray(designUploadList) && designUploadList?.length > 0 ? designUploadList?.length : 0}</h4>
                                 
                             </div>
                         </div>
@@ -44,12 +84,13 @@ function DashboardComponent() {
                                     </span>
                                 </div>
                                 <p className="text-muted mt-4 mb-0">Designer</p>
-                                <h4 className="mt-1 mb-0">0</h4>
+                                <h4 className="mt-1 mb-0">{designerList && Array.isArray(designerList) && designerList?.length > 0 ? designerList?.length : 0}</h4>
+
                                 
                             </div>
                         </div>
                     </div>
-                    <div className="col-lg-3 col-md-6">
+                    {/* <div className="col-lg-3 col-md-6">
                         <div className="card">
                             <div className="card-body">
                                 <div className="avatar">
@@ -62,7 +103,7 @@ function DashboardComponent() {
                                 
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
