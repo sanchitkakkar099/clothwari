@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 
 
 function SidebarComponent() {
+const auth = localStorage.getItem('auth')
+  const user = JSON.parse(auth)
   return (
     <div className="vertical-menu">
 
@@ -44,6 +46,7 @@ function SidebarComponent() {
                     </Link>
                 </li>
 
+                {user?.role === 'Super Admin' &&
                 <li>
                     <Link to="/design-list-v1">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -51,6 +54,7 @@ function SidebarComponent() {
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>
+                }
 
                 <li>
                     <Link to="/design-list-v2">
@@ -60,14 +64,17 @@ function SidebarComponent() {
                     </Link>
                 </li>
 
+                {user?.role === 'Super Admin' &&
                 <li>
                     <Link to="/designer-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
-                        <span className="menu-item" data-key="t-dashboards">Add Designer</span>
+                        <span className="menu-item" data-key="t-dashboards">Designer</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>
+                }
 
+                {user?.role === 'Super Admin' &&
                 <li>
                     <Link to="/category-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -75,7 +82,10 @@ function SidebarComponent() {
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>
+                }
 
+
+                {user?.role === 'Super Admin' &&
                 <li>
                     <Link to="/tag-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -83,6 +93,7 @@ function SidebarComponent() {
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>
+                }
 
             </ul>
         </div>

@@ -1,14 +1,45 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import One from '../../assets/images/product/five.jpg'
 import Two from '../../assets/images/product/seven.jpg'
 import Three from '../../assets/images/product/four.jpg'
 import Four from '../../assets/images/product/three.jpg'
 import Five from '../../assets/images/product/one.jpg'
 import Six from '../../assets/images/product/six.jpg'
+import { useDesignUploadListMutation } from '../../service'
+import { useDispatch, useSelector } from 'react-redux'
+import { getDesignUpload } from '../../redux/designUploadSlice'
 
 
 
 function DesignList() {
+  const dispatch = useDispatch()
+  const [reqDesign,resDesign] = useDesignUploadListMutation()
+  const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
+  console.log('designUploadList',designUploadList);
+
+  useEffect(() => {
+    reqDesign({
+      page: 1,
+      limit: 6,
+      search: "",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (resDesign?.isSuccess) {
+      dispatch(getDesignUpload(resDesign?.data?.data?.docs));
+    }
+  }, [resDesign]);
+
+
+  const handleSearch = (search) => {
+        reqDesign({
+          page: 1,
+          limit: 6,
+          search: search,
+        });
+  }
+
   return (
     <div className="page-content">
     <div className="container-fluid">
@@ -225,7 +256,9 @@ function DesignList() {
                                     <div className="form-inline float-md-end">
                                         <div className="search-box ms-2">
                                             <div className="position-relative">
-                                                <input type="text" className="form-control bg-light border-light rounded" placeholder="Search..."/>
+                                                <input type="text" 
+                                                onChange={(e) => handleSearch(e.target.value)}
+                                                className="form-control bg-light border-light rounded" placeholder="Search..."/>
                                                 <i className="bx bx-search search-icon"></i>
                                             </div>
                                         </div>
@@ -251,7 +284,10 @@ function DesignList() {
                                 <div className="tab-content p-3 text-muted">
                                     <div className="tab-pane active" id="popularity" role="tabpanel">
                                         <div className="row">
-                                            <div className="col-xl-4 col-sm-6">
+                                        {designUploadList && Array.isArray(designUploadList) && designUploadList?.length > 0 ?
+                                            designUploadList?.map((el,i) => {
+                                                return(
+                                                    <div className="col-xl-4 col-sm-6" key={i}>
                                                 <div className="product-box">
                                                     {/* <div className="product-ribbon">
                                                         - 20 %
@@ -262,244 +298,31 @@ function DesignList() {
                                                                 <i className="mdi mdi-heart-outline"></i>
                                                             </a>
                                                         </div> */}
-                                                        <img src={One} alt="" className="img-fluid mx-auto d-block"/>
+                                                        <img src={el?.image[0]?.filepath} alt="" className="img-fluid mx-auto d-block"/>
                                                     </div>
                                                     
                                                     <div className="product-content p-4">
                                                         
                                                         <div className="d-flex justify-content-between align-items-end">
                                                             <div>
-                                                                <h5 className="mb-1"><a href="#!" className="text-dark font-size-16">Nike N012 Shoes</a></h5>
+                                                                <h5 className="mb-1"><a href="#!" className="text-dark font-size-16">{el?.name}</a></h5>
                                                                 {/* <p className="text-muted font-size-13">Gray, Shoes</p> */}
-                                                                <h5 className="mt-3 mb-0">$260</h5>
+                                                                {/* <h5 className="mt-3 mb-0">$260</h5> */}
                                                             </div>
-
                                                             <div>
-                                                                {/* <ul className="list-inline mb-0 text-muted product-color">
-                                                                    <li className="list-inline-item">
-                                                                        Colors :
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-dark"></i>
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-light"></i>
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-primary"></i>
-                                                                    </li>
-                                                                </ul> */}
                                                             </div>
                                                         </div>
                                                         
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="col-xl-4 col-sm-6">
-                                                <div className="product-box">
-                                                    {/* <div className="product-ribbon">
-                                                        - 20 %
-                                                    </div> */}
-                                                    <div className="product-img pt-4 px-4">
-                                                        {/* <div className="product-wishlist">
-                                                            <a href="#">
-                                                                <i className="mdi mdi-heart-outline"></i>
-                                                            </a>
-                                                        </div> */}
-                                                        <img src={Two} alt="" className="img-fluid mx-auto d-block"/>
-                                                    </div>
-                                                    
-                                                    <div className="product-content p-4">
-
-                                                        <div className="d-flex justify-content-between align-items-end">
-                                                            <div>
-                                                                <h5 className="mb-1"><a href="#!" className="text-dark font-size-16">Adidas Running Shoes</a></h5>
-                                                                {/* <p className="text-muted font-size-13">Black, Shoes</p> */}
-                                                                <h5 className="mt-3 mb-0">$240</h5>
-                                                            </div>
-
-                                                            {/* <div>
-                                                                <ul className="list-inline mb-0 text-muted product-color">
-                                                                    <li className="list-inline-item">
-                                                                        Colors :
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-danger"></i>
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-dark"></i>
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-light"></i>
-                                                                    </li>
-                                                                </ul>
-                                                            </div> */}
-
-                                                    </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-xl-4 col-sm-6">
-                                                <div className="product-box">
-                                                    <div className="product-img pt-4 px-4">
-                                                        
-                                                        {/* <div className="product-wishlist">
-                                                            <a href="#">
-                                                                <i className="mdi mdi-heart-outline"></i>
-                                                            </a>
-                                                        </div> */}
-                                                        <img src={Three} alt="" className="img-fluid mx-auto d-block"/>
-                                                    </div>
-                                                    
-                                                    <div className="product-content p-4">
-                                                        <div className="d-flex justify-content-between align-items-end">
-                                                            <div>
-                                                                <h5 className="mb-1"><a href="#!" className="text-dark font-size-16">Puma P103 Shoes</a></h5>
-                                                                {/* <p className="text-muted font-size-13">Purple, Shoes</p> */}
-                                                                <h5 className="mt-3 mb-0">$250</h5>
-                                                            </div>
-
-                                                            {/* <div>
-                                                                <ul className="list-inline mb-0 text-muted product-color">
-                                                                    <li className="list-inline-item">
-                                                                        Colors :
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-purple"></i>
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-light"></i>
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-dark"></i>
-                                                                    </li>
-                                                                </ul>
-                                                            </div> */}
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-xl-4 col-sm-6">
-                                                <div className="product-box">
-                                                    <div className="product-img pt-4 px-4">
-                                                        {/* <div className="product-wishlist">
-                                                            <a href="#">
-                                                                <i className="mdi mdi-heart-outline"></i>
-                                                            </a>
-                                                        </div> */}
-                                                        <img src={Four} alt="" className="img-fluid mx-auto d-block"/>
-                                                    </div>
-                                                    
-                                                    <div className="product-content p-4">
-
-                                                        <div className="d-flex justify-content-between align-items-end">
-                                                            <div>
-                                                                <h5 className="mb-1"><a href="#!" className="text-dark font-size-16">Sports S120 Shoes</a></h5>
-                                                                {/* <p className="text-muted font-size-13">Cyan, Shoes</p> */}
-                                                                <h5 className="mt-3 mb-0">$230</h5>
-                                                            </div>
-                                                        
-                                                            {/* <div>
-                                                                <ul className="list-inline mb-0 text-muted product-color">
-                                                                    <li className="list-inline-item">
-                                                                        Colors :
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-info"></i>
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-success"></i>
-                                                                    </li>
-                                                                </ul>
-                                                            </div> */}
-                                                        
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-xl-4 col-sm-6">
-                                                <div className="product-box">
-                                                    <div className="product-img pt-4 px-4">
-
-                                                        {/* <div className="product-wishlist">
-                                                            <a href="#">
-                                                                <i className="mdi mdi-heart-outline"></i>
-                                                            </a>
-                                                        </div> */}
-                                                        <img src={Five} alt="" className="img-fluid mx-auto d-block"/>
-                                                    </div>
-                                                    
-                                                    <div className="product-content p-4">
-
-                                                        <div className="d-flex justify-content-between align-items-end">
-                                                            <div>
-                                                                <h5 className="mb-1"><a href="#!" className="text-dark font-size-16">Adidas AB23 Shoes</a></h5>
-                                                                {/* <p className="text-muted font-size-13">Blue, Shoes</p> */}
-                                                                <h5 className="mt-3 mb-0">$250</h5>
-                                                            </div>
-                                                        {/* <div>
-                                                            <ul className="list-inline mb-0 text-muted product-color">
-                                                                <li className="list-inline-item">
-                                                                    Colors :
-                                                                </li>
-                                                                <li className="list-inline-item">
-                                                                    <i className="mdi mdi-circle text-dark"></i>
-                                                                </li>
-                                                                <li className="list-inline-item">
-                                                                    <i className="mdi mdi-circle text-light"></i>
-                                                                </li>
-                                                                <li className="list-inline-item">
-                                                                    <i className="mdi mdi-circle text-primary"></i>
-                                                                </li>
-                                                            </ul>
-                                                        </div> */}
-
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-xl-4 col-sm-6">
-                                                <div className="product-box">
-                                                    {/* <div className="product-ribbon">
-                                                        - 20 %
-                                                    </div> */}
-                                                    <div className="product-img pt-4 px-4">
-                                                        {/* <div className="product-wishlist">
-                                                            <a href="#">
-                                                                <i className="mdi mdi-heart-outline"></i>
-                                                            </a>
-                                                        </div> */}
-                                                        <img src={Six} alt="" className="img-fluid mx-auto d-block"/>
-                                                    </div>
-                                                    
-                                                    <div className="product-content p-4">
-                                                        <div className="d-flex justify-content-between align-items-end">
-                                                            <div>
-                                                                <h5 className="mb-1"><a href="#!" className="text-dark font-size-16">Nike N012 Shoes</a></h5>
-                                                                {/* <p className="text-muted font-size-13">Gray, Shoes</p> */}
-                                                                <h5 className="mt-3 mb-0">$260</h5>
-                                                            </div>
-
-                                                            {/* <div>
-                                                                <ul className="list-inline mb-0 text-muted product-color">
-                                                                    <li className="list-inline-item">
-                                                                        Colors :
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-dark"></i>
-                                                                    </li>
-                                                                    <li className="list-inline-item">
-                                                                        <i className="mdi mdi-circle text-light"></i>
-                                                                    </li>
-                                                                </ul>
-                                                            </div> */}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                )
+                                            })
+                                            :
+                                            <h4 className='text-center mt-5'>No Design Found</h4>
+                                        }
+                                            
+                                            
                                         </div>
                                     </div>
 

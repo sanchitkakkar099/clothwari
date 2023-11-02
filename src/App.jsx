@@ -11,6 +11,7 @@ function App({children}) {
   const navigate = useNavigate()
   const auth = localStorage.getItem('auth')
   const user = JSON.parse(auth)
+  console.log('user',user);
 
   useEffect(() => {
     if(!user?.token){
