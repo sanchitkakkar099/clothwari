@@ -2,7 +2,7 @@ import React from "react";
 import { useTable, useFilters, usePagination,useRowSelect } from "react-table";
 
 // utilities
-import { matchSorterFn } from "./Filter";
+import { matchSorterFn } from "../common/Filter";
 import Pagination from "./Pagination";
 
 const DataTable = (props) => {

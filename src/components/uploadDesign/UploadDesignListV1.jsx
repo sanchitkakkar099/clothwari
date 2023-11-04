@@ -11,7 +11,7 @@ import { getDesignUpload } from '../../redux/designUploadSlice'
 
 
 
-function DesignList() {
+function UploadDesignListV1() {
   const dispatch = useDispatch()
   const [reqDesign,resDesign] = useDesignUploadListMutation()
   const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
@@ -376,4 +376,4 @@ function DesignList() {
   )
 }
 
-export default DesignList
+export default UploadDesignListV1

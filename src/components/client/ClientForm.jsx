@@ -5,16 +5,16 @@ import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
-import { useDesignerByIdQuery, useSubmitDesignerMutation } from "../../service";
+import { useClientByIdQuery, useSubmitClientMutation } from "../../service";
 import toast from "react-hot-toast";
 
-function AddDesigner() {
+function ClientForm() {
   const navigate = useNavigate()
   const location = useLocation();
   const { state: locationState } = location;
-  const [reqDesigner, resDesigner] = useSubmitDesignerMutation();
-  const resDesignerById = useDesignerByIdQuery(locationState?.designerID, {
-    skip: !locationState?.designerID,
+  const [reqClient, resClient] = useSubmitClientMutation();
+  const resClientById = useClientByIdQuery(locationState?.clientID, {
+    skip: !locationState?.clientID,
   });
 
   const {
@@ -25,32 +25,32 @@ function AddDesigner() {
   } = useForm();
 
   useEffect(() => {
-    if (resDesignerById?.isSuccess && resDesignerById?.data?.data) {
+    if (resClientById?.isSuccess && resClientById?.data?.data) {
       reset({
-        _id: resDesignerById?.data?.data?._id,
-        firstName: resDesignerById?.data?.data?.firstName,
-        lastName: resDesignerById?.data?.data?.lastName,
-        email: resDesignerById?.data?.data?.email,
-        phone: resDesignerById?.data?.data?.phone,
-        onlyUpload: resDesignerById?.data?.data?.onlyUpload,
+        _id: resClientById?.data?.data?._id,
+        firstName: resClientById?.data?.data?.firstName,
+        lastName: resClientById?.data?.data?.lastName,
+        email: resClientById?.data?.data?.email,
+        phone: resClientById?.data?.data?.phone,
+        onlyUpload: resClientById?.data?.data?.onlyUpload,
       });
     }
-  }, [resDesignerById]);
+  }, [resClientById]);
 
   const onNext = (state) => {
     console.log("state", state);
-    reqDesigner(state);
+    reqClient(state);
   };
 
   useEffect(() => {
-    if (resDesigner?.isSuccess) {
-      toast.success(resDesigner?.data?.message, {
+    if (resClient?.isSuccess) {
+      toast.success(resClient?.data?.message, {
         position: "top-center",
       });
       reset()
-      navigate("/designer-list");
+      navigate("/client-list");
     }
-  }, [resDesigner?.isSuccess]);
+  }, [resClient?.isSuccess]);
   
 
    return (
@@ -59,14 +59,14 @@ function AddDesigner() {
         <div className="row">
           <div className="col-12">
             <div className="page-title-box d-flex align-items-center justify-content-between">
-              <h4 className="mb-0">Create Designer</h4>
+              <h4 className="mb-0">Create Client</h4>
 
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Designer</a>
+                    <a href="javascript: void(0);">Client</a>
                   </li>
-                  <li className="breadcrumb-item active">Create Designer</li>
+                  <li className="breadcrumb-item active">Create Client</li>
                 </ol>
               </div>
             </div>
@@ -87,7 +87,7 @@ function AddDesigner() {
                   <div className="p-4">
                     <div className="d-flex align-items-center">
                       <div className="flex-grow-1 overflow-hidden">
-                        <h5 className="font-size-16 mb-1">Designer Info</h5>
+                        <h5 className="font-size-16 mb-1">Client Info</h5>
                         <p className="text-muted text-truncate mb-0">
                           Fill all information below
                         </p>
@@ -107,49 +107,25 @@ function AddDesigner() {
                       <div className="row">
                       <div className="col-md-6">
                       <div className="mb-3">
-                        <Label className="form-label" for="firstName">
-                            First Name
+                        <Label className="form-label" for="nam">
+                            Name
                         </Label>
                         <Controller
-                          id="firstName"
-                          name="firstName"
+                          id="nam"
+                          name="nam"
                           control={control}
-                          rules={{ required: "First Name is required" }}
+                          rules={{ required: "Name is required" }}
                           render={({ field }) => (
                             <Input
-                              placeholder="Entare First Name"
+                              placeholder="Entare Name"
                               className="form-control"
                               {...field}
                               type="text"
                             />
                           )}
                         />
-                        {errors.firstName && (
-                          <FormFeedback>{errors?.firstName?.message}</FormFeedback>
-                        )}
-                      </div>
-                      </div>
-                      <div className="col-md-6">
-                      <div className="mb-3">
-                        <Label className="form-label" for="lastName">
-                            Last Name
-                        </Label>
-                        <Controller
-                          id="lastName"
-                          name="lastName"
-                          control={control}
-                          rules={{ required: "Last Name is required" }}
-                          render={({ field }) => (
-                            <Input
-                              placeholder="Entare Last Name"
-                              className="form-control"
-                              {...field}
-                              type="text"
-                            />
-                          )}
-                        />
-                        {errors.lastName && (
-                          <FormFeedback>{errors?.lastName?.message}</FormFeedback>
+                        {errors.name && (
+                          <FormFeedback>{errors?.name?.message}</FormFeedback>
                         )}
                       </div>
                       </div>
@@ -296,4 +272,4 @@ function AddDesigner() {
   );
 }
 
-export default AddDesigner;
+export default ClientForm;

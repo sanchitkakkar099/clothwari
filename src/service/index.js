@@ -282,3 +282,54 @@ export const {
   useDesignerByIdQuery,
   useDeleteDesignerMutation
 } = designerApi;
+
+
+export const clientApi = createApi({
+  tagTypes: ["client"],
+  reducerPath: "clientApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}/`,
+    prepareHeaders: (headers, { getState }) => {
+      headers.set('Authorization', user?.token);
+      return headers
+    },
+  }),
+  endpoints: (builder) => ({
+    clientList: builder.mutation({
+      query: (payload) => ({
+        url: "client/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["client"],
+    }),
+    submitClient: builder.mutation({
+      query: (payload) => ({
+        url: "client/create",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["client"],
+    }),
+    clientById: builder.query({
+      query: (id) => ({
+        url: `client/byId/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["client"],
+    }),
+    deleteClient: builder.mutation({
+      query: (id) => ({
+        url: `client/byId/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["client"],
+    }),
+  }),
+});
+export const {
+ useClientListMutation,
+ useSubmitClientMutation,
+ useClientByIdQuery,
+ useDeleteClientMutation
+} = clientApi;

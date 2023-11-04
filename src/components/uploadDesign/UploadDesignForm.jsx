@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useCategoryDropdownListQuery, useDesignUploadByIdQuery, useFileUploadMutation, useMultipleFileUploadMutation, useSubmitDesignUploadMutation, useTagDropdownListQuery } from "../../service";
 import toast from "react-hot-toast";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 function AddDesign() {
   const dispatch = useDispatch()
@@ -21,13 +22,13 @@ function AddDesign() {
 
   console.log('resCategoryListDropdown',resCategoryListDropdown);
 
-  const [reqFile] = useMultipleFileUploadMutation();
-  const [mainFiles, setMainFiles] = useState([])
-  const [thumbnailFiles, setThumbnailFiles] = useState([])
+  const [reqFile] = useFileUploadMutation();
+  const [mainFile, setMainFile] = useState(null)
+  const [thumbnailFile, setThumbnailFile] = useState(null)
   const [categoryDropdown, setCategoryDropdown] = useState([])
   const [tagDropdown, setTagDropdown] = useState([])
 
-  console.log('mainFiles',mainFiles);
+  console.log('mainFile',mainFile);
   const {
     control,
     handleSubmit,
@@ -42,14 +43,14 @@ function AddDesign() {
       console.log('resDesignById?.data?.data',resDesignById?.data?.data);
       reset({
         ...resDesignById.data.data,
-        image:resDesignById?.data?.data?.image && Array.isArray(resDesignById?.data?.data?.image) && resDesignById?.data?.data?.image?.length > 0 ? resDesignById?.data?.data?.image : [],
-        thumbnail:resDesignById?.data?.data?.thumbnail && Array.isArray(resDesignById?.data?.data?.thumbnail) && resDesignById?.data?.data?.thumbnail?.length > 0 ? resDesignById?.data?.data?.thumbnail : []
+        image:resDesignById?.data?.data?.image  ? resDesignById?.data?.data?.image : null,
+        thumbnail:resDesignById?.data?.data?.thumbnail ? resDesignById?.data?.data?.thumbnail : null
       });
-      if(resDesignById?.data?.data?.image && Array.isArray(resDesignById?.data?.data?.image) && resDesignById?.data?.data?.image?.length > 0){
-        setMainFiles(resDesignById?.data?.data?.image)
+      if(resDesignById?.data?.data?.image){
+        setMainFile(resDesignById?.data?.data?.image)
       }
-      if(resDesignById?.data?.data?.thumbnail && Array.isArray(resDesignById?.data?.data?.thumbnail) && resDesignById?.data?.data?.thumbnail?.length > 0){
-        setThumbnailFiles(resDesignById?.data?.data?.thumbnail)
+      if(resDesignById?.data?.data?.thumbnail){
+        setThumbnailFile(resDesignById?.data?.data?.thumbnail)
       }
     }
   }, [resDesignById]);
@@ -70,11 +71,7 @@ function AddDesign() {
   console.log('eeeee',name);
   if(name === 'image' && e.target.files){
     const formData = new FormData();
-    const files = Array.from(e.target.files)
-    for (let i = 0 ; i < files.length ; i++) {
-        console.log('files[i]',files[i]);
-        formData.append("file", files[i]);
-    }
+    formData.append("file", e.target.files[0]);
       const reqData = {
         file: formData,
         type: 1,
@@ -82,10 +79,9 @@ function AddDesign() {
       reqFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
-            console.log("res?.data?.data", res?.data?.data, name);
             setValue(name, res?.data?.data);
             setError(name, "");
-            setMainFiles([...mainFiles, ...res?.data?.data])
+            setMainFile(res?.data?.data)
           }
         })
         .catch((err) => {
@@ -94,11 +90,7 @@ function AddDesign() {
   }
   if(name === 'thumbnail' && e.target.files){
     const formData = new FormData();
-    const files = Array.from(e.target.files)
-    for (let i = 0 ; i < files.length ; i++) {
-        console.log('files[i]',files[i]);
-        formData.append("file", files[i]);
-    }
+    formData.append("file", e.target.files[0]);
       const reqData = {
         file: formData,
         type: 1,
@@ -106,10 +98,9 @@ function AddDesign() {
       reqFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
-            console.log("res?.data?.data", res?.data?.data, name);
             setValue(name, res?.data?.data);
             setError(name, "");
-            setThumbnailFiles([...thumbnailFiles, ...res?.data?.data])
+            setThumbnailFile(res?.data?.data)
           }
         })
         .catch((err) => {
@@ -119,25 +110,25 @@ function AddDesign() {
   
  } 
   
- const removeFile = (e,name) => {
-  const filterUrls = mainFiles?.filter(el => el !== name)
-  setMainFiles(filterUrls)
+ const removeFile = (e) => {
+  e.preventDefault()
+  setMainFile(null)
  }
 
- const removeThumbnailFile = (e,name) => {
-  const filterUrls = thumbnailFiles?.filter(el => el !== name)
-  setThumbnailFiles(filterUrls)
+ const removeThumbnailFile = (e) => {
+  e.preventDefault()
+  setThumbnailFile(null)
  }
 
   const onNext = (state) => {
     console.log("state", state);
-    reqDesignUpload({
-      ...state,
-      category: state?.category?.value,
-      tag: state?.tag?.value,
-      image: mainFiles && Array.isArray(mainFiles) && mainFiles?.length > 0 ?  mainFiles?.map(el => el?._id)  : null,
-      thumbnail: thumbnailFiles && Array.isArray(thumbnailFiles) && thumbnailFiles?.length > 0 ?  thumbnailFiles?.map(el => el?._id)  : null,
-    });
+    // reqDesignUpload({
+    //   ...state,
+    //   category: state?.category?.value,
+    //   tag: state?.tag?.value,
+    //   image: mainFile && Array.isArray(mainFile) && mainFile?.length > 0 ?  mainFile?.map(el => el?._id)  : null,
+    //   thumbnail: thumbnailFile && Array.isArray(thumbnailFile) && thumbnailFile?.length > 0 ?  thumbnailFile?.map(el => el?._id)  : null,
+    // });
   };
 
   useEffect(() => {
@@ -296,16 +287,16 @@ function AddDesign() {
                               control={control}
                               rules={{ required: "Tag is required" }}
                               render={({ field: { onChange, value } }) => (
-                                <Select
-                                  isClearable
-                                  options={
-                                    tagDropdown || []
-                                  }
-                                  className="react-select"
-                                  classNamePrefix="select"
-                                  onChange={onChange}
-                                  value={value ? value : null}
-                                />
+                                <Typeahead
+                                    allowNew
+                                    id="custom-selections-example"
+                                    multiple
+                                    newSelectionPrefix="Add Tag: "
+                                    options={[]}
+                                    placeholder="Type anything..."
+                                    onChange={onChange}
+                                    selected={value}
+                                  />
                               )}
                             />
                             {errors.tag && (
@@ -337,7 +328,6 @@ function AddDesign() {
                                       onChange(e.target.files);
                                       handleFile(e, "image");
                                     }}
-                                    multiple
                                   />
                                 )}
                               />
@@ -357,21 +347,17 @@ function AddDesign() {
                           )}
                           <div className="img_opc">
                             <div className="row">
-                            {mainFiles && Array.isArray(mainFiles) && 
-                              mainFiles?.length > 0 && 
-                            mainFiles?.map((el,i) => {
-                              return(
-                                <div className="col-sm-2" key={i}>
+                            {mainFile &&
+                                <div className="col-sm-2">
                                 <div className="past_img">
                                   <img
-                                    src={el?.filepath}
+                                    src={mainFile?.filepath}
                                     alt=""
                                   />
-                                  <span onClick={(e) => removeFile(e,el)}>x</span>
+                                  <span onClick={(e) => removeFile(e)}>x</span>
                                 </div>
                               </div>
-                              )
-                            })}
+                              }
                             
                               
                               {/* <div className="col-sm-2">
@@ -462,7 +448,6 @@ function AddDesign() {
                                       onChange(e.target.files);
                                       handleFile(e, "thumbnail");
                                     }}
-                                    multiple
                                   />
                                 )}
                               />
@@ -482,21 +467,17 @@ function AddDesign() {
                           )}
                           <div className="img_opc">
                             <div className="row">
-                            {thumbnailFiles && Array.isArray(thumbnailFiles) && 
-                              thumbnailFiles?.length > 0 && 
-                            thumbnailFiles?.map((el,i) => {
-                              return(
-                                <div className="col-sm-2" key={i}>
+                            {thumbnailFile &&
+                                <div className="col-sm-2">
                                 <div className="past_img">
                                   <img
-                                    src={el?.filepath}
+                                    src={thumbnailFile?.filepath}
                                     alt=""
                                   />
-                                  <span onClick={(e) => removeThumbnailFile(e,el)}>x</span>
+                                  <span onClick={(e) => removeThumbnailFile(e)}>x</span>
                                 </div>
                               </div>
-                              )
-                            })}
+                              }
                             </div>
                           </div>
                         </div>

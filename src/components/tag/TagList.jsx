@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react'
-import { TextSearchFilter } from '../design/Filter';
-import DataTable from "../design/DataTable";
+import { TextSearchFilter } from '../common/Filter';
+import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteTagMutation, useTagListMutation } from '../../service';

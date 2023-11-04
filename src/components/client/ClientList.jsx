@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../design/Filter";
-import DataTable from "../design/DataTable";
+import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Filter";
+import DataTable from "../common/DataTable";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useDeleteDesignerMutation, useDesignerListMutation } from "../../service";
@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 
 
-function DesignerList() {
+function ClientList() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [reqDesigner,resDesigner] = useDesignerListMutation()
@@ -35,7 +35,7 @@ function DesignerList() {
 
   const onEditAction = (e, st) => {
     e.preventDefault();
-    navigate("/add-designer", {
+    navigate("/client-form", {
       state: {
         designerID: st?.row?.original?._id,
         isEdit:true
@@ -109,14 +109,14 @@ function DesignerList() {
         <div className="row">
           <div className="col-12">
             <div className="page-title-box d-flex align-items-center justify-content-between">
-              <h4 className="mb-0">Designer</h4>
+              <h4 className="mb-0">Client</h4>
 
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
                     <a href="javascript: void(0);">Clothwari</a>
                   </li>
-                  <li className="breadcrumb-item active">Designer</li>
+                  <li className="breadcrumb-item active">Client</li>
                 </ol>
               </div>
             </div>
@@ -134,16 +134,13 @@ function DesignerList() {
                       className="btn btn-success waves-effect waves-light mb-4 me-2"
                       data-bs-toggle="modal"
                       data-bs-target=".add-new-order"
-                      onClick={() => navigate('/add-designer')}
+                      onClick={() => navigate('/client-form')}
                     >
-                      <i className="mdi mdi-plus me-1"></i> Create Designer
+                      <i className="mdi mdi-plus me-1"></i> Create Client
                     </button>
                   </div>
                 </div>
-                {/* <div id="table-ecommerce-orders"></div> */}
-                {/* {Array.isArray(designList) && designList?.length > 0 && ( */}
                   <DataTable data={designerList} columns={columns} />
-                {/* )} */}
               </div>
             </div>
           </div>
@@ -160,4 +157,4 @@ function DesignerList() {
   );
 }
 
-export default DesignerList;
+export default ClientList;

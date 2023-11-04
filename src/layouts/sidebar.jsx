@@ -66,9 +66,19 @@ const auth = localStorage.getItem('auth')
 
                 {user?.role === 'Super Admin' &&
                 <li>
-                    <Link to="/designer-list">
+                    <Link to="/staff-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
-                        <span className="menu-item" data-key="t-dashboards">Designer</span>
+                        <span className="menu-item" data-key="t-dashboards">Staff</span>
+                        {/* <span className="badge rounded-pill bg-success">5+</span> */}
+                    </Link>
+                </li>
+                }
+
+                {user?.role === 'Super Admin' &&
+                <li>
+                    <Link to="/client-list">
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-dashboards">Client</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>

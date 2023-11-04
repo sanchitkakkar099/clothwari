@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "./Filter";
-import DataTable from "./DataTable";
+import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Filter";
+import DataTable from "../common/DataTable";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useDeleteDesignUploadMutation, useDesignUploadListMutation } from "../../service";
@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 
 
-function DesignListV2() {
+function UploadDesignListV2() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [reqDesign,resDesign] = useDesignUploadListMutation()
@@ -40,7 +40,7 @@ function DesignListV2() {
 
   const onEditAction = (e, st) => {
     e.preventDefault();
-    navigate("/upload-design", {
+    navigate("/upload-design-form", {
       state: {
         designID: st?.row?.original?._id,
       },
@@ -137,16 +137,13 @@ function DesignListV2() {
                       className="btn btn-success waves-effect waves-light mb-4 me-2"
                       data-bs-toggle="modal"
                       data-bs-target=".add-new-order"
-                      onClick={() => navigate('/upload-design')}
+                      onClick={() => navigate('/upload-design-form')}
                     >
                       <i className="mdi mdi-plus me-1"></i> Upload Design
                     </button>
                   </div>
-                </div>
-                {/* <div id="table-ecommerce-orders"></div> */}
-                {/* {Array.isArray(designUploadList) && designUploadList?.length > 0 && ( */}
+                </div>                
                   <DataTable data={designUploadList} columns={columns} />
-                {/* )} */}
               </div>
             </div>
           </div>
@@ -163,4 +160,4 @@ function DesignListV2() {
   );
 }
 
-export default DesignListV2;
+export default UploadDesignListV2;
