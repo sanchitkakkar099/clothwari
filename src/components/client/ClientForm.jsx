@@ -39,7 +39,7 @@ function ClientForm() {
   const onNext = (state) => {
     console.log("state", state);
     reqClient({...state,
-      allowLoginTime: 'string',
+      allowLoginTime: '',
       allowLoginSec: 0
     });
   };
