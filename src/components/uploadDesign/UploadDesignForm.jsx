@@ -122,13 +122,13 @@ function AddDesign() {
 
   const onNext = (state) => {
     console.log("state", state);
-    // reqDesignUpload({
-    //   ...state,
-    //   category: state?.category?.value,
-    //   tag: state?.tag?.value,
-    //   image: mainFile && Array.isArray(mainFile) && mainFile?.length > 0 ?  mainFile?.map(el => el?._id)  : null,
-    //   thumbnail: thumbnailFile && Array.isArray(thumbnailFile) && thumbnailFile?.length > 0 ?  thumbnailFile?.map(el => el?._id)  : null,
-    // });
+    reqDesignUpload({
+      ...state,
+      category: state?.category?.value,
+      tag: state?.tag,
+      image: mainFile ?  mainFile?._id : null,
+      thumbnail: thumbnailFile ?  thumbnailFile?._id  : null,
+    });
   };
 
   useEffect(() => {

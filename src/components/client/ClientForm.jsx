@@ -28,18 +28,20 @@ function ClientForm() {
     if (resClientById?.isSuccess && resClientById?.data?.data) {
       reset({
         _id: resClientById?.data?.data?._id,
-        firstName: resClientById?.data?.data?.firstName,
-        lastName: resClientById?.data?.data?.lastName,
+        name: resClientById?.data?.data?.name,
         email: resClientById?.data?.data?.email,
-        phone: resClientById?.data?.data?.phone,
-        onlyUpload: resClientById?.data?.data?.onlyUpload,
+        allowLoginTime: resClientById?.data?.data?.allowLoginTime,
+        allowLoginSec: 0
       });
     }
   }, [resClientById]);
 
   const onNext = (state) => {
     console.log("state", state);
-    reqClient(state);
+    reqClient({...state,
+      allowLoginTime: 'string',
+      allowLoginSec: 0
+    });
   };
 
   useEffect(() => {
@@ -107,12 +109,12 @@ function ClientForm() {
                       <div className="row">
                       <div className="col-md-6">
                       <div className="mb-3">
-                        <Label className="form-label" for="nam">
+                        <Label className="form-label" for="name">
                             Name
                         </Label>
                         <Controller
-                          id="nam"
-                          name="nam"
+                          id="name"
+                          name="name"
                           control={control}
                           rules={{ required: "Name is required" }}
                           render={({ field }) => (
@@ -190,60 +192,7 @@ function ClientForm() {
                           </div>
                         </div>
                         }
-                        <div className="col-md-6">
-                      <div className="mb-3">
-                        <Label className="form-label" for="phone">
-                            Phone
-                        </Label>
-                        <Controller
-                          id="phone"
-                          name="phone"
-                          control={control}
-                          rules={{ 
-                                validate: (value) => handleValidatePhone(value)
-                          }}
-                          render={({ field }) => (
-                            <Input
-                              placeholder="Entare Phone"
-                              className="form-control"
-                              {...field}
-                              type="text"
-                            />
-                          )}
-                        />
-                        {errors.phone && (
-                          <FormFeedback>{errors?.phone?.message}</FormFeedback>
-                        )}
-                      </div>
-                      </div>
-                        
-                      <div className="col-md-6">
-                      <div className={locationState?.isEdit ? "py-1" : "py-5"}>
-                        
-                        <div class="form-check">
-                                                            
-                        <Controller
-                          id="onlyUpload"
-                          name="onlyUpload"
-                          control={control}
-                          render={({ field }) => (
-                            <Input
-                              className="form-check-input"
-                              {...field}
-                              type="checkbox"
-                              defaultChecked={field?.value}
-                            />
-                          )}
-                        />
-                        <Label className="form-check-label" for="onlyUpload">
-                          Only Upload
-                        </Label>
-                      </div>
-                      </div>
-                      </div>
-                      </div>
-                      
-                      
+                      </div>                      
                       <div className="row">
                         <div className="col text-end">
                           <a href="#" className="btn btn-danger m-1">

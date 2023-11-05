@@ -3,24 +3,25 @@ import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Fi
 import DataTable from "../common/DataTable";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useDeleteDesignerMutation, useDesignerListMutation } from "../../service";
+import { useClientListMutation, useDeleteClientMutation } from "../../service";
 import { getDesigner } from "../../redux/designerSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
+import { getClient } from "../../redux/clientSlice";
 
 
 function ClientList() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [reqDesigner,resDesigner] = useDesignerListMutation()
-  const [reqDelete, resDelete] = useDeleteDesignerMutation();
-  const designerList = useSelector((state) => state?.designerState.designerList)
+  const [reqClient,resClient] = useClientListMutation()
+  const [reqDelete, resDelete] = useDeleteClientMutation();
+  const designerList = useSelector((state) => state?.clientState.clientList)
   console.log('designerList',designerList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
 
   useEffect(() => {
-    reqDesigner({
+    reqClient({
       page: 0,
       limit: 0,
       search: "",
@@ -28,16 +29,16 @@ function ClientList() {
   }, []);
 
   useEffect(() => {
-    if (resDesigner?.isSuccess) {
-      dispatch(getDesigner(resDesigner?.data?.data?.docs));
+    if (resClient?.isSuccess) {
+      dispatch(getClient(resClient?.data?.data?.docs));
     }
-  }, [resDesigner]);
+  }, [resClient]);
 
   const onEditAction = (e, st) => {
     e.preventDefault();
     navigate("/client-form", {
       state: {
-        designerID: st?.row?.original?._id,
+        clientID: st?.row?.original?._id,
         isEdit:true
       },
     });
@@ -58,7 +59,7 @@ function ClientList() {
       toast.success(resDelete?.data?.message, {
         position: "top-center",
       });
-      reqDesigner({
+      reqClient({
         page: 0,
         limit: 0,
         search: "",
@@ -70,14 +71,8 @@ function ClientList() {
 
   const columns = [
     {
-      Header: "First Name",
-      accessor: "firstName",
-      Filter: TextSearchFilter,
-      filter: "rankedMatchSorter",
-    },
-    {
-      Header: "Last Name",
-      accessor: "lastName",
+      Header: "Name",
+      accessor: "name",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
     },
@@ -85,11 +80,7 @@ function ClientList() {
       Header: "Email",
       accessor: "email",
       Filter: TextSearchFilter,
-    },
-    {
-      Header: "Phone",
-      accessor: "phone",
-      Filter: TextSearchFilter,
+      filter: "rankedMatchSorter",
     },
     {
       Header: "Action",

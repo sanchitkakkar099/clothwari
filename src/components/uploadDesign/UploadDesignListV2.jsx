@@ -80,19 +80,20 @@ function UploadDesignListV2() {
       filter: "rankedMatchSorter",
     },
     // {
-    //   Header: "Design Number",
-    //   accessor: "designe_number",
-    //   Filter: TextSearchFilter,
-    // },
-    // {
-    //   Header: "BirthDate",
-    //   accessor: "birthDate",
+    //   Header: "Date",
+    //   accessor: "Date",
     //   Filter: DateSearchFilter,
     // },
     {
       Header: "Category",
       accessor: "category.label",
       Filter: DropdownFilter,
+    },
+    {
+      Header: "Upload By",
+      accessor: "uploadedBy.firstName uploadedBy.lastName",
+      Cell: (row) => `${row?.row?.original?.uploadedBy?.firstName} ${row?.row?.original?.uploadedBy?.lastName}`,
+      Filter: TextSearchFilter,
     },
     {
       Header: "Action",

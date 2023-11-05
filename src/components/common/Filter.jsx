@@ -6,6 +6,7 @@ import ReactDatePicker from "react-datepicker";
 export function TextSearchFilter({
   column: { filterValue, preFilteredRows, setFilter }
 }) {
+  console.log('filterValue',filterValue);
   return (
     <input
       value={filterValue || ""}
