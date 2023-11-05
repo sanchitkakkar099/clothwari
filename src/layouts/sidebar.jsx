@@ -1,11 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Logosm from "../assets/images/logo-sm.svg";
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 function SidebarComponent() {
-const auth = localStorage.getItem('auth')
-  const user = JSON.parse(auth)
+  const [sidebarEnable,setSidebarEnable] = useState(false)
+  const userInfo = useSelector((state) => state?.authState.userInfo)
+  console.log('userInfo',userInfo);
+  console.log('sidebarEnable',sidebarEnable);
+  const toggleSidebar = (e,sde) => {
+    e.preventDefault()
+    if(sidebarEnable){
+        setSidebarEnable(false)
+        document.body.setAttribute('data-sidebar-size','lg')
+    }else{
+        setSidebarEnable(true)
+        document.body.setAttribute('data-sidebar-size','sm')
+    }
+  }
   return (
     <div className="vertical-menu">
 
@@ -29,7 +42,7 @@ const auth = localStorage.getItem('auth')
         </Link>
     </div>
 
-    <button type="button" className="btn btn-sm px-3 font-size-16 header-item vertical-menu-btn">
+    <button type="button" className="btn btn-sm px-3 font-size-16 header-item vertical-menu-btn" onClick={(e) => toggleSidebar(e,sidebarEnable)}>
         <i className="fa fa-fw fa-bars"></i>
     </button>
 
@@ -46,7 +59,7 @@ const auth = localStorage.getItem('auth')
                     </Link>
                 </li>
 
-                {user?.role === 'Super Admin' &&
+                {userInfo?.role === 'Super Admin' &&
                 <li>
                     <Link to="/design-list-v1">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -56,6 +69,7 @@ const auth = localStorage.getItem('auth')
                 </li>
                 }
 
+                {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Designer') &&
                 <li>
                     <Link to="/design-list-v2">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -63,8 +77,9 @@ const auth = localStorage.getItem('auth')
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>
+                }
 
-                {user?.role === 'Super Admin' &&
+                {userInfo?.role === 'Super Admin' &&
                 <li>
                     <Link to="/staff-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -74,7 +89,7 @@ const auth = localStorage.getItem('auth')
                 </li>
                 }
 
-                {user?.role === 'Super Admin' &&
+                {userInfo?.role === 'Super Admin' &&
                 <li>
                     <Link to="/client-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -84,7 +99,7 @@ const auth = localStorage.getItem('auth')
                 </li>
                 }
 
-                {user?.role === 'Super Admin' &&
+                {userInfo?.role === 'Super Admin' &&
                 <li>
                     <Link to="/category-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -95,11 +110,19 @@ const auth = localStorage.getItem('auth')
                 }
 
 
-                {user?.role === 'Super Admin' &&
-                <li>
+                {/* {userInfo?.role === 'Super Admin' && */}
+                {/* <li>
                     <Link to="/tag-list">
-                        {/* <i className="bx bx-store icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-dashboards">Tag</span>
+                    </Link>
+                </li> */}
+                {/* } */}
+
+                {userInfo?.role === 'Client' &&
+                <li>
+                    <Link to="">
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-dashboards">Client Show Design</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>

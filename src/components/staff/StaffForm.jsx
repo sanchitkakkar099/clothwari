@@ -28,8 +28,7 @@ function StaffForm() {
     if (resDesignerById?.isSuccess && resDesignerById?.data?.data) {
       reset({
         _id: resDesignerById?.data?.data?._id,
-        firstName: resDesignerById?.data?.data?.firstName,
-        lastName: resDesignerById?.data?.data?.lastName,
+        name: resDesignerById?.data?.data?.name,
         email: resDesignerById?.data?.data?.email,
         phone: resDesignerById?.data?.data?.phone,
         onlyUpload: resDesignerById?.data?.data?.onlyUpload,
@@ -95,7 +94,6 @@ function StaffForm() {
                     </div>
                   </div>
                 </a>
-
                 <div
                   id="addproduct-productinfo-collapse"
                   className="collapse show"
@@ -107,49 +105,25 @@ function StaffForm() {
                       <div className="row">
                       <div className="col-md-6">
                       <div className="mb-3">
-                        <Label className="form-label" for="firstName">
-                            First Name
+                        <Label className="form-label" for="name">
+                            Name
                         </Label>
                         <Controller
-                          id="firstName"
-                          name="firstName"
+                          id="name"
+                          name="name"
                           control={control}
-                          rules={{ required: "First Name is required" }}
+                          rules={{ required: "Name is required" }}
                           render={({ field }) => (
                             <Input
-                              placeholder="Entare First Name"
+                              placeholder="Entare Name"
                               className="form-control"
                               {...field}
                               type="text"
                             />
                           )}
                         />
-                        {errors.firstName && (
-                          <FormFeedback>{errors?.firstName?.message}</FormFeedback>
-                        )}
-                      </div>
-                      </div>
-                      <div className="col-md-6">
-                      <div className="mb-3">
-                        <Label className="form-label" for="lastName">
-                            Last Name
-                        </Label>
-                        <Controller
-                          id="lastName"
-                          name="lastName"
-                          control={control}
-                          rules={{ required: "Last Name is required" }}
-                          render={({ field }) => (
-                            <Input
-                              placeholder="Entare Last Name"
-                              className="form-control"
-                              {...field}
-                              type="text"
-                            />
-                          )}
-                        />
-                        {errors.lastName && (
-                          <FormFeedback>{errors?.lastName?.message}</FormFeedback>
+                        {errors.name && (
+                          <FormFeedback>{errors?.name?.message}</FormFeedback>
                         )}
                       </div>
                       </div>
@@ -242,7 +216,7 @@ function StaffForm() {
                       </div>
                         
                       <div className="col-md-6">
-                      <div className={locationState?.isEdit ? "py-1" : "py-5"}>
+                      <div className={locationState?.isEdit ? "py-5" : "py-3"}>
                         
                         <div class="form-check">
                                                             

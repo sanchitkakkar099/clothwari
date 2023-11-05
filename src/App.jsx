@@ -5,23 +5,23 @@ import DashboardComponent from './components/dashboard'
 import PageContent from './layouts/pageContent'
 import { useNavigate } from 'react-router-dom'
 import { Toaster } from "react-hot-toast";
+import { useSelector } from 'react-redux'
 
 
 function App({children}) {
   const navigate = useNavigate()
-  const auth = localStorage.getItem('auth')
-  const user = JSON.parse(auth)
-  console.log('user',user);
+  const userToken = useSelector((state) => state?.authState.userToken)
 
   useEffect(() => {
-    if(!user?.token){
+    if(!userToken){
       navigate('/login')
     }
-  },[user?.token])
+  },[userToken])
 
-    useEffect(() => {
-      document.body.setAttribute('data-sidebar', 'light')
-    },[])
+  useEffect(() => {
+    document.body.setAttribute('data-sidebar', 'light')
+  },[])
+
   return (
     <Fragment>
     <div id='layout-wrapper'>

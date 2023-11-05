@@ -1,7 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-const auth = localStorage.getItem('auth')
-const user = JSON.parse(auth)
-console.log('user',user);
 const baseUrl =
   import.meta.env.MODE === "development"
     ? import.meta.env.VITE_APP_DEV_URL
@@ -22,10 +19,19 @@ export const authApi = createApi({
       }),
       invalidatesTags: ["auth"],
     }),
+    loginAsAdmin: builder.mutation({
+      query: (payload) => ({
+        url: "designer/login/byadmin",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["auth"],
+    }),
   }),
 });
 export const {
-  useLoginAuthMutation
+  useLoginAuthMutation,
+  useLoginAsAdminMutation
 } = authApi;   
 
 export const categoryApi = createApi({
@@ -34,13 +40,11 @@ export const categoryApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/`,
     prepareHeaders: (headers, { getState }) => {
-      headers.set('Authorization', user?.token);
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
       return headers
-    },
-    prepareHeaders: (headers, { getState }) => {
-      headers.set('Authorization', user?.token);
-      return headers
-    },
+    }
   }),
   endpoints: (builder) => ({
     categoryList: builder.mutation({
@@ -97,7 +101,9 @@ export const designTagApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/`,
     prepareHeaders: (headers, { getState }) => {
-      headers.set('Authorization', user?.token);
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
       return headers
     },
   }),
@@ -156,7 +162,9 @@ export const designUploadApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/`,
     prepareHeaders: (headers, { getState }) => {
-      headers.set('Authorization', user?.token);
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
       return headers
     },
   }),
@@ -206,7 +214,9 @@ export const fileApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/`,
     prepareHeaders: (headers, { getState }) => {
-      headers.set('Authorization', user?.token);
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
       return headers
     },
   }),
@@ -239,7 +249,9 @@ export const designerApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/`,
     prepareHeaders: (headers, { getState }) => {
-      headers.set('Authorization', user?.token);
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
       return headers
     },
   }),
@@ -290,7 +302,9 @@ export const clientApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl}/`,
     prepareHeaders: (headers, { getState }) => {
-      headers.set('Authorization', user?.token);
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
       return headers
     },
   }),

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Controller,useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useCategoryDropdownListQuery, useDesignUploadByIdQuery, useFileUploadMutation, useMultipleFileUploadMutation, useSubmitDesignUploadMutation, useTagDropdownListQuery } from "../../service";
 import toast from "react-hot-toast";
@@ -13,6 +13,7 @@ function AddDesign() {
   const navigate = useNavigate()
   const location = useLocation()
   const { state: locationState } = location;
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const [reqDesignUpload, resDesignUpload] = useSubmitDesignUploadMutation();
   const resDesignById = useDesignUploadByIdQuery(locationState?.designID, {
     skip: !locationState?.designID,
@@ -328,6 +329,7 @@ function AddDesign() {
                                       onChange(e.target.files);
                                       handleFile(e, "image");
                                     }}
+                                    disabled={locationState?.isEdit && userInfo?.onlyUpload}
                                   />
                                 )}
                               />
@@ -354,7 +356,9 @@ function AddDesign() {
                                     src={mainFile?.filepath}
                                     alt=""
                                   />
+                                  {locationState?.isEdit && !userInfo?.onlyUpload &&
                                   <span onClick={(e) => removeFile(e)}>x</span>
+                                  }
                                 </div>
                               </div>
                               }

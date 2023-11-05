@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Filter";
 import DataTable from "../common/DataTable";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useDeleteDesignerMutation, useDesignerListMutation } from "../../service";
+import { useDeleteDesignerMutation, useDesignerListMutation, useLoginAsAdminMutation } from "../../service";
 import { getDesigner } from "../../redux/designerSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
-
+import Cookies from "universal-cookie";
+import { setUserInfo, setUserToken } from "../../redux/authSlice";
+const cookies = new Cookies();
 
 function StaffList() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const [reqDesigner,resDesigner] = useDesignerListMutation()
   const [reqDelete, resDelete] = useDeleteDesignerMutation();
+  const [loginAsAdminReq, loginAsAdminRes] = useLoginAsAdminMutation();
   const designerList = useSelector((state) => state?.designerState.designerList)
   console.log('designerList',designerList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
+  const [adminId, setAdminId] = useState(null);
+
 
   useEffect(() => {
     reqDesigner({
@@ -68,18 +74,38 @@ function StaffList() {
     }
   }, [resDelete]);
 
+  const loginAsStaff = (e,staffId,aId) => {
+    e.preventDefault();
+    console.log('staffId',staffId);
+    setAdminId(aId);
+    loginAsAdminReq({
+      designerById: staffId
+    })
+  }
+
+
+  useEffect(() => {
+    if(loginAsAdminRes?.isSuccess && loginAsAdminRes?.data?.data){
+      console.log('loginAs',loginAsAdminRes?.data);
+      cookies.set("clothwari", loginAsAdminRes?.data?.data?.token, { path: "/" });
+      cookies.set("clothwari_user", {...loginAsAdminRes?.data?.data,adminId:adminId,asAdminFlag:true}, { path: "/" });
+      dispatch(setUserToken(loginAsAdminRes?.data?.data?.token))
+      dispatch(setUserInfo({...loginAsAdminRes?.data?.data,adminId:adminId,asAdminFlag:true}))
+      navigate('/dashboard')
+    }
+  },[loginAsAdminRes])
+
   const columns = [
     {
-      Header: "First Name",
-      accessor: "firstName",
+      Header: "Name",
+      accessor: "name",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
-    },
-    {
-      Header: "Last Name",
-      accessor: "lastName",
-      Filter: TextSearchFilter,
-      filter: "rankedMatchSorter",
+      Cell: (row) => (
+        <div>
+          <Link to="" onClick={(e) => loginAsStaff(e,row?.row?.original?._id,userInfo?._id)}>{row?.row?.original?.name}</Link>
+        </div>
+      ),
     },
     {
       Header: "Email",

@@ -4,12 +4,15 @@ import Logosm from "../../assets/images/logo-sm.svg";
 import { useLoginAuthMutation } from "../../service";
 import { FormFeedback, Input, Label } from "reactstrap";
 import { Controller, useForm } from "react-hook-form";
-
+import Cookies from "universal-cookie";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserInfo, setUserToken } from "../../redux/authSlice";
+const cookies = new Cookies();
 
 function Login() {
   const navigate = useNavigate()
-  const auth = localStorage.getItem('auth')
-  const user = JSON.parse(auth)
+  const dispatch = useDispatch()
+  const userToken = useSelector((state) => state?.authState.userToken)
   const [errorMessage, setErrorMessage] = useState('');
   const [passwordShow, setPasswordShow] = useState(false);
   const [loginReq, loginRes] = useLoginAuthMutation();
@@ -21,10 +24,10 @@ function Login() {
   } = useForm();
 
   useEffect(() => {
-    if(user?.token){
+    if(userToken){
       navigate('/dashboard')
     }
-  },[user?.token])
+  },[userToken])
 
   useEffect(() => {
     document.body.setAttribute('data-sidebar', 'dark')
@@ -41,9 +44,10 @@ function Login() {
 
   useEffect(() => {
     if(loginRes?.isSuccess){
-        localStorage.setItem('auth',JSON.stringify({
-            ...loginRes?.data?.data
-        }))
+        cookies.set("clothwari", loginRes?.data?.data?.token, { path: "/" });
+        cookies.set("clothwari_user", loginRes?.data?.data, { path: "/" });
+        dispatch(setUserToken(loginRes?.data?.data?.token))
+        dispatch(setUserInfo(loginRes?.data?.data))
         setErrorMessage('')
         navigate('/dashboard')
     } else if(loginRes?.isError){
@@ -180,7 +184,7 @@ function Login() {
                          
                       </div>
 
-                      <div className="form-check">
+                      {/* <div className="form-check">
                         <input
                           type="checkbox"
                           className="form-check-input"
@@ -192,7 +196,7 @@ function Login() {
                         >
                           Remember me
                         </label>
-                      </div>
+                      </div> */}
                       <div className="mt-3 text-end">
                         <input
                           className="btn btn-primary w-sm waves-effect waves-light"

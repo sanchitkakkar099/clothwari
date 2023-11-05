@@ -6,8 +6,10 @@ import tagSlice from "./tagSlice";
 import clientSlice from "./clientSlice";
 
 import { authApi, categoryApi, clientApi, designTagApi, designUploadApi, designerApi, fileApi } from "../service";
+import authSlice from "./authSlice";
 
 const appReducer = combineReducers({
+  authState: authSlice,
   designUploadState: designUploadSlice,
   designerState: designerSlice,
   categoryState: categorySlice,

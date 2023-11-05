@@ -1,16 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logosm from "../assets/images/logo-sm.svg";
 import Avatar1 from '../assets/images/users/avatar-1.jpg'
 import { Link, useNavigate } from "react-router-dom";
+import Cookies from "universal-cookie";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserInfo, setUserToken } from "../redux/authSlice";
+import { useLoginAsAdminMutation } from "../service";
+const cookies = new Cookies();
 
 function HeaderComponent() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [loginBackAdminReq, loginBackAdminRes] = useLoginAsAdminMutation();
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const [openMenu,setOpenMenu] = useState(false)
   
   const handleLogout = () => {
-    localStorage.clear()
+    cookies.remove("clothwari", { path: "/" });
+    cookies.remove("clothwari_user", { path: "/" });
+    dispatch(setUserInfo({}))
+    dispatch(setUserToken(''))
+    setOpenMenu(false)
     navigate('/')
   }
+
+  const handleBackToAdmin = (e,adminId) => {
+    e.preventDefault();
+    loginBackAdminReq({
+      designerById: adminId
+    })
+    setOpenMenu(false)
+  }
+
+  useEffect(() => {
+    if(loginBackAdminRes?.isSuccess && loginBackAdminRes?.data?.data){
+      console.log('loginAs',loginBackAdminRes?.data);
+      cookies.set("clothwari", loginBackAdminRes?.data?.data?.token, { path: "/" });
+      cookies.set("clothwari_user", loginBackAdminRes?.data?.data, { path: "/" });
+      dispatch(setUserToken(loginBackAdminRes?.data?.data?.token))
+      dispatch(setUserInfo(loginBackAdminRes?.data?.data))
+      navigate('/dashboard')
+    }
+  },[loginBackAdminRes])
 
   return (
     <header id="page-topbar" className="isvertical-topbar">
@@ -138,10 +169,24 @@ function HeaderComponent() {
                 <i className="bx bx-lock text-muted font-size-18 align-middle me-1"></i>{" "}
                 <span className="align-middle">Lock screen</span>
               </a> */}
+              <Link
+                className="dropdown-item"
+                to=""
+              >
+                <i className="bx bx-user-circle text-muted font-size-18 align-middle me-1"></i>{" "}
+                <span className="align-middle text-capitalize">{(userInfo?.firstName || userInfo?.lastName) ? `${userInfo?.firstName} ${userInfo?.lastName}` : userInfo?.name}</span>
+              </Link>
+              {userInfo?.asAdminFlag ?
+                <Link className="dropdown-item" to="" onClick={(e) => handleBackToAdmin(e,userInfo?.adminId)}>
+                <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
+                <span className="align-middle">Bact To Admin</span>
+              </Link>
+              :
               <Link className="dropdown-item" to="" onClick={handleLogout}>
                 <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
                 <span className="align-middle">Logout</span>
               </Link>
+              }
             </div>
           </div>
         </div>

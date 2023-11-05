@@ -43,6 +43,7 @@ function UploadDesignListV2() {
     navigate("/upload-design-form", {
       state: {
         designID: st?.row?.original?._id,
+        isEdit:true
       },
     });
   };
@@ -91,9 +92,9 @@ function UploadDesignListV2() {
     },
     {
       Header: "Upload By",
-      accessor: "uploadedBy.firstName uploadedBy.lastName",
-      Cell: (row) => `${row?.row?.original?.uploadedBy?.firstName} ${row?.row?.original?.uploadedBy?.lastName}`,
+      accessor: "uploadedBy.name",
       Filter: TextSearchFilter,
+      filter: "rankedMatchSorter",
     },
     {
       Header: "Action",
