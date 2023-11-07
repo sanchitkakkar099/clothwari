@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import Cookies from "universal-cookie";
 import { setUserInfo, setUserToken } from "../../redux/authSlice";
+import StaffView from "./StaffView";
 const cookies = new Cookies();
 
 function StaffList() {
@@ -23,7 +24,8 @@ function StaffList() {
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [adminId, setAdminId] = useState(null);
-
+  const [modal, setModal] = useState(false);
+  const [viewData, setViewData] = useState(null);
 
   useEffect(() => {
     reqDesigner({
@@ -47,6 +49,12 @@ function StaffList() {
         isEdit:true
       },
     });
+  };
+
+  const onViewAction = (e, st) => {
+    e.preventDefault();
+    setModal(true)
+    setViewData(st?.row?.original)
   };
 
   const handleDelete = (e, st) => {
@@ -122,7 +130,8 @@ function StaffList() {
       accessor: "action",
       Cell: (row) => (
         <div>
-          <button onClick={(e) => onEditAction(e,row)}>Edit</button>
+          <button onClick={(e) => onViewAction(e,row)}>View</button>
+          <button onClick={(e) => onEditAction(e,row)} className='ms-2'>Edit</button>
           <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
         </div>
       ),
@@ -176,6 +185,11 @@ function StaffList() {
         </div>
       </div>
     </div>
+    <StaffView
+      modal={modal}
+      setModal={setModal}
+      viewData={viewData}
+    />
     <VerifyDeleteModal
         showModal={showModal}
         setShowModal={setShowModal}

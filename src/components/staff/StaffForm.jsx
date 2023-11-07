@@ -218,18 +218,17 @@ function StaffForm() {
                       <div className="col-md-6">
                       <div className={locationState?.isEdit ? "py-5" : "py-3"}>
                         
-                        <div class="form-check">
-                                                            
+                        <div class="form-check">                      
                         <Controller
                           id="onlyUpload"
                           name="onlyUpload"
                           control={control}
                           render={({ field }) => (
                             <Input
-                              className="form-check-input"
                               {...field}
+                              checked={field?.value}
+                              className="form-check-input"
                               type="checkbox"
-                              defaultChecked={field?.value}
                             />
                           )}
                         />

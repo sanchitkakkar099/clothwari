@@ -8,6 +8,7 @@ import { getDesignUpload } from "../../redux/designUploadSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { downloadFile } from "../common/FileDownload";
+import UploadDesignView from "./UploadDesignView";
 
 
 function UploadDesignListV2() {
@@ -20,6 +21,8 @@ function UploadDesignListV2() {
   console.log('designUploadList',designUploadList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
+  const [modalView, setModalView] = useState(false);
+  const [viewData, setViewData] = useState(null);
 
   useEffect(() => {
     reqDesign({
@@ -48,6 +51,12 @@ function UploadDesignListV2() {
         isEdit:true
       },
     });
+  };
+
+  const onViewAction = (e, st) => {
+    e.preventDefault();
+    setModalView(true)
+    setViewData(st?.row?.original)
   };
 
   const handleDelete = (e, st) => {
@@ -103,7 +112,8 @@ function UploadDesignListV2() {
       accessor: "action",
       Cell: (row) => (
         <div>
-          <button onClick={(e) => onEditAction(e,row)}>Edit</button>
+          <button onClick={(e) => onViewAction(e,row)}>View</button>
+          <button onClick={(e) => onEditAction(e,row)} className='ms-2'>Edit</button>
           {(userInfo?.role === 'Super Admin' || !userInfo?.onlyUpload) &&
           <button onClick={(e) => downloadFile(e,row?.row?.original?.image?.filepath,row?.row?.original?.name)} className='ms-2'>Download</button>
           }
@@ -157,6 +167,11 @@ function UploadDesignListV2() {
         </div>
       </div>
     </div>
+    <UploadDesignView
+      modal={modalView}
+      setModal={setModalView}
+      viewData={viewData}
+    />
     <VerifyDeleteModal
         showModal={showModal}
         setShowModal={setShowModal}
