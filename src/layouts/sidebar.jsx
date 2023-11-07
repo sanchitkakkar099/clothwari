@@ -42,9 +42,9 @@ function SidebarComponent() {
         </Link>
     </div>
 
-    <button type="button" className="btn btn-sm px-3 font-size-16 header-item vertical-menu-btn" onClick={(e) => toggleSidebar(e,sidebarEnable)}>
+    {/* <button type="button" className="btn btn-sm px-3 font-size-16 header-item vertical-menu-btn" onClick={(e) => toggleSidebar(e,sidebarEnable)}>
         <i className="fa fa-fw fa-bars"></i>
-    </button>
+    </button> */}
 
     <div data-simplebar className="sidebar-menu-scroll">
 
@@ -120,9 +120,9 @@ function SidebarComponent() {
 
                 {userInfo?.role === 'Client' &&
                 <li>
-                    <Link to="">
+                    <Link to="/client-view-design">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
-                        <span className="menu-item" data-key="t-dashboards">Client Show Design</span>
+                        <span className="menu-item" data-key="t-dashboards">View Design</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>

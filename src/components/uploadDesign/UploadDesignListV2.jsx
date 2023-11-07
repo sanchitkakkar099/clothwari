@@ -7,11 +7,13 @@ import { useDeleteDesignUploadMutation, useDesignUploadListMutation } from "../.
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
+import { downloadFile } from "../common/FileDownload";
 
 
 function UploadDesignListV2() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const [reqDesign,resDesign] = useDesignUploadListMutation()
   const [reqDelete, resDelete] = useDeleteDesignUploadMutation();
   const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
@@ -102,6 +104,9 @@ function UploadDesignListV2() {
       Cell: (row) => (
         <div>
           <button onClick={(e) => onEditAction(e,row)}>Edit</button>
+          {(userInfo?.role === 'Super Admin' || !userInfo?.onlyUpload) &&
+          <button onClick={(e) => downloadFile(e,row?.row?.original?.image?.filepath,row?.row?.original?.name)} className='ms-2'>Download</button>
+          }
           <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
         </div>
       ),

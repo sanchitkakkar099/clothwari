@@ -33,7 +33,6 @@ function Login() {
     document.body.setAttribute('data-sidebar', 'dark')
   },[])
   
-
   const handleLogin = (state) => {
     const reqData = {
       email: state?.email,
@@ -183,6 +182,12 @@ function Login() {
                         )}
                          
                       </div>
+
+                      {errorMessage && 
+                        <FormFeedback>
+                            {errorMessage}
+                          </FormFeedback>
+                      }
 
                       {/* <div className="form-check">
                         <input

@@ -6,12 +6,12 @@ import { getDesignUpload } from '../redux/designUploadSlice';
 
 function DashboardComponent() {
     const dispatch = useDispatch()
+    const userInfo = useSelector((state) => state?.authState.userInfo)
     const [reqDesigner,resDesigner] = useDesignerListMutation()
     const [reqDesign,resDesign] = useDesignUploadListMutation()
 
     const designerList = useSelector((state) => state?.designerState.designerList)
     const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
-
 
     useEffect(() => {
         reqDesigner({
@@ -19,7 +19,7 @@ function DashboardComponent() {
         limit: 0,
         search: "",
         });
-    }, []);
+    }, [resDesigner?.isSuccess]);
 
     useEffect(() => {
         if (resDesigner?.isSuccess) {
@@ -33,7 +33,7 @@ function DashboardComponent() {
           limit: 0,
           search: "",
         });
-      }, []);
+      }, [resDesign?.isSuccess]);
     
       useEffect(() => {
         if (resDesign?.isSuccess) {
@@ -75,6 +75,7 @@ function DashboardComponent() {
                             </div>
                         </div>
                     </div>
+                    {userInfo?.role === 'Super Admin' &&
                     <div className="col-lg-3 col-md-6">
                         <div className="card">
                             <div className="card-body">
@@ -90,7 +91,9 @@ function DashboardComponent() {
                             </div>
                         </div>
                     </div>
-                    {/* <div className="col-lg-3 col-md-6">
+                    }
+                    {userInfo?.role === 'Super Admin' &&
+                    <div className="col-lg-3 col-md-6">
                         <div className="card">
                             <div className="card-body">
                                 <div className="avatar">
@@ -98,12 +101,13 @@ function DashboardComponent() {
                                         <i className="mdi mdi-eye-outline text-success font-size-24"></i>
                                     </span>
                                 </div>
-                                <p className="text-muted mt-4 mb-0">User</p>
+                                <p className="text-muted mt-4 mb-0">Client Order</p>
                                 <h4 className="mt-1 mb-0">0</h4>
                                 
                             </div>
                         </div>
-                    </div> */}
+                    </div>
+                    }
                 </div>
             </div>
         </div>

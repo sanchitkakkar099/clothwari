@@ -13,6 +13,7 @@ import TagList from "../components/tag/TagList";
 import TagForm from "../components/tag/TagForm";
 import ClientList from "../components/client/ClientList";
 import ClientForm from "../components/client/ClientForm";
+import ClientViewDesign from "../components/client/ClientViewDesign";
 
 export const privateRoutes = [
   { path: "/dashboard", Component: Dashboard },
@@ -27,6 +28,8 @@ export const privateRoutes = [
   { path: "/tag-form", Component: TagForm },
   { path: "/client-list", Component: ClientList },
   { path: "/client-form", Component: ClientForm },
+  { path: "/client-view-design", Component: ClientViewDesign },
+
 ];
 
 export const publicRoutes = [

@@ -7,6 +7,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useCategoryDropdownListQuery, useDesignUploadByIdQuery, useFileUploadMutation, useMultipleFileUploadMutation, useSubmitDesignUploadMutation, useTagDropdownListQuery } from "../../service";
 import toast from "react-hot-toast";
 import { Typeahead } from "react-bootstrap-typeahead";
+import { alphaNumericPattern } from "../common/InputValidation";
 
 function AddDesign() {
   const dispatch = useDispatch()
@@ -127,7 +128,7 @@ function AddDesign() {
       ...state,
       category: state?.category?.value,
       tag: state?.tag,
-      image: mainFile ?  mainFile?._id : null,
+      image: mainFile ?  mainFile?._id : '',
       thumbnail: thumbnailFile ?  thumbnailFile?._id  : null,
     });
   };
@@ -228,13 +229,16 @@ function AddDesign() {
                               id="designNo"
                               name="designNo"
                               control={control}
-                              rules={{ required: "Design Number is required" }}
+                              rules={{ 
+                                  required: "Design Number is required",
+                                  validate:alphaNumericPattern
+                              }}
                               render={({ field }) => (
                                 <Input
                                   placeholder="Entare Design Number"
                                   className="form-control"
                                   {...field}
-                                  type="number"
+                                  // type="number"
                                 />
                               )}
                             />
@@ -320,7 +324,7 @@ function AddDesign() {
                                 id="image"
                                 name="image"
                                 control={control}
-                                rules={{ required: "Design File is required" }}
+                                // rules={{ required: "Design File is required" }}
                                 render={({ field: { onChange, value } }) => (
                                   <Input
                                     type="file"
@@ -342,11 +346,11 @@ function AddDesign() {
                               <h4>Click to upload main file.</h4>
                             </div>
                           </form>
-                          {errors.image && (
+                          {/* {errors.image && (
                             <FormFeedback>
                               {errors?.image?.message}
                             </FormFeedback>
-                          )}
+                          )} */}
                           <div className="img_opc">
                             <div className="row">
                             {mainFile &&
@@ -362,8 +366,6 @@ function AddDesign() {
                                 </div>
                               </div>
                               }
-                            
-                              
                               {/* <div className="col-sm-2">
                                 <div className="past_img">
                                   <img
