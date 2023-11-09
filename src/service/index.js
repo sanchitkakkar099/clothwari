@@ -32,7 +32,59 @@ export const authApi = createApi({
 export const {
   useLoginAuthMutation,
   useLoginAsAdminMutation
-} = authApi;   
+} = authApi;  
+
+export const adminApi = createApi({
+  tagTypes: ["admin"],
+  reducerPath: "adminApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}/`,
+    prepareHeaders: (headers, { getState }) => {
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
+      return headers
+    },
+  }),
+  endpoints: (builder) => ({
+    adminList: builder.mutation({
+      query: (payload) => ({
+        url: "admin/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["admin"],
+    }),
+    submitAdmin: builder.mutation({
+      query: (payload) => ({
+        url: "admin/create",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["admin"],
+    }),
+    adminById: builder.query({
+      query: (id) => ({
+        url: `admin/byId/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["admin"],
+    }),
+    deleteAdmin: builder.mutation({
+      query: (id) => ({
+        url: `admin/byId/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["admin"],
+    }),
+  }),
+});
+export const {
+ useAdminListMutation,
+ useSubmitAdminMutation,
+ useAdminByIdQuery,
+ useDeleteAdminMutation
+} = adminApi;
 
 export const categoryApi = createApi({
   tagTypes: ["category"],

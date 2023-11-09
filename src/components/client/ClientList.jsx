@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { getClient } from "../../redux/clientSlice";
 import ClientView from "./ClientView";
+import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { Edit, MoreVertical, Trash,Eye } from "react-feather";
 
 
 function ClientList() {
@@ -95,14 +97,49 @@ function ClientList() {
       Header: "Action",
       accessor: "action",
       Cell: (row) => (
-        <div>
-          <button onClick={(e) => onViewAction(e,row)}>View</button>
-          <button onClick={(e) => onEditAction(e,row)} className='ms-2'>Edit</button>
-          <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
-        </div>
+        <UncontrolledDropdown>
+                                <DropdownToggle
+                                  className="icon-btn hide-arrow moreOption"
+                                  color="transparent"
+                                  size="sm"
+                                  caret
+                                >
+                                  <MoreVertical size={15} />
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onViewAction(e,row)}
+                                  >
+                                    <Eye className="me-50" size={15} />{" "}
+                                    <span className="align-middle">View</span>
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onEditAction(e,row)}
+                                  >
+                                    <Edit className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Edit</span>
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleDelete(e,row)}
+                                  >
+                                    <Trash className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Delete</span>
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+        
       ),
     },
   ];
+
+  // <div>
+  //         <button onClick={(e) => onViewAction(e,row)}>View</button>
+  //         <button onClick={(e) => onEditAction(e,row)} className='ms-2'>Edit</button>
+  //         <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
+  //       </div>
   return (
     <>
     <div className="page-content">

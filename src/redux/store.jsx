@@ -5,17 +5,20 @@ import categorySlice from "./categorySlice";
 import tagSlice from "./tagSlice";
 import clientSlice from "./clientSlice";
 
-import { authApi, categoryApi, clientApi, designTagApi, designUploadApi, designerApi, fileApi } from "../service";
+import { adminApi, authApi, categoryApi, clientApi, designTagApi, designUploadApi, designerApi, fileApi } from "../service";
 import authSlice from "./authSlice";
+import adminSlice from "./adminSlice";
 
 const appReducer = combineReducers({
   authState: authSlice,
+  adminState: adminSlice,
   designUploadState: designUploadSlice,
   designerState: designerSlice,
   categoryState: categorySlice,
   tagState: tagSlice,
   clientState: clientSlice,
   [authApi.reducerPath]: authApi.reducer,
+  [adminApi.reducerPath]: adminApi.reducer,
   [categoryApi.reducerPath]: categoryApi.reducer,
   [designTagApi.reducerPath]: designTagApi.reducer,
   [designUploadApi.reducerPath]: designUploadApi.reducer,
@@ -29,6 +32,7 @@ export const store = configureStore({
   middleware: (getDefaltMiddleware) =>
     getDefaltMiddleware({ serializableCheck: false }).concat([
       authApi.middleware,
+      adminApi.middleware,
       categoryApi.middleware,
       designTagApi.middleware,
       designUploadApi.middleware,

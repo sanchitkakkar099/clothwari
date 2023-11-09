@@ -117,3 +117,42 @@ form.img__upload{margin-bottom: 25px;}
     .list_table thead tr th{padding: 0.50rem 0.50rem;}
     .list_table tbody tr td{padding: 0.50rem 0.50rem;}
 }
+
+.timer{
+    color: #004085;
+    background: #cce5ff;
+    border: 1px solid #b8daff;
+    height: 30px;
+    padding: 0 8px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    width: 145px;
+    margin: 18px;
+}
+
+.timer .time_left_txt{
+    font-weight: 400;
+    font-size: 17px;
+    user-select: none;
+    text-align: center;
+}
+
+.list_table tbody tr td button{
+    background-color: #fff;
+    color: #000;
+}
+
+.multiselect_action{
+    width: 16.66666667%;
+    float: left;
+    padding-left: 15px;
+    position: relative;
+    padding-right: 15px;
+    min-height: 1px;
+}
+.multiselect_action .multiselect_action_block {
+    display: block;
+    width: 100%;
+}
+

@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
 import Logosm from "../assets/images/logo-sm.svg";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 
 function SidebarComponent() {
+  const location = useLocation()
   const [sidebarEnable,setSidebarEnable] = useState(false)
+  const [menuOpen,setMenuOpen] = useState()
+
   const userInfo = useSelector((state) => state?.authState.userInfo)
+
   console.log('userInfo',userInfo);
   console.log('sidebarEnable',sidebarEnable);
   const toggleSidebar = (e,sde) => {
@@ -17,6 +21,15 @@ function SidebarComponent() {
     }else{
         setSidebarEnable(true)
         document.body.setAttribute('data-sidebar-size','sm')
+    }
+  }
+
+  const handleShowMenu = (e,id) => {
+    e.preventDefault()
+    if(menuOpen && id === menuOpen){
+        setMenuOpen(null)
+    } else {
+        setMenuOpen(id)
     }
   }
   return (
@@ -59,6 +72,13 @@ function SidebarComponent() {
                     </Link>
                 </li>
 
+                <li>
+                    <Link to="/admin-list">
+                        {/* <i className="bx bx-tachometer icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-dashboards">Admin Account</span>                    
+                    </Link>
+                </li>
+
                 {userInfo?.role === 'Super Admin' &&
                 <li>
                     <Link to="/design-list-v1">
@@ -81,10 +101,23 @@ function SidebarComponent() {
 
                 {userInfo?.role === 'Super Admin' &&
                 <li>
+                    <Link to="" className={`has-arrow ${(menuOpen === 'accounts' || location?.pathname === '/staff-list' || location?.pathname === '/client-list') ? "" : 'mm-collapsed'}`} id="accounts" onClick={(e) => handleShowMenu(e,'accounts')}>
+                        {/* <i className="bx bx-user-circle icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-email">Accounts</span>
+                    </Link>
+                    <ul className={`sub-menu ${(menuOpen === 'accounts' || location?.pathname === '/staff-list' || location?.pathname === '/client-list') ?  "" : "mm-collapse"}`} aria-expanded="false">
+                    
+                        <li><Link to="/staff-list" data-key="t-inbox">Staff</Link></li>
+                        <li><Link to="/client-list" data-key="t-read-email">Client</Link></li>
+                    
+                    </ul>
+                </li>
+                }
+
+                {/* {userInfo?.role === 'Super Admin' &&
+                <li>
                     <Link to="/staff-list">
-                        {/* <i className="bx bx-store icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-dashboards">Staff</span>
-                        {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>
                 }
@@ -92,12 +125,10 @@ function SidebarComponent() {
                 {userInfo?.role === 'Super Admin' &&
                 <li>
                     <Link to="/client-list">
-                        {/* <i className="bx bx-store icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-dashboards">Client</span>
-                        {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>
-                }
+                } */}
 
                 {userInfo?.role === 'Super Admin' &&
                 <li>

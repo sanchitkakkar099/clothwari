@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCategoryByIdQuery, useSubmitCategoryMutation } from "../../service";
 import { toast } from "react-hot-toast";
 
@@ -128,10 +128,10 @@ function CategoryForm() {
                       </div>
                       <div className="row">
                         <div className="col text-end">
-                          <a href="#" className="btn btn-danger m-1">
+                          <Link to="/category-list" className="btn btn-danger m-1">
                             {" "}
                             <i className="bx bx-x mr-1"></i> Cancel{" "}
-                          </a>
+                          </Link>
                           <button
                             type="submit"
                             className="btn btn-success m-1"

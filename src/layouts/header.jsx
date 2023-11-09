@@ -6,6 +6,7 @@ import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserInfo, setUserToken } from "../redux/authSlice";
 import { useLoginAsAdminMutation } from "../service";
+import TimeElapsedApp from "../components/TimeElapsed";
 const cookies = new Cookies();
 
 function HeaderComponent() {
@@ -18,6 +19,8 @@ function HeaderComponent() {
   const handleLogout = () => {
     cookies.remove("clothwari", { path: "/" });
     cookies.remove("clothwari_user", { path: "/" });
+    cookies.remove("client_allow_time", { path: "/" });
+    cookies.remove("client_login_time", { path: "/" });
     dispatch(setUserInfo({}))
     dispatch(setUserToken(''))
     setOpenMenu(false)
@@ -125,7 +128,7 @@ function HeaderComponent() {
               <i data-feather="sun" className="icon-sm layout-mode-light"></i>
             </button>
           </div>
-
+          {/* <TimeElapsedApp/> */}
           <div className="dropdown d-inline-block">
             <button
               type="button"

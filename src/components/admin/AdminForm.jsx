@@ -5,16 +5,16 @@ import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
-import { useClientByIdQuery, useSubmitClientMutation } from "../../service";
+import { useAdminByIdQuery, useSubmitAdminMutation } from "../../service";
 import toast from "react-hot-toast";
 
-function ClientForm() {
+function AdminForm() {
   const navigate = useNavigate()
   const location = useLocation();
   const { state: locationState } = location;
-  const [reqClient, resClient] = useSubmitClientMutation();
-  const resClientById = useClientByIdQuery(locationState?.clientID, {
-    skip: !locationState?.clientID,
+  const [reqAdmin, resAdmin] = useSubmitAdminMutation();
+  const resAdminById = useAdminByIdQuery(locationState?.adminID, {
+    skip: !locationState?.adminID,
   });
 
   const {
@@ -25,34 +25,29 @@ function ClientForm() {
   } = useForm();
 
   useEffect(() => {
-    if (resClientById?.isSuccess && resClientById?.data?.data) {
+    if (resAdminById?.isSuccess && resAdminById?.data?.data) {
       reset({
-        _id: resClientById?.data?.data?._id,
-        name: resClientById?.data?.data?.name,
-        email: resClientById?.data?.data?.email,
-        allowLoginTime: resClientById?.data?.data?.allowLoginTime,
-        allowLoginSec: 0
+        _id: resAdminById?.data?.data?._id,
+        name: resAdminById?.data?.data?.name,
+        email: resAdminById?.data?.data?.email,
       });
     }
-  }, [resClientById]);
+  }, [resAdminById]);
 
   const onNext = (state) => {
     console.log("state", state);
-    // reqClient({...state,
-    //   allowLoginTime: '',
-    //   allowLoginSec: 0
-    // });
+    reqAdmin(state);
   };
 
   useEffect(() => {
-    if (resClient?.isSuccess) {
-      toast.success(resClient?.data?.message, {
+    if (resAdmin?.isSuccess) {
+      toast.success(resAdmin?.data?.message, {
         position: "top-center",
       });
       reset()
-      navigate("/client-list");
+      navigate("/admin-list");
     }
-  }, [resClient?.isSuccess]);
+  }, [resAdmin?.isSuccess]);
   
 
    return (
@@ -61,14 +56,14 @@ function ClientForm() {
         <div className="row">
           <div className="col-12">
             <div className="page-title-box d-flex align-items-center justify-content-between">
-              <h4 className="mb-0">Create Client</h4>
+              <h4 className="mb-0">Create Admin</h4>
 
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Client</a>
+                    <a href="javascript: void(0);">Admin</a>
                   </li>
-                  <li className="breadcrumb-item active">Create Client</li>
+                  <li className="breadcrumb-item active">Create Admin</li>
                 </ol>
               </div>
             </div>
@@ -89,7 +84,7 @@ function ClientForm() {
                   <div className="p-4">
                     <div className="d-flex align-items-center">
                       <div className="flex-grow-1 overflow-hidden">
-                        <h5 className="font-size-16 mb-1">Client Info</h5>
+                        <h5 className="font-size-16 mb-1">Admin Info</h5>
                         <p className="text-muted text-truncate mb-0">
                           Fill all information below
                         </p>
@@ -192,32 +187,28 @@ function ClientForm() {
                           </div>
                         </div>
                         }
-                        <div className="col-md-6">
+                        {/* <div className="col-md-6">
                           <div className="mb-3">
-                            <Label for="category" className="form-label">
-                              Stay Activate
+                            <Label for="permision" className="form-label">
+                              Permision
                             </Label>
                             <Controller
-                              id="stay_activate"
-                              name="stay_activate"
+                              id="permision"
+                              name="permision"
                               control={control}
-                              rules={{ required: "Stay Activate is required" }}
+                              rules={{ required: "Permision is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable
+                                  isMulti
                                   options={
-                                    [{
-                                      label:'30 min',value:1800,
-                                    },
-                                    {
-                                      label:'1 hrs',value:3600,
-                                    },
-                                    {
-                                      label:'2 hrs',value:7200,
-                                    },
-                                    {
-                                      label:'3 hrs',value:10800,
-                                    }]|| []
+                                    [
+                                      {label:'Staff',value:'staff'},
+                                      {label:'Client',value:'client'},
+                                      {label:'Design',value:'design'},
+                                      {label:'Category',value:'category'}
+                                    
+                                    ]|| []
                                   }
                                   className="react-select"
                                   classNamePrefix="select"
@@ -226,17 +217,18 @@ function ClientForm() {
                                 />
                               )}
                             />
-                            {errors.stay_activate && (
+                            {errors.permision && (
                               <FormFeedback>
-                                {errors?.stay_activate?.message}
+                                {errors?.permision?.message}
                               </FormFeedback>
                             )}
                           </div>
-                        </div>
+                        </div> */}
+                        
                       </div>                      
                       <div className="row">
                         <div className="col text-end">
-                          <Link to="/client-list" className="btn btn-danger m-1">
+                          <Link to="/admin-list" className="btn btn-danger m-1">
                             {" "}
                             <i className="bx bx-x mr-1"></i> Cancel{" "}
                           </Link>
@@ -262,4 +254,4 @@ function ClientForm() {
   );
 }
 
-export default ClientForm;
+export default AdminForm;

@@ -8,6 +8,7 @@ import Six from "../../assets/images/product/six.jpg";
 import { useDesignUploadListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
+import { Link } from "react-router-dom";
 
 function UploadDesignListV1() {
   const dispatch = useDispatch();
@@ -60,136 +61,7 @@ function UploadDesignListV1() {
         </div>
 
         <div className="row">
-          <div className="col-xl-3 col-lg-4">
-            <div className="card">
-              <div className="card-header bg-transparent border-bottom">
-                <h5 className="mb-0">Filters</h5>
-              </div>
-              <div className="custom-accordion">
-                <div className="p-4 border-top">
-                  <div>
-                    <h5 className="font-size-14 mb-0">
-                      <a
-                        href="#filterprodductcolor-collapse"
-                        className="text-dark d-block"
-                        data-bs-toggle="collapse"
-                      >
-                        Colors{" "}
-                        <i className="mdi mdi-chevron-up float-end accor-down-icon"></i>
-                      </a>
-                    </h5>
-                    <div
-                      className="collapse show"
-                      id="filterprodductcolor-collapse"
-                    >
-                      <div className="mt-4">
-                        <div className="form-check mt-2">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="productcolorCheck1"
-                          />
-                          <label
-                            className="form-check-label"
-                            for="productcolorCheck1"
-                          >
-                            <i className="mdi mdi-circle text-dark mx-1"></i>{" "}
-                            Black
-                          </label>
-                        </div>
-                        <div className="form-check mt-2">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="productcolorCheck3"
-                          />
-                          <label
-                            className="form-check-label"
-                            for="productcolorCheck3"
-                          >
-                            <i className="mdi mdi-circle text-secondary mx-1"></i>{" "}
-                            Gray
-                          </label>
-                        </div>
-                        <div className="form-check mt-2">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="productcolorCheck4"
-                          />
-                          <label
-                            className="form-check-label"
-                            for="productcolorCheck4"
-                          >
-                            <i className="mdi mdi-circle text-primary mx-1"></i>{" "}
-                            Blue
-                          </label>
-                        </div>
-                        <div className="form-check mt-2">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="productcolorCheck5"
-                          />
-                          <label
-                            className="form-check-label"
-                            for="productcolorCheck5"
-                          >
-                            <i className="mdi mdi-circle text-success mx-1"></i>{" "}
-                            Green
-                          </label>
-                        </div>
-                        <div className="form-check mt-2">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="productcolorCheck6"
-                          />
-                          <label
-                            className="form-check-label"
-                            for="productcolorCheck6"
-                          >
-                            <i className="mdi mdi-circle text-danger mx-1"></i>{" "}
-                            Red
-                          </label>
-                        </div>
-                        <div className="form-check mt-2">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="productcolorCheck7"
-                          />
-                          <label
-                            className="form-check-label"
-                            for="productcolorCheck7"
-                          >
-                            <i className="mdi mdi-circle text-warning mx-1"></i>{" "}
-                            Yellow
-                          </label>
-                        </div>
-                        <div className="form-check mt-2">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="productcolorCheck8"
-                          />
-                          <label
-                            className="form-check-label"
-                            for="productcolorCheck8"
-                          >
-                            <i className="mdi mdi-circle text-purple mx-1"></i>{" "}
-                            Purple
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-xl-9 col-lg-8">
+          <div className="col-xl-12 col-lg-12">
             <div className="card">
               <div className="card-body">
                 <div>
@@ -227,32 +99,23 @@ function UploadDesignListV1() {
                         designUploadList?.length > 0 ? (
                           designUploadList?.map((el, i) => {
                             return (
-                              <div className="col-xl-4 col-sm-6" key={i}>
-                                <div className="product-box">
-                                  <div className="product-img pt-4 px-4">
-                                    <img
-                                      src={el?.thumbnail?.filepath}
-                                      alt=""
-                                      className="img-fluid mx-auto d-block"
-                                    />
-                                  </div>
-
-                                  <div className="product-content p-4">
-                                    <div className="d-flex justify-content-between align-items-end">
-                                      <div>
-                                        <h5 className="mb-1">
-                                          <a
-                                            href="#!"
-                                            className="text-dark font-size-16"
-                                          >
-                                            {el?.name}
-                                          </a>
-                                        </h5>
-                                        {/* <p className="text-muted font-size-13">Gray, Shoes</p> */}
-                                        {/* <h5 className="mt-3 mb-0">$260</h5> */}
-                                      </div>
-                                      <div></div>
-                                    </div>
+                              <div
+                                className="col-md-6 col-xl-3"
+                                style={{ cursor: "pointer" }}
+                                key={i}
+                              >
+                                <div className="card">
+                                  <img
+                                    className="card-img-top img-fluid"
+                                    src={el?.thumbnail?.filepath}
+                                    alt="Card image cap"
+                                  />
+                                  <div className="card-body">
+                                    <h4 className="card-title">{el?.name}</h4>
+                                    <p className="card-text">
+                                      {el?.category?.label}
+                                    </p>
+                                    
                                   </div>
                                 </div>
                               </div>

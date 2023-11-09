@@ -6,7 +6,7 @@ import { FormFeedback, Input, Label } from "reactstrap";
 import { Controller, useForm } from "react-hook-form";
 import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserInfo, setUserToken } from "../../redux/authSlice";
+import { setAllowTime, setLoginTime, setUserInfo, setUserToken } from "../../redux/authSlice";
 const cookies = new Cookies();
 
 function Login() {
@@ -45,6 +45,8 @@ function Login() {
     if(loginRes?.isSuccess){
         cookies.set("clothwari", loginRes?.data?.data?.token, { path: "/" });
         cookies.set("clothwari_user", loginRes?.data?.data, { path: "/" });
+        cookies.set("client_allow_time", 30, { path: "/" });
+        cookies.set("client_login_time", new Date(), { path: "/" });
         dispatch(setUserToken(loginRes?.data?.data?.token))
         dispatch(setUserInfo(loginRes?.data?.data))
         setErrorMessage('')

@@ -3,7 +3,7 @@ import Select from "react-select";
 import { Controller,useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useCategoryDropdownListQuery, useDesignUploadByIdQuery, useFileUploadMutation, useMultipleFileUploadMutation, useSubmitDesignUploadMutation, useTagDropdownListQuery } from "../../service";
 import toast from "react-hot-toast";
 import { Typeahead } from "react-bootstrap-typeahead";
@@ -491,10 +491,10 @@ function AddDesign() {
 
                       <div className="row">
                         <div className="col text-end">
-                          <a href="#" className="btn btn-danger m-1">
+                          <Link to="/design-list-v2" className="btn btn-danger m-1">
                             {" "}
                             <i className="bx bx-x mr-1"></i> Cancel{" "}
-                          </a>
+                          </Link>
                           <button
                             type="submit"
                             className="btn btn-success m-1"

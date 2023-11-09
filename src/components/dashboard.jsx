@@ -19,13 +19,13 @@ function DashboardComponent() {
         limit: 0,
         search: "",
         });
-    }, [resDesigner?.isSuccess]);
+    }, [userInfo]);
 
     useEffect(() => {
         if (resDesigner?.isSuccess) {
         dispatch(getDesigner(resDesigner?.data?.data?.docs));
         }
-    }, [resDesigner]);
+    }, [resDesigner?.isSuccess]);
 
     useEffect(() => {
         reqDesign({
@@ -33,13 +33,13 @@ function DashboardComponent() {
           limit: 0,
           search: "",
         });
-      }, [resDesign?.isSuccess]);
+      }, [userInfo]);
     
       useEffect(() => {
         if (resDesign?.isSuccess) {
           dispatch(getDesignUpload(resDesign?.data?.data?.docs));
         }
-      }, [resDesign]);
+      }, [resDesign?.isSuccess]);
 
   return (
     <div className="page-content">

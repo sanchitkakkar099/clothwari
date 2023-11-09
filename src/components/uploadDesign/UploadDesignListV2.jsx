@@ -3,12 +3,15 @@ import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Fi
 import DataTable from "../common/DataTable";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useDeleteDesignUploadMutation, useDesignUploadListMutation } from "../../service";
+import { useDeleteDesignUploadMutation, useDesignUploadListMutation, useMultipleFileUploadMutation } from "../../service";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { downloadFile } from "../common/FileDownload";
 import UploadDesignView from "./UploadDesignView";
+import { Edit, Eye, MoreVertical, Trash } from "react-feather";
+import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { useRef } from "react";
 
 
 function UploadDesignListV2() {
@@ -17,12 +20,16 @@ function UploadDesignListV2() {
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const [reqDesign,resDesign] = useDesignUploadListMutation()
   const [reqDelete, resDelete] = useDeleteDesignUploadMutation();
+  const [reqFile] = useMultipleFileUploadMutation();
   const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
   console.log('designUploadList',designUploadList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [modalView, setModalView] = useState(false);
   const [viewData, setViewData] = useState(null);
+  const [mainFiles, setMainFiles] = useState([])
+  console.log('mainFiles',mainFiles);
+
 
   useEffect(() => {
     reqDesign({
@@ -111,17 +118,77 @@ function UploadDesignListV2() {
       Header: "Action",
       accessor: "action",
       Cell: (row) => (
-        <div>
-          <button onClick={(e) => onViewAction(e,row)}>View</button>
-          <button onClick={(e) => onEditAction(e,row)} className='ms-2'>Edit</button>
-          {(userInfo?.role === 'Super Admin' || !userInfo?.onlyUpload) &&
-          <button onClick={(e) => downloadFile(e,row?.row?.original?.image?.filepath,row?.row?.original?.name)} className='ms-2'>Download</button>
-          }
-          <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
-        </div>
+        <UncontrolledDropdown>
+                                <DropdownToggle
+                                  className="icon-btn hide-arrow moreOption"
+                                  color="transparent"
+                                  size="sm"
+                                  caret
+                                >
+                                  <MoreVertical size={15} />
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onViewAction(e,row)}
+                                  >
+                                    <Eye className="me-50" size={15} />{" "}
+                                    <span className="align-middle">View</span>
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onEditAction(e,row)}
+                                  >
+                                    <Edit className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Edit</span>
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleDelete(e,row)}
+                                  >
+                                    <Trash className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Delete</span>
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
       ),
     },
   ];
+
+  // <div>
+  //       <MoreVertical/>
+  //         <button onClick={(e) => onViewAction(e,row)}>View</button>
+  //         <button onClick={(e) => onEditAction(e,row)} className='ms-2'>Edit</button>
+  //         {(userInfo?.role === 'Super Admin' || !userInfo?.onlyUpload) &&
+  //         <button onClick={(e) => downloadFile(e,row?.row?.original?.image?.filepath,row?.row?.original?.name)} className='ms-2'>Download</button>
+  //         }
+  //         <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
+  //       </div>
+  const hiddenFileInput = useRef(null);
+  const handleClickBulkUpload = (event) => {
+    hiddenFileInput.current.click();
+  };
+
+  const handleChangeBulkUpload = (e) => {
+    console.log('fooooo',e.target.files);
+    const formData = new FormData();
+    for (let i = 0; i < e.target.files.length; i++) {
+      formData.append('file', e.target.files[i])
+    }
+      const reqData = {
+        file: formData,
+        type: 1,
+      };
+      reqFile(reqData)
+        .then((res) => {
+          if (res?.data?.data) {
+              navigate('/upload-multiple-design-form',{state:res?.data?.data})
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+  }
   return (
     <>
     <div className="page-content">
@@ -149,6 +216,21 @@ function UploadDesignListV2() {
               <div className="card-body">
                 <div className="position-relative">
                   <div className="modal-button modal-button-s mt-2">
+                  <button
+                      type="button"
+                      className="btn btn-success waves-effect waves-light mb-4 me-2"
+                      onClick={() => handleClickBulkUpload()}
+                    >
+                      <i className="mdi mdi-plus me-1"></i> Bulk upload
+                    </button>
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg,image/jpg"
+                      ref={hiddenFileInput}
+                      style={{ display: "none" }} // Make the file input element invisible
+                      onChange={(e) => handleChangeBulkUpload(e)}
+                      multiple
+                    />
                     <button
                       type="button"
                       className="btn btn-success waves-effect waves-light mb-4 me-2"

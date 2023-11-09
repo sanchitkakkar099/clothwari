@@ -3,13 +3,15 @@ import HeaderComponent from './layouts/header'
 import SidebarComponent from './layouts/sidebar'
 import DashboardComponent from './components/dashboard'
 import PageContent from './layouts/pageContent'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Toaster } from "react-hot-toast";
 import { useSelector } from 'react-redux'
 
 
 function App({children}) {
   const navigate = useNavigate()
+  const location = useLocation()
+
   const userToken = useSelector((state) => state?.authState.userToken)
 
   useEffect(() => {
@@ -20,6 +22,11 @@ function App({children}) {
 
   useEffect(() => {
     document.body.setAttribute('data-sidebar', 'light')
+  },[])
+
+  useEffect(() => {
+    const now = new Date()
+    console.log("time is",now.getSeconds());
   },[])
 
   return (

@@ -14,12 +14,26 @@ import TagForm from "../components/tag/TagForm";
 import ClientList from "../components/client/ClientList";
 import ClientForm from "../components/client/ClientForm";
 import ClientViewDesign from "../components/client/ClientViewDesign";
+import TimeElapsedApp from "../components/TimeElapsed";
+import AdmintList from "../components/admin/AdminList";
+import AdminForm from "../components/admin/AdminForm";
+import AdminView from "../components/admin/AdminView";
+import UploadDesignMultipleForm from "../components/uploadDesign/UploadDesignMultipleForm";
 
 export const privateRoutes = [
   { path: "/dashboard", Component: Dashboard },
+
+  { path: "/admin-list", Component: AdmintList },
+  { path: "/admin-form", Component: AdminForm },
+  { path: "/admin-view", Component: AdminView },
+
+
+
   { path: "/design-list-v1", Component: UploadDesignListV1 },
   { path: "/design-list-v2", Component: UploadDesignListV2 },
   { path: "/upload-design-form", Component: UploadDesignForm },
+  { path: "/upload-multiple-design-form", Component: UploadDesignMultipleForm },
+
   { path: "/staff-form", Component: StaffForm },
   { path: "/staff-list", Component: StaffList },
   { path: "/category-list", Component: CategoryList },
@@ -29,9 +43,10 @@ export const privateRoutes = [
   { path: "/client-list", Component: ClientList },
   { path: "/client-form", Component: ClientForm },
   { path: "/client-view-design", Component: ClientViewDesign },
-
 ];
 
 export const publicRoutes = [
   { path: "/login", Component: LoginComponent },
+  { path: "/time", Component: TimeElapsedApp },
+
 ]
