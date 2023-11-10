@@ -61,7 +61,8 @@ function DashboardComponent() {
           
             <div className="col-xl-12">
                 <div className="row">
-                <div className="col-lg-3 col-md-6">
+                    {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download")) &&
+                    <div className="col-lg-3 col-md-6">
                         <div className="card">
                             <div className="card-body">
                                 <div className="avatar">
@@ -75,7 +76,8 @@ function DashboardComponent() {
                             </div>
                         </div>
                     </div>
-                    {userInfo?.role === 'Super Admin' &&
+                    }
+                    {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Staff Create" || el === "Staff View" || el === "Staff Edit" || el === "Staff Delete")) &&
                     <div className="col-lg-3 col-md-6">
                         <div className="card">
                             <div className="card-body">
@@ -84,7 +86,7 @@ function DashboardComponent() {
                                         <i className="mdi mdi-eye-outline text-success font-size-24"></i>
                                     </span>
                                 </div>
-                                <p className="text-muted mt-4 mb-0">Designer</p>
+                                <p className="text-muted mt-4 mb-0">Staff</p>
                                 <h4 className="mt-1 mb-0">{designerList && Array.isArray(designerList) && designerList?.length > 0 ? designerList?.length : 0}</h4>
 
                                 
@@ -92,7 +94,7 @@ function DashboardComponent() {
                         </div>
                     </div>
                     }
-                    {userInfo?.role === 'Super Admin' &&
+                    {/* {userInfo?.role === 'Super Admin' &&
                     <div className="col-lg-3 col-md-6">
                         <div className="card">
                             <div className="card-body">
@@ -107,7 +109,7 @@ function DashboardComponent() {
                             </div>
                         </div>
                     </div>
-                    }
+                    } */}
                 </div>
             </div>
         </div>

@@ -16,6 +16,7 @@ import { Edit, MoreVertical, Trash,Eye } from "react-feather";
 function ClientList() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const [reqClient,resClient] = useClientListMutation()
   const [reqDelete, resDelete] = useDeleteClientMutation();
   const designerList = useSelector((state) => state?.clientState.clientList)
@@ -97,6 +98,7 @@ function ClientList() {
       Header: "Action",
       accessor: "action",
       Cell: (row) => (
+        ((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Client View" || el === "Client Edit" || el === "Client Delete")) ?
         <UncontrolledDropdown>
                                 <DropdownToggle
                                   className="icon-btn hide-arrow moreOption"
@@ -107,6 +109,7 @@ function ClientList() {
                                   <MoreVertical size={15} />
                                 </DropdownToggle>
                                 <DropdownMenu>
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Client View")) &&
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => onViewAction(e,row)}
@@ -114,6 +117,9 @@ function ClientList() {
                                     <Eye className="me-50" size={15} />{" "}
                                     <span className="align-middle">View</span>
                                   </DropdownItem>
+                                }
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Client Edit")) &&
+
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => onEditAction(e,row)}
@@ -121,6 +127,9 @@ function ClientList() {
                                     <Edit className="me-50" size={15} />{" "}
                                     <span className="align-middle">Edit</span>
                                   </DropdownItem>
+                                }
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Client Delete")) &&
+
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => handleDelete(e,row)}
@@ -128,8 +137,11 @@ function ClientList() {
                                     <Trash className="me-50" size={15} />{" "}
                                     <span className="align-middle">Delete</span>
                                   </DropdownItem>
+                                }
                                 </DropdownMenu>
                               </UncontrolledDropdown>
+                              :"No Permissions"
+      
         
       ),
     },
@@ -165,6 +177,8 @@ function ClientList() {
           <div className="col-12">
             <div className="card">
               <div className="card-body">
+              {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Client Create")) &&
+
                 <div className="position-relative">
                   <div className="modal-button modal-button-s mt-2">
                     <button
@@ -178,6 +192,7 @@ function ClientList() {
                     </button>
                   </div>
                 </div>
+              }
                   <DataTable data={designerList} columns={columns} />
               </div>
             </div>

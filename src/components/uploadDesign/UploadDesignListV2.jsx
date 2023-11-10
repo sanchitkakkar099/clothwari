@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { downloadFile } from "../common/FileDownload";
 import UploadDesignView from "./UploadDesignView";
-import { Edit, Eye, MoreVertical, Trash } from "react-feather";
+import { Download, Edit, Eye, MoreVertical, Trash } from "react-feather";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { useRef } from "react";
 
@@ -118,6 +118,7 @@ function UploadDesignListV2() {
       Header: "Action",
       accessor: "action",
       Cell: (row) => (
+        ((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?
         <UncontrolledDropdown>
                                 <DropdownToggle
                                   className="icon-btn hide-arrow moreOption"
@@ -128,6 +129,7 @@ function UploadDesignListV2() {
                                   <MoreVertical size={15} />
                                 </DropdownToggle>
                                 <DropdownMenu>
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design View")) &&
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => onViewAction(e,row)}
@@ -135,6 +137,9 @@ function UploadDesignListV2() {
                                     <Eye className="me-50" size={15} />{" "}
                                     <span className="align-middle">View</span>
                                   </DropdownItem>
+                                }
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
+
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => onEditAction(e,row)}
@@ -142,15 +147,25 @@ function UploadDesignListV2() {
                                     <Edit className="me-50" size={15} />{" "}
                                     <span className="align-middle">Edit</span>
                                   </DropdownItem>
-                                  <DropdownItem
+                                }
+                                {(userInfo?.role === 'Super Admin' && userInfo?.permissions?.includes("Upload Design Download")) &&
+                                <DropdownItem
+                                    href="#!"
+                                  >
+                                    <Download className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Download</span>
+                                  </DropdownItem>
+                                }
+                                  {/* <DropdownItem
                                     href="#!"
                                     onClick={(e) => handleDelete(e,row)}
                                   >
                                     <Trash className="me-50" size={15} />{" "}
                                     <span className="align-middle">Delete</span>
-                                  </DropdownItem>
+                                  </DropdownItem> */}
                                 </DropdownMenu>
                               </UncontrolledDropdown>
+                              :'No Permission'
       ),
     },
   ];
@@ -215,6 +230,7 @@ function UploadDesignListV2() {
             <div className="card">
               <div className="card-body">
                 <div className="position-relative">
+                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Create")) &&
                   <div className="modal-button modal-button-s mt-2">
                   <button
                       type="button"
@@ -241,6 +257,7 @@ function UploadDesignListV2() {
                       <i className="mdi mdi-plus me-1"></i> Upload Design
                     </button>
                   </div>
+                  }
                 </div>                
                   <DataTable data={designUploadList} columns={columns} />
               </div>

@@ -77,13 +77,21 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ["admin"],
     }),
+    getAdminPermissionList: builder.query({
+      query: (id) => ({
+        url: `admin/permissions/list`,
+        method: "GET",
+      }),
+      providesTags: ["admin"],
+    }),
   }),
 });
 export const {
  useAdminListMutation,
  useSubmitAdminMutation,
  useAdminByIdQuery,
- useDeleteAdminMutation
+ useDeleteAdminMutation,
+ useGetAdminPermissionListQuery,
 } = adminApi;
 
 export const categoryApi = createApi({
@@ -338,13 +346,21 @@ export const designerApi = createApi({
       }),
       invalidatesTags: ["designer"],
     }),
+    getDesignerPermissionList: builder.query({
+      query: (id) => ({
+        url: `designer/permissions/list`,
+        method: "GET",
+      }),
+      providesTags: ["designer"],
+    }),
   }),
 });
 export const {
   useDesignerListMutation,
   useSubmitDesignerMutation,
   useDesignerByIdQuery,
-  useDeleteDesignerMutation
+  useDeleteDesignerMutation,
+  useGetDesignerPermissionListQuery
 } = designerApi;
 
 

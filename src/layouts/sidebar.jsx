@@ -72,12 +72,20 @@ function SidebarComponent() {
                     </Link>
                 </li>
 
+
+                {userInfo?.role === 'Super Admin' &&
                 <li>
-                    <Link to="/admin-list">
-                        {/* <i className="bx bx-tachometer icon nav-icon"></i> */}
-                        <span className="menu-item" data-key="t-dashboards">Admin Account</span>                    
+                    <Link to="" className={`has-arrow ${(menuOpen === 'accounts' || location?.pathname === '/staff-list' || location?.pathname === '/client-list') ? "" : 'mm-collapsed'}`} id="accounts" onClick={(e) => handleShowMenu(e,'accounts')}>
+                        {/* <i className="bx bx-user-circle icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-email">Accounts</span>
                     </Link>
+                    <ul className={`sub-menu ${(menuOpen === 'accounts' || location?.pathname === '/staff-list' || location?.pathname === '/client-list') ?  "" : "mm-collapse"}`} aria-expanded="false">
+                        <li><Link to="/admin-list" data-key="t-inbox">Admin</Link></li>
+                        <li><Link to="/staff-list" data-key="t-inbox">Staff</Link></li>
+                        <li><Link to="/client-list" data-key="t-read-email">Client</Link></li>
+                    </ul>
                 </li>
+                }
 
                 {userInfo?.role === 'Super Admin' &&
                 <li>
@@ -89,7 +97,10 @@ function SidebarComponent() {
                 </li>
                 }
 
-                {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Designer') &&
+                {(
+                    userInfo?.role === 'Super Admin' || 
+                    (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download"))    
+                ) &&
                 <li>
                     <Link to="/design-list-v2">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -99,16 +110,21 @@ function SidebarComponent() {
                 </li>
                 }
 
-                {userInfo?.role === 'Super Admin' &&
+                
+
+                {userInfo?.role === 'Admin' && (userInfo?.permissions?.some(el => el === "Staff Create" ||  el === "Staff View" ||  el === "Staff Edit" ||  el === "Staff Delete") || userInfo?.permissions?.some(el =>  el === "Client Create" ||  el === "Client View" ||  el === "Client Edit" ||  el === "Client Delete")) &&
                 <li>
                     <Link to="" className={`has-arrow ${(menuOpen === 'accounts' || location?.pathname === '/staff-list' || location?.pathname === '/client-list') ? "" : 'mm-collapsed'}`} id="accounts" onClick={(e) => handleShowMenu(e,'accounts')}>
                         {/* <i className="bx bx-user-circle icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-email">Accounts</span>
                     </Link>
                     <ul className={`sub-menu ${(menuOpen === 'accounts' || location?.pathname === '/staff-list' || location?.pathname === '/client-list') ?  "" : "mm-collapse"}`} aria-expanded="false">
-                    
+                        {userInfo?.permissions?.some(el => el === "Staff Create" ||  el === "Staff View" ||  el === "Staff Edit" ||  el === "Staff Delete") &&
                         <li><Link to="/staff-list" data-key="t-inbox">Staff</Link></li>
+                        }
+                        {userInfo?.permissions?.some(el =>  el === "Client Create" ||  el === "Client View" ||  el === "Client Edit" ||  el === "Client Delete") &&
                         <li><Link to="/client-list" data-key="t-read-email">Client</Link></li>
+                        }
                     
                     </ul>
                 </li>

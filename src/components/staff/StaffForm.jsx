@@ -5,7 +5,7 @@ import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
-import { useDesignerByIdQuery, useSubmitDesignerMutation } from "../../service";
+import { useDesignerByIdQuery, useGetDesignerPermissionListQuery, useSubmitDesignerMutation } from "../../service";
 import toast from "react-hot-toast";
 
 function StaffForm() {
@@ -13,9 +13,13 @@ function StaffForm() {
   const location = useLocation();
   const { state: locationState } = location;
   const [reqDesigner, resDesigner] = useSubmitDesignerMutation();
+  const permissionList = useGetDesignerPermissionListQuery()
   const resDesignerById = useDesignerByIdQuery(locationState?.designerID, {
     skip: !locationState?.designerID,
   });
+  const [permissionDropdown,setPermissionDropDown] = useState([])
+  console.log('permissionDropdown',permissionDropdown);
+
 
   const {
     control,
@@ -36,9 +40,17 @@ function StaffForm() {
     }
   }, [resDesignerById]);
 
+  useEffect(() => {
+    if(permissionList?.isSuccess && permissionList?.data?.data){
+      setPermissionDropDown(permissionList?.data?.data)
+    }
+  },[permissionList])
+
   const onNext = (state) => {
     console.log("state", state);
-    reqDesigner(state);
+    reqDesigner({...state,
+      permissions:state?.permissions?.map(el => el?._id)
+    });
   };
 
   useEffect(() => {
@@ -215,7 +227,7 @@ function StaffForm() {
                       </div>
                       </div>
                         
-                      <div className="col-md-6">
+                      {/* <div className="col-md-6">
                       <div className={locationState?.isEdit ? "py-5" : "py-3"}>
                         
                         <div class="form-check">                      
@@ -237,29 +249,22 @@ function StaffForm() {
                         </Label>
                       </div>
                       </div>
-                      </div>
+                      </div> */}
                       <div className="col-md-6">
                           <div className="mb-3">
-                            <Label for="permision" className="form-label">
-                              Permision
+                            <Label for="permissions" className="form-label">
+                              Permissions
                             </Label>
                             <Controller
-                              id="permision"
-                              name="permision"
+                              id="permissions"
+                              name="permissions"
                               control={control}
-                              rules={{ required: "Permision is required" }}
+                              rules={{ required: "Permissions is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable
                                   isMulti
-                                  options={
-                                    [
-                                      {label:'Create',value:'create'},
-                                      {label:'Update',value:'update'},
-                                      {label:'Upload',value:'upload'},
-                                      {label:'Download',value:'download'}
-                                    ]|| []
-                                  }
+                                  options={permissionDropdown}
                                   className="react-select"
                                   classNamePrefix="select"
                                   onChange={onChange}
@@ -267,9 +272,9 @@ function StaffForm() {
                                 />
                               )}
                             />
-                            {errors.permision && (
+                            {errors.permissions && (
                               <FormFeedback>
-                                {errors?.permision?.message}
+                                {errors?.permissions?.message}
                               </FormFeedback>
                             )}
                           </div>

@@ -27,8 +27,6 @@ export const privateRoutes = [
   { path: "/admin-form", Component: AdminForm },
   { path: "/admin-view", Component: AdminView },
 
-
-
   { path: "/design-list-v1", Component: UploadDesignListV1 },
   { path: "/design-list-v2", Component: UploadDesignListV2 },
   { path: "/upload-design-form", Component: UploadDesignForm },

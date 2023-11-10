@@ -131,6 +131,7 @@ function StaffList() {
       Header: "Action",
       accessor: "action",
       Cell: (row) => (
+        ((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Staff View" || el === "Staff Edit" || el === "Staff Delete")) ?
         <UncontrolledDropdown>
                                 <DropdownToggle
                                   className="icon-btn hide-arrow moreOption"
@@ -141,6 +142,8 @@ function StaffList() {
                                   <MoreVertical size={15} />
                                 </DropdownToggle>
                                 <DropdownMenu>
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Staff View")) &&
+
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => onViewAction(e,row)}
@@ -148,6 +151,9 @@ function StaffList() {
                                     <Eye className="me-50" size={15} />{" "}
                                     <span className="align-middle">View</span>
                                   </DropdownItem>
+                                }
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Staff Edit")) &&
+
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => onEditAction(e,row)}
@@ -155,6 +161,9 @@ function StaffList() {
                                     <Edit className="me-50" size={15} />{" "}
                                     <span className="align-middle">Edit</span>
                                   </DropdownItem>
+                                }
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Staff Delete")) &&
+
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => handleDelete(e,row)}
@@ -162,8 +171,10 @@ function StaffList() {
                                     <Trash className="me-50" size={15} />{" "}
                                     <span className="align-middle">Delete</span>
                                   </DropdownItem>
+                                }
                                 </DropdownMenu>
                               </UncontrolledDropdown>
+                              :"No Permissions"
         
       ),
     },
@@ -198,6 +209,7 @@ function StaffList() {
           <div className="col-12">
             <div className="card">
               <div className="card-body">
+              {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Staff Create")) &&
                 <div className="position-relative">
                   <div className="modal-button modal-button-s mt-2">
                     <button
@@ -211,6 +223,7 @@ function StaffList() {
                     </button>
                   </div>
                 </div>
+              }
                 {/* <div id="table-ecommerce-orders"></div> */}
                 {/* {Array.isArray(designList) && designList?.length > 0 && ( */}
                   <DataTable data={designerList} columns={columns} />
