@@ -21,6 +21,7 @@ import AdminView from "../components/admin/AdminView";
 import UploadDesignMultipleForm from "../components/uploadDesign/UploadDesignMultipleForm";
 import ColorVariationForm from "../components/colorVariation/ColorVariationForm";
 import ColorVariationList from "../components/colorVariation/ColorVariationList";
+import StaffApprovalList from "../components/staff/StaffApprovalList";
 
 export const privateRoutes = [
   { path: "/dashboard", Component: Dashboard },
@@ -36,6 +37,8 @@ export const privateRoutes = [
 
   { path: "/staff-form", Component: StaffForm },
   { path: "/staff-list", Component: StaffList },
+  { path: "/staff-approval", Component: StaffApprovalList },
+
   { path: "/category-list", Component: CategoryList },
   { path: "/category-form", Component: CategoryForm },
   { path: "/tag-list", Component: TagList },

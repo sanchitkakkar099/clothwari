@@ -5,8 +5,10 @@ import categorySlice from "./categorySlice";
 import colorVariationSlice from "./colorVariationSlice";
 import tagSlice from "./tagSlice";
 import clientSlice from "./clientSlice";
+import dashboardSlice from "./dashboardSlice";
 
-import { adminApi, authApi, categoryApi, clientApi, colorVariationApi, designTagApi, designUploadApi, designerApi, fileApi } from "../service";
+
+import { adminApi, authApi, categoryApi, clientApi, colorVariationApi, dashboardApi, designTagApi, designUploadApi, designerApi, fileApi } from "../service";
 import authSlice from "./authSlice";
 import adminSlice from "./adminSlice";
 
@@ -19,6 +21,7 @@ const appReducer = combineReducers({
   colorVariationState: colorVariationSlice,
   tagState: tagSlice,
   clientState: clientSlice,
+  dashboardState: dashboardSlice,
   [authApi.reducerPath]: authApi.reducer,
   [adminApi.reducerPath]: adminApi.reducer,
   [categoryApi.reducerPath]: categoryApi.reducer,
@@ -28,7 +31,7 @@ const appReducer = combineReducers({
   [designerApi.reducerPath]: designerApi.reducer,
   [clientApi.reducerPath]: clientApi.reducer,
   [colorVariationApi.reducerPath]: colorVariationApi.reducer,
-
+  [dashboardApi.reducerPath]: dashboardApi.reducer,
 });
 
 export const store = configureStore({
@@ -44,5 +47,6 @@ export const store = configureStore({
       designerApi.middleware,
       clientApi.middleware,
       colorVariationApi.middleware,
+      dashboardApi.middleware,
     ]),
 });

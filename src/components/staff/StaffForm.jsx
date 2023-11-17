@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 function StaffForm() {
   const navigate = useNavigate()
   const location = useLocation();
+  
   const { state: locationState } = location;
   const [reqDesigner, resDesigner] = useSubmitDesignerMutation();
   const permissionList = useGetDesignerPermissionListQuery()
@@ -19,7 +20,6 @@ function StaffForm() {
   });
   const [permissionDropdown,setPermissionDropDown] = useState([])
   console.log('permissionDropdown',permissionDropdown);
-
 
   const {
     control,
@@ -250,7 +250,7 @@ function StaffForm() {
                       </div>
                       </div>
                       </div> */}
-                      <div className="col-md-6">
+                      {/* <div className="col-md-6">
                           <div className="mb-3">
                             <Label for="permissions" className="form-label">
                               Permissions
@@ -278,7 +278,7 @@ function StaffForm() {
                               </FormFeedback>
                             )}
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                       
                       

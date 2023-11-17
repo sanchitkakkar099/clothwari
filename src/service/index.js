@@ -55,6 +55,14 @@ export const adminApi = createApi({
       }),
       providesTags: ["admin"],
     }),
+    adminStaffApprovalList: builder.mutation({
+      query: (payload) => ({
+        url: "admin/staff/approval/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["admin"],
+    }),
     submitAdmin: builder.mutation({
       query: (payload) => ({
         url: "admin/create",
@@ -92,6 +100,7 @@ export const {
  useAdminByIdQuery,
  useDeleteAdminMutation,
  useGetAdminPermissionListQuery,
+ useAdminStaffApprovalListMutation
 } = adminApi;
 
 export const categoryApi = createApi({
@@ -292,7 +301,7 @@ export const fileApi = createApi({
   endpoints: (builder) => ({
     fileUpload: builder.mutation({
       query: (payload) => ({
-        url: `uploads?type=${payload?.type}`,
+        url: payload?.watermark ? `uploads?type=${payload?.type}&watermark=${payload?.watermark}` : `uploads?type=${payload?.type}`,
         method: "POST",
         body: payload?.file,
       }),
@@ -341,6 +350,14 @@ export const designerApi = createApi({
       }),
       invalidatesTags: ["designer"],
     }),
+    staffApprovalBySuperAdmin: builder.mutation({
+      query: (payload) => ({
+        url: "admin/staff/approved",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["designer"],
+    }),
     designerById: builder.query({
       query: (id) => ({
         url: `designer/byId/${id}`,
@@ -369,7 +386,8 @@ export const {
   useSubmitDesignerMutation,
   useDesignerByIdQuery,
   useDeleteDesignerMutation,
-  useGetDesignerPermissionListQuery
+  useGetDesignerPermissionListQuery,
+  useStaffApprovalBySuperAdminMutation
 } = designerApi;
 
 
@@ -485,3 +503,29 @@ export const {
   useColorVariationDropdownListQuery,
   useDeleteColorVariationMutation
 } = colorVariationApi;
+
+export const dashboardApi = createApi({
+  tagTypes: ["dashboard"],
+  reducerPath: "dashboardApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}/`,
+    prepareHeaders: (headers, { getState }) => {
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
+      return headers
+    },
+  }),
+  endpoints: (builder) => ({
+    dashboardCount: builder.query({
+      query: (id) => ({
+        url: `admin/dashboard`,
+        method: "GET",
+      }),
+      providesTags: ["dashboard"],
+    }),
+  }),
+});
+export const {
+  useDashboardCountQuery
+} = dashboardApi;

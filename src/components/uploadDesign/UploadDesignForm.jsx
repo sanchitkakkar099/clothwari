@@ -106,7 +106,7 @@ function AddDesign() {
       const reqData = {
         file: formData,
         type: 1,
-        waterMark:true
+        watermark:true
       };
       reqFile(reqData)
         .then((res) => {
@@ -406,7 +406,7 @@ function AddDesign() {
                                     src={mainFile?.filepath}
                                     alt=""
                                   />
-                                  {locationState?.isEdit && !userInfo?.onlyUpload &&
+                                  {!locationState?.isEdit && 
                                   <span onClick={(e) => removeFile(e)}>x</span>
                                   }
                                 </div>
@@ -526,7 +526,9 @@ function AddDesign() {
                                     src={thumbnailFile?.filepath}
                                     alt=""
                                   />
+                                  {!locationState?.isEdit &&
                                   <span onClick={(e) => removeThumbnailFile(e)}>x</span>
+                                  }
                                 </div>
                               </div>
                               }

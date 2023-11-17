@@ -40,6 +40,7 @@ function Login() {
     };
     loginReq(reqData);
   };
+  console.log('loginRes',loginRes);
 
   useEffect(() => {
     if(loginRes?.isSuccess){
@@ -52,7 +53,7 @@ function Login() {
         setErrorMessage('')
         navigate('/dashboard')
     } else if(loginRes?.isError){
-      setErrorMessage('Invalid credential')
+      setErrorMessage(loginRes?.error?.data?.message)
     }
   },[loginRes]) 
 

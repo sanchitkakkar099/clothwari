@@ -92,7 +92,7 @@ function UploadDesignMultipleForm() {
     const reqData = {
       file: formData,
       type: 1,
-      waterMark:true
+      watermark:true
     };
     reqFile(reqData)
       .then((res) => {
