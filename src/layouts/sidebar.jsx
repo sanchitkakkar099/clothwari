@@ -175,6 +175,16 @@ function SidebarComponent() {
                 </li>
                 }
 
+                {userInfo?.role === 'Super Admin' &&
+                <li>
+                    <Link to="/color-variation-list">
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-dashboards">Color Variation</span>
+                        {/* <span className="badge rounded-pill bg-success">5+</span> */}
+                    </Link>
+                </li>
+                }
+
             </ul>
         </div>
     </div>

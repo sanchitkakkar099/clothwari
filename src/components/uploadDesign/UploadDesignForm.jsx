@@ -4,7 +4,7 @@ import { Controller,useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { useCategoryDropdownListQuery, useDesignUploadByIdQuery, useFileUploadMutation, useMultipleFileUploadMutation, useSubmitDesignUploadMutation, useTagDropdownListQuery } from "../../service";
+import { useCategoryDropdownListQuery, useColorVariationDropdownListQuery, useDesignUploadByIdQuery, useFileUploadMutation, useMultipleFileUploadMutation, useSubmitDesignUploadMutation, useTagDropdownListQuery } from "../../service";
 import toast from "react-hot-toast";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { alphaNumericPattern } from "../common/InputValidation";
@@ -20,6 +20,8 @@ function AddDesign() {
     skip: !locationState?.designID,
   });
   const resCategoryListDropdown = useCategoryDropdownListQuery();
+  const resColorListDropdown = useColorVariationDropdownListQuery();
+
   const resTagListDropdown = useTagDropdownListQuery();
 
   console.log('resCategoryListDropdown',resCategoryListDropdown);
@@ -28,6 +30,8 @@ function AddDesign() {
   const [mainFile, setMainFile] = useState(null)
   const [thumbnailFile, setThumbnailFile] = useState(null)
   const [categoryDropdown, setCategoryDropdown] = useState([])
+  const [colorDropdown, setColorDropdown] = useState([])
+
   const [tagDropdown, setTagDropdown] = useState([])
 
   console.log('mainFile',mainFile);
@@ -64,6 +68,12 @@ function AddDesign() {
   },[resCategoryListDropdown])
 
   useEffect(() => {
+    if(resColorListDropdown?.isSuccess && resColorListDropdown?.data?.data){
+      setColorDropdown(resColorListDropdown?.data?.data)
+    }
+  },[resColorListDropdown])
+
+  useEffect(() => {
     if(resTagListDropdown?.isSuccess && resTagListDropdown?.data?.data){
       setTagDropdown(resTagListDropdown?.data?.data)
     }
@@ -96,6 +106,7 @@ function AddDesign() {
       const reqData = {
         file: formData,
         type: 1,
+        waterMark:true
       };
       reqFile(reqData)
         .then((res) => {
@@ -128,7 +139,7 @@ function AddDesign() {
       ...state,
       category: state?.category?.value,
       tag: state?.tag,
-      image: mainFile ?  mainFile?._id : '',
+      image: mainFile ?  mainFile?._id : null,
       thumbnail: thumbnailFile ?  thumbnailFile?._id  : null,
     });
   };
@@ -313,6 +324,41 @@ function AddDesign() {
                         </div>
                       </div>
 
+                      <div className="row">
+                        <div className="col-md-12">
+                          <div className="mb-3">
+                            <Label for="color" className="form-label">
+                              Color Variation
+                            </Label>
+                            <Controller
+                              id="color"
+                              name="color"
+                              control={control}
+                              rules={{ required: "Color is required" }}
+                              render={({ field: { onChange, value } }) => (
+                                <Select
+                                  isClearable
+                                  isMulti
+                                  options={
+                                    colorDropdown|| []
+                                  }
+                                  className="react-select"
+                                  classNamePrefix="select"
+                                  onChange={onChange}
+                                  value={value ? value : null}
+                                />
+                              )}
+                            />
+                            {errors.color && (
+                              <FormFeedback>
+                                {errors?.color?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                        
+                      </div>
+
                       <div className="mb-0">
                         <Label className="form-label" for="image">
                           Upload MainFile
@@ -445,7 +491,7 @@ function AddDesign() {
                                 id="thumbnail"
                                 name="thumbnail"
                                 control={control}
-                                rules={{ required: "Design File is required" }}
+                                // rules={{ required: "Design File is required" }}
                                 render={({ field: { onChange, value } }) => (
                                   <Input
                                     type="file"

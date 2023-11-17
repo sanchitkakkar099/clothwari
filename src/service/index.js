@@ -245,6 +245,14 @@ export const designUploadApi = createApi({
       }),
       invalidatesTags: ["designeUpload"],
     }),
+    submitMultipleDesignUpload: builder.mutation({
+      query: (payload) => ({
+        url: "designupload/create/bulk",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["designeUpload"],
+    }),
     designUploadById: builder.query({
       query: (id) => ({
         url: `designupload/byId/${id}`,
@@ -264,6 +272,7 @@ export const designUploadApi = createApi({
 export const {
   useDesignUploadListMutation,
   useSubmitDesignUploadMutation,
+  useSubmitMultipleDesignUploadMutation,
   useDesignUploadByIdQuery,
   useDeleteDesignUploadMutation
 } = designUploadApi;
@@ -415,3 +424,64 @@ export const {
  useClientByIdQuery,
  useDeleteClientMutation
 } = clientApi;
+
+
+export const colorVariationApi = createApi({
+  tagTypes: ["colorVariation"],
+  reducerPath: "colorVariationApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}/`,
+    prepareHeaders: (headers, { getState }) => {
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
+      return headers
+    }
+  }),
+  endpoints: (builder) => ({
+    colorVariationList: builder.mutation({
+      query: (payload) => ({
+        url: "color/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["colorVariation"],
+    }),
+    colorVariationDropdownList: builder.query({
+      query: () => ({
+        url: "color/drop/down/list",
+        method: "GET",
+      }),
+      providesTags: ["colorVariation"],
+    }),
+    submitColorVariation: builder.mutation({
+      query: (payload) => ({
+        url: "color/create",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["colorVariation"],
+    }),
+    colorVariationById: builder.query({
+      query: (id) => ({
+        url: `color/byId/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["colorVariation"],
+    }),
+    deleteColorVariation: builder.mutation({
+      query: (id) => ({
+        url: `color/byId/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["colorVariation"],
+    }),
+  }),
+});
+export const {
+  useColorVariationListMutation,
+  useSubmitColorVariationMutation,
+  useColorVariationByIdQuery,
+  useColorVariationDropdownListQuery,
+  useDeleteColorVariationMutation
+} = colorVariationApi;

@@ -35,7 +35,7 @@ function StaffForm() {
         name: resDesignerById?.data?.data?.name,
         email: resDesignerById?.data?.data?.email,
         phone: resDesignerById?.data?.data?.phone,
-        onlyUpload: resDesignerById?.data?.data?.onlyUpload,
+        permissions:resDesignerById?.data?.data?.permissions
       });
     }
   }, [resDesignerById]);

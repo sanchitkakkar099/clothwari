@@ -19,6 +19,8 @@ import AdmintList from "../components/admin/AdminList";
 import AdminForm from "../components/admin/AdminForm";
 import AdminView from "../components/admin/AdminView";
 import UploadDesignMultipleForm from "../components/uploadDesign/UploadDesignMultipleForm";
+import ColorVariationForm from "../components/colorVariation/ColorVariationForm";
+import ColorVariationList from "../components/colorVariation/ColorVariationList";
 
 export const privateRoutes = [
   { path: "/dashboard", Component: Dashboard },
@@ -41,6 +43,9 @@ export const privateRoutes = [
   { path: "/client-list", Component: ClientList },
   { path: "/client-form", Component: ClientForm },
   { path: "/client-view-design", Component: ClientViewDesign },
+
+  { path: "/color-variation-list", Component: ColorVariationList },
+  { path: "/color-variation-form", Component: ColorVariationForm },
 ];
 
 export const publicRoutes = [

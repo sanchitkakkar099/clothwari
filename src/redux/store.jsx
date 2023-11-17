@@ -2,10 +2,11 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import designUploadSlice from "./designUploadSlice";
 import designerSlice from "./designerSlice";
 import categorySlice from "./categorySlice";
+import colorVariationSlice from "./colorVariationSlice";
 import tagSlice from "./tagSlice";
 import clientSlice from "./clientSlice";
 
-import { adminApi, authApi, categoryApi, clientApi, designTagApi, designUploadApi, designerApi, fileApi } from "../service";
+import { adminApi, authApi, categoryApi, clientApi, colorVariationApi, designTagApi, designUploadApi, designerApi, fileApi } from "../service";
 import authSlice from "./authSlice";
 import adminSlice from "./adminSlice";
 
@@ -15,6 +16,7 @@ const appReducer = combineReducers({
   designUploadState: designUploadSlice,
   designerState: designerSlice,
   categoryState: categorySlice,
+  colorVariationState: colorVariationSlice,
   tagState: tagSlice,
   clientState: clientSlice,
   [authApi.reducerPath]: authApi.reducer,
@@ -25,6 +27,8 @@ const appReducer = combineReducers({
   [fileApi.reducerPath]: fileApi.reducer,
   [designerApi.reducerPath]: designerApi.reducer,
   [clientApi.reducerPath]: clientApi.reducer,
+  [colorVariationApi.reducerPath]: colorVariationApi.reducer,
+
 });
 
 export const store = configureStore({
@@ -39,5 +43,6 @@ export const store = configureStore({
       fileApi.middleware,
       designerApi.middleware,
       clientApi.middleware,
+      colorVariationApi.middleware,
     ]),
 });

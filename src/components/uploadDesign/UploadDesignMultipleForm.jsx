@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, FormFeedback, Input, Table } from "reactstrap";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import Select from "react-select";
 import { Typeahead } from "react-bootstrap-typeahead";
-
-
+import { useCategoryDropdownListQuery, useColorVariationDropdownListQuery, useFileUploadMutation, useSubmitMultipleDesignUploadMutation } from "../../service";
+import toast from "react-hot-toast";
 
 function UploadDesignMultipleForm() {
   const location = useLocation();
   const navigate = useNavigate()
   const { state: locationState } = location;
+  const [reqFile] = useFileUploadMutation();
+  const resCategoryListDropdown = useCategoryDropdownListQuery();
+  const resColorListDropdown = useColorVariationDropdownListQuery();
+  const [reqDesignUpload, resDesignUpload] = useSubmitMultipleDesignUploadMutation();
+
+
+  const [categoryDropdown, setCategoryDropdown] = useState([])
+  const [colorDropdown, setColorDropdown] = useState([])
+
   const {
     control,
     handleSubmit,
@@ -22,7 +31,7 @@ function UploadDesignMultipleForm() {
     setError,
   } = useForm();
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, update } = useFieldArray({
     control,
     name: "multiple_design",
   });
@@ -41,6 +50,7 @@ function UploadDesignMultipleForm() {
           designNo: "",
           category: "",
           tag: [],
+          color:[],
           image: locationState[i],
           thumbnail: "",
         });
@@ -50,9 +60,62 @@ function UploadDesignMultipleForm() {
 
   console.log("locationState", locationState);
 
+   useEffect(() => {
+    if(resCategoryListDropdown?.isSuccess && resCategoryListDropdown?.data?.data){
+      setCategoryDropdown(resCategoryListDropdown?.data?.data)
+    }
+  },[resCategoryListDropdown])
+
+  useEffect(() => {
+    if(resColorListDropdown?.isSuccess && resColorListDropdown?.data?.data){
+      setColorDropdown(resColorListDropdown?.data?.data)
+    }
+  },[resColorListDropdown])
+
   const onNext = (state) => {
     console.log("state", state);
+    const res1 = state?.multiple_design?.map(el => ({
+      ...el, 
+      category: el?.category?.value,
+      tag: el?.tag,
+      image: el?.image ?  el?.image?._id : null,
+      thumbnail: el?.thumbnail ?  el?.thumbnail?._id  : null,
+    }))
+    console.log('res1',res1);
+    reqDesignUpload(res1)
   };
+
+  const handleFile = (fileVal, fld,index) => {
+    console.log('index',index);
+    const formData = new FormData();
+    formData.append("file", fileVal.target.files[0]);
+    const reqData = {
+      file: formData,
+      type: 1,
+      waterMark:true
+    };
+    reqFile(reqData)
+      .then((res) => {
+        if (res?.data?.data) {
+          console.log("res?.data?.data", res?.data?.data, index);
+          update(index, {...fld,thumbnail: res?.data?.data});
+          setError(`multiple_design.${index}.thumbnail`, "");
+        }
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+
+  useEffect(() => {
+    if (resDesignUpload?.isSuccess) {
+      toast.success(resDesignUpload?.data?.message, {
+        position: "top-center",
+      });
+      reset()
+      navigate("/design-list-v2");
+    }
+  }, [resDesignUpload?.isSuccess]);
 
   return (
     <div className="page-content">
@@ -76,7 +139,7 @@ function UploadDesignMultipleForm() {
           </div>
         </div>
         <form onSubmit={handleSubmit(onNext)}>
-          <Table dark responsive>
+          <Table dark  striped responsive>
             <thead>
               <tr>
                 <th>#</th>
@@ -85,6 +148,7 @@ function UploadDesignMultipleForm() {
                 <th>Image</th>
                 <th>Thumbnail</th>
                 <th>Category</th>
+                <th>Color</th>
                 <th>Tag</th>
                 {/* <th>Variant</th> */}
               </tr>
@@ -142,6 +206,14 @@ function UploadDesignMultipleForm() {
                     />
                   </td>
                   <td>
+                  {console.log('ssss',`multiple_design.${index}.thumbnail`)}
+                  {fld?.thumbnail ? <img
+                      src={fld?.thumbnail?.filepath}
+                      alt="img"
+                      height={25}
+                      width={25}
+                    />
+                    :
                   <Controller
                   id={`multiple_design.${index}.thumbnail`}
                       name={`multiple_design.${index}.thumbnail`}
@@ -153,11 +225,13 @@ function UploadDesignMultipleForm() {
                                     type="file"
                                     accept="image/png, image/gif, image/jpeg"
                                     onChange={(e) => {
-                                      onChange(e.target.files);
+                                      onChange();
+                                      handleFile(e, fld,index);
                                     }}
                                   />
                                 )}
                               />
+                  }
                   </td>
                   <td>
                   <Controller
@@ -170,10 +244,7 @@ function UploadDesignMultipleForm() {
                                 <Select
                                   isClearable
                                   options={
-                                    [{
-                                        label:'Category 1',
-                                        value:'1'
-                                    }]|| []
+                                   categoryDropdown || []
                                   }
                                   className="react-select"
                                   classNamePrefix="select"
@@ -185,6 +256,33 @@ function UploadDesignMultipleForm() {
                             {errors.multiple_design && (
                       <FormFeedback>
                         {errors?.multiple_design[index]?.category?.message}
+                      </FormFeedback>
+                    )}
+                  </td>
+                  <td>
+                  <Controller
+                  id={`multiple_design.${index}.color`}
+                      name={`multiple_design.${index}.color`}
+                            
+                              control={control}
+                              rules={{ required: "Color is required" }}
+                              render={({ field: { onChange, value } }) => (
+                                <Select
+                                  isClearable
+                                  isMulti
+                                  options={
+                                   colorDropdown || []
+                                  }
+                                  className="react-select"
+                                  classNamePrefix="select"
+                                  onChange={onChange}
+                                  value={value ? value : null}
+                                />
+                              )}
+                            />
+                            {errors.multiple_design && (
+                      <FormFeedback>
+                        {errors?.multiple_design[index]?.color?.message}
                       </FormFeedback>
                     )}
                   </td>

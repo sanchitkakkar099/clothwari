@@ -109,6 +109,11 @@ function UploadDesignListV2() {
       Filter: DropdownFilter,
     },
     {
+      Header: "Color",
+      accessor: "color.label",
+      Filter: DropdownFilter,
+    },
+    {
       Header: "Upload By",
       accessor: "uploadedBy.name",
       Filter: TextSearchFilter,
