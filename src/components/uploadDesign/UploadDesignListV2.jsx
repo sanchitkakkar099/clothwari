@@ -62,8 +62,9 @@ function UploadDesignListV2() {
 
   const onViewAction = (e, st) => {
     e.preventDefault();
-    setModalView(true)
-    setViewData(st?.row?.original)
+    // setModalView(true)
+    // setViewData(st?.row?.original)
+    navigate(`/product-view/${st?.row?.original?._id}`)
   };
 
   const handleDelete = (e, st) => {
@@ -108,11 +109,11 @@ function UploadDesignListV2() {
       accessor: "category.label",
       Filter: DropdownFilter,
     },
-    {
-      Header: "Color",
-      accessor: "color.label",
-      Filter: DropdownFilter,
-    },
+    // {
+    //   Header: "Color",
+    //   accessor: "color.label",
+    //   Filter: DropdownFilter,
+    // },
     {
       Header: "Upload By",
       accessor: "uploadedBy.name",

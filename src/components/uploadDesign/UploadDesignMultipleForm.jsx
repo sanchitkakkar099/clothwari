@@ -30,6 +30,7 @@ function UploadDesignMultipleForm() {
     setValue,
     setError,
   } = useForm();
+  console.log('errors',errors);
 
   const { fields, append, update } = useFieldArray({
     control,
@@ -85,10 +86,10 @@ function UploadDesignMultipleForm() {
     reqDesignUpload(res1)
   };
 
-  const handleFile = (fileVal, fld,index) => {
+  const handleFile = (e, fld,index) => {
     console.log('index',index);
     const formData = new FormData();
-    formData.append("file", fileVal.target.files[0]);
+    formData.append("file", e.target.files[0]);
     const reqData = {
       file: formData,
       type: 1,
@@ -139,7 +140,7 @@ function UploadDesignMultipleForm() {
           </div>
         </div>
         <form onSubmit={handleSubmit(onNext)}>
-          <Table dark  striped responsive>
+          <Table   striped responsive>
             <thead>
               <tr>
                 <th>#</th>
@@ -164,8 +165,9 @@ function UploadDesignMultipleForm() {
                       control={control}
                       rules={{ required: "Name is required" }}
                       render={({ field }) => (
-                        <input
-                          placeholder="Entare Name"
+                        <Input
+                          placeholder="Enter Name"
+                          onChange={field.onChange}
                           {...field}
                           type="text"
                         />
@@ -184,8 +186,9 @@ function UploadDesignMultipleForm() {
                       control={control}
                       rules={{ required: "Design Number is required" }}
                       render={({ field }) => (
-                        <input
+                        <Input
                           placeholder="Design Number"
+                          onChange={field.onChange}
                           {...field}
                           type="text"
                         />

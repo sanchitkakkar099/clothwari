@@ -124,7 +124,7 @@ function StaffApprovalList() {
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Permissions</th>
+                {/* <th>Permissions</th> */}
                 <th>Action</th>
               </tr>
             </thead>
@@ -135,7 +135,7 @@ function StaffApprovalList() {
                   <td>
                     {fld?.name}
                   </td>
-                  <td>
+                  {/* <td>
                 
                                 <Select
                                   isClearable
@@ -145,13 +145,13 @@ function StaffApprovalList() {
                                   }
                                   className="react-select"
                                   classNamePrefix="select"
-                                  // onChange={onChange}
-                                  // value={value ? value : null}
+                                 
                                 />
-                              {/* )} */}
                            
-                  </td>
-                  <td><button onClick={(e) => onApproveAction(e,fld)}>Approve</button><button className='ms-2' onClick={(e) => onRejectAction(e,fld)}>Reject</button></td>
+                  </td> */}
+                  <td>
+                    <button className='btn btn-success' onClick={(e) => onApproveAction(e,fld)}>Approve</button>
+                    <button className='btn btn-danger ms-2' onClick={(e) => onRejectAction(e,fld)}>Reject</button></td>
                 </tr>
               )) : <tr><td colSpan={3} className='text-center'>No Pending Approval</td></tr>}
             </tbody>

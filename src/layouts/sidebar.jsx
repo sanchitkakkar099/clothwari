@@ -87,7 +87,9 @@ function SidebarComponent() {
                 </li>
                 }
 
-                {userInfo?.role === 'Super Admin' &&
+                {(userInfo?.role === 'Super Admin' ||
+                (userInfo?.role === 'Designer' && userInfo?.permissions?.some(el  => el === "Upload Design View")))    
+                &&
                 <li>
                     <Link to="/design-list-v1">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -98,8 +100,12 @@ function SidebarComponent() {
                 }
 
                 {(
-                    userInfo?.role === 'Super Admin' || 
-                    (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download"))    
+                    userInfo?.role === 'Super Admin' 
+                    || 
+                    (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download"))
+                    || 
+                    (userInfo?.role === 'Designer' && userInfo?.permissions?.some(el  => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download"))    
+
                 ) &&
                 <li>
                     <Link to="/design-list-v2">

@@ -93,7 +93,7 @@ function UploadDesignListV1() {
                       id="popularity"
                       role="tabpanel"
                     >
-                      <div className="row">
+                      {/* <div className="row">
                         {designUploadList &&
                         Array.isArray(designUploadList) &&
                         designUploadList?.length > 0 ? (
@@ -124,11 +124,140 @@ function UploadDesignListV1() {
                         ) : (
                           <h4 className="text-center mt-5">No Design Found</h4>
                         )}
+                      </div> */}
+                      <div className="row">
+                        <div class="col-xl-12 col-lg-8">
+                          <div class="card">
+                            <div class="card-body">
+                              <div>
+                                <div class="tab-content p-3 text-muted">
+                                  <div
+                                    class="tab-pane active"
+                                    id="popularity"
+                                    role="tabpanel"
+                                  >
+                                    <div class="row">
+                                      {designUploadList &&
+                                      Array.isArray(designUploadList) &&
+                                      designUploadList?.length > 0 ? (
+                                        designUploadList?.map((el, i) => {
+                                          return (
+                                            <div
+                                              class="col-xl-4 col-sm-6"
+                                              key={i}
+                                            >
+                                              <div class="product-box">
+                                                <div class="product-img pt-4 px-4">
+                                                  <img
+                                                    src={
+                                                      el?.thumbnail?.filepath
+                                                    }
+                                                    alt=""
+                                                    class="img-fluid mx-auto d-block"
+                                                  />
+                                                </div>
+
+                                                <div class="product-content p-4">
+                                                  <div class="d-flex justify-content-between align-items-end">
+                                                    <div>
+                                                      <h5 class="mb-1">
+                                                        <Link to={`/product-view/${el?._id}`}
+                                                          href="ecommerce-product-detail.html"
+                                                          class="text-dark font-size-16"
+                                                        >
+                                                          {el?.name}
+                                                        </Link>
+                                                      </h5>
+                                                      <p class="text-muted font-size-13">
+                                                        {el?.tag && Array.isArray(el?.tag) && el?.tag?.length > 0 ? el?.tag?.map(el => el?.label)?.join(',') : ''}
+                                                      </p>
+                                                    </div>
+
+                                                    <div>
+                                                      <ul class="list-inline mb-0 text-muted product-color">
+                                                        {el?.color?.map(
+                                                          (cl, cinx) => {
+                                                            return (
+                                                              <li class="list-inline-item" key={cinx}>
+                                                                <i class="mdi mdi-circle" style={{color:cl?.value}}></i>
+                                                              </li>
+                                                            );
+                                                          }
+                                                        )}
+                                                      </ul>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          );
+                                        })
+                                      ) : (
+                                        <h4 className="text-center mt-5">
+                                          No Design Found
+                                        </h4>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* <div class="row mt-4">
+                                  <div class="col-sm-6">
+                                    <div>
+                                      <p class="mb-sm-0">Page 2 of 84</p>
+                                    </div>
+                                  </div>
+                                  <div class="col-sm-6">
+                                    <div class="float-sm-end">
+                                      <ul class="pagination pagination-rounded mb-sm-0">
+                                        <li class="page-item disabled">
+                                          <a href="#" class="page-link">
+                                            <i class="mdi mdi-chevron-left"></i>
+                                          </a>
+                                        </li>
+                                        <li class="page-item active">
+                                          <a href="#" class="page-link">
+                                            1
+                                          </a>
+                                        </li>
+                                        <li class="page-item">
+                                          <a href="#" class="page-link">
+                                            2
+                                          </a>
+                                        </li>
+                                        <li class="page-item">
+                                          <a href="#" class="page-link">
+                                            3
+                                          </a>
+                                        </li>
+                                        <li class="page-item">
+                                          <a href="#" class="page-link">
+                                            4
+                                          </a>
+                                        </li>
+                                        <li class="page-item">
+                                          <a href="#" class="page-link">
+                                            5
+                                          </a>
+                                        </li>
+                                        <li class="page-item">
+                                          <a href="#" class="page-link">
+                                            <i class="mdi mdi-chevron-right"></i>
+                                          </a>
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  </div>
+                                </div> */}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="row mt-4">
+                  {/* <div className="row mt-4">
                     <div className="col-sm-6">
                       <div>
                         <p className="mb-sm-0">Page 1 of 1</p>
@@ -155,7 +284,7 @@ function UploadDesignListV1() {
                         </ul>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

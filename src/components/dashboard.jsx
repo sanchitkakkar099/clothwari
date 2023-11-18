@@ -9,7 +9,7 @@ function DashboardComponent() {
     const navigate = useNavigate()
     const userInfo = useSelector((state) => state?.authState.userInfo)
     const dashData = useSelector((state) => state?.dashboardState.dash_data)
-    const resDashboard = useDashboardCountQuery();
+    const resDashboard = useDashboardCountQuery(undefined,{refetchOnMountOrArgChange:true});
     const designerList = useSelector((state) => state?.designerState.designerList)
     const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
     console.log('dashData',dashData);

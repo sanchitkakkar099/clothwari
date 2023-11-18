@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Controller, set, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
 import { useDesignerByIdQuery, useGetDesignerPermissionListQuery, useSubmitDesignerMutation } from "../../service";
@@ -20,13 +20,17 @@ function StaffForm() {
   });
   const [permissionDropdown,setPermissionDropDown] = useState([])
   console.log('permissionDropdown',permissionDropdown);
+  const userInfo = useSelector((state) => state?.authState.userInfo)
+
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
+    setError
   } = useForm();
+  console.log('errors',errors);
 
   useEffect(() => {
     if (resDesignerById?.isSuccess && resDesignerById?.data?.data) {
@@ -52,6 +56,7 @@ function StaffForm() {
       permissions:state?.permissions?.map(el => el?._id)
     });
   };
+  console.log('resDesigner',resDesigner);
 
   useEffect(() => {
     if (resDesigner?.isSuccess) {
@@ -61,7 +66,14 @@ function StaffForm() {
       reset()
       navigate("/staff-list");
     }
-  }, [resDesigner?.isSuccess]);
+    if (resDesigner?.isError) {
+      setError("email", {
+        type: "manual",
+        message: resDesigner?.error?.data?.message,
+      })
+
+    }
+  }, [resDesigner?.isSuccess,resDesigner?.isError]);
   
 
    return (
@@ -250,7 +262,8 @@ function StaffForm() {
                       </div>
                       </div>
                       </div> */}
-                      {/* <div className="col-md-6">
+                      {userInfo?.role === 'Super Admin' &&
+                      <div className="col-md-6">
                           <div className="mb-3">
                             <Label for="permissions" className="form-label">
                               Permissions
@@ -278,7 +291,8 @@ function StaffForm() {
                               </FormFeedback>
                             )}
                           </div>
-                        </div> */}
+                        </div>
+                      }
                       </div>
                       
                       

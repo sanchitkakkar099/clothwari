@@ -22,6 +22,7 @@ import UploadDesignMultipleForm from "../components/uploadDesign/UploadDesignMul
 import ColorVariationForm from "../components/colorVariation/ColorVariationForm";
 import ColorVariationList from "../components/colorVariation/ColorVariationList";
 import StaffApprovalList from "../components/staff/StaffApprovalList";
+import ProductView from "../components/uploadDesign/ProductView";
 
 export const privateRoutes = [
   { path: "/dashboard", Component: Dashboard },
@@ -34,6 +35,8 @@ export const privateRoutes = [
   { path: "/design-list-v2", Component: UploadDesignListV2 },
   { path: "/upload-design-form", Component: UploadDesignForm },
   { path: "/upload-multiple-design-form", Component: UploadDesignMultipleForm },
+  { path: "/product-view/:id", Component: ProductView },
+
 
   { path: "/staff-form", Component: StaffForm },
   { path: "/staff-list", Component: StaffList },
