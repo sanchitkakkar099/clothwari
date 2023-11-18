@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import One from "../../assets/images/product/five.jpg";
 import Two from "../../assets/images/product/seven.jpg";
 import Three from "../../assets/images/product/four.jpg";
@@ -9,6 +9,7 @@ import { useDesignUploadListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link } from "react-router-dom";
+import { DivideSquare } from "react-feather";
 
 function UploadDesignListV1() {
   const dispatch = useDispatch();
@@ -17,6 +18,8 @@ function UploadDesignListV1() {
     (state) => state?.designUploadState.designUploadList
   );
   console.log("designUploadList", designUploadList);
+  const [designID,setDesignId] = useState(null)
+  const [variationImg,setVariationImg] = useState(null)
 
   useEffect(() => {
     reqDesign({
@@ -39,6 +42,15 @@ function UploadDesignListV1() {
       search: search,
     });
   };
+
+  const handleChangeVariation = (e,variation,dId) => {
+    e.preventDefault()
+    if(variation?.thumbnail?.filepath){
+      setVariationImg(variation?.thumbnail?.filepath)
+      setDesignId(dId)
+    }
+    console.log('variation',variation);
+  }
 
   return (
     <div className="page-content">
@@ -150,7 +162,7 @@ function UploadDesignListV1() {
                                                 <div class="product-img pt-4 px-4">
                                                   <img
                                                     src={
-                                                      el?.thumbnail?.filepath
+                                                    (variationImg && el?._id === designID) ? variationImg :  el?.thumbnail?.filepath
                                                     }
                                                     alt=""
                                                     class="img-fluid mx-auto d-block"
@@ -178,7 +190,7 @@ function UploadDesignListV1() {
                                                         {el?.color?.map(
                                                           (cl, cinx) => {
                                                             return (
-                                                              <li class="list-inline-item" key={cinx}>
+                                                              <li class="list-inline-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl,el?._id)}>
                                                                 <i class="mdi mdi-circle" style={{color:cl?.value}}></i>
                                                               </li>
                                                             );

@@ -42,6 +42,7 @@ function ColorVariationList() {
     navigate("/color-variation-form", {
       state: {
         variationID: st?.row?.original?._id,
+        isEdit:true
       },
     });
   };

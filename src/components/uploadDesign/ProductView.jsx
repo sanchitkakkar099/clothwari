@@ -14,6 +14,16 @@ function ProductView() {
             setProductView(resDesignById?.data?.data)
         }
       }, [resDesignById]);
+  const [variationImg,setVariationImg] = useState(null)
+
+  const handleChangeVariation = (e,variation) => {
+    e.preventDefault()
+    if(variation?.thumbnail?.filepath){
+      setVariationImg(variation?.thumbnail?.filepath)
+    }
+    console.log('variation',variation);
+  }
+
     
   return (
     <div className="page-content">
@@ -42,7 +52,7 @@ function ProductView() {
                 
                 <div class="post-image">
                 {productView?.thumbnail?.filepath ? 
-                  <img src={productView?.thumbnail?.filepath} class="image" alt="image post"/>
+                  <img src={variationImg ? variationImg : productView?.thumbnail?.filepath} class="image" alt="image post"/>
 :
                     <img src="https://www.bootdey.com/image/400x200/FFB6C1/000000" class="image" alt="image post"/>
                 }
@@ -59,7 +69,7 @@ function ProductView() {
                 {productView?.color && Array.isArray(productView?.color) && productView?.color?.length > 0 && 
                   productView?.color?.map((cl, cinx) => {
                     return(
-                      <Link to="" class="stat-item" key={cinx}>
+                      <Link to="" class="stat-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl)}>
                         <i class="mdi mdi-circle" style={{color:cl?.value,fontSize:'18px'}}/>
                         </Link>
                     )
