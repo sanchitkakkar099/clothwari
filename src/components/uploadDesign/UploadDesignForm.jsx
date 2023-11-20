@@ -152,7 +152,13 @@ function AddDesign() {
       reset()
       navigate("/design-list-v2");
     }
-  }, [resDesignUpload?.isSuccess]);
+    if (resDesignUpload?.isError) {
+      setError("name", {
+        type: "manual",
+        message: resDesignUpload?.error?.data?.message === "Already uploaded" ? 'Design Name Already Exist' : '',
+      })
+    }
+  }, [resDesignUpload?.isSuccess,resDesignUpload?.isError]);
 
    return (
     <div className="page-content">
@@ -242,7 +248,7 @@ function AddDesign() {
                               control={control}
                               rules={{ 
                                   required: "Design Number is required",
-                                  validate:alphaNumericPattern
+                                  // validate:alphaNumericPattern
                               }}
                               render={({ field }) => (
                                 <Input
@@ -328,13 +334,13 @@ function AddDesign() {
                         <div className="col-md-12">
                           <div className="mb-3">
                             <Label for="color" className="form-label">
-                              Color Variation
+                              Variation
                             </Label>
                             <Controller
                               id="color"
                               name="color"
                               control={control}
-                              rules={{ required: "Color is required" }}
+                              rules={{ required: "Variation is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable

@@ -149,7 +149,7 @@ function UploadDesignMultipleForm() {
                 <th>Image</th>
                 <th>Thumbnail</th>
                 <th>Category</th>
-                <th>Color</th>
+                <th>Variation</th>
                 <th>Tag</th>
                 {/* <th>Variant</th> */}
               </tr>
@@ -268,7 +268,7 @@ function UploadDesignMultipleForm() {
                       name={`multiple_design.${index}.color`}
                             
                               control={control}
-                              rules={{ required: "Color is required" }}
+                              rules={{ required: "Variation is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable

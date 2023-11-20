@@ -27,6 +27,7 @@ function AdminForm() {
     handleSubmit,
     formState: { errors },
     reset,
+    setError
   } = useForm();
 
   useEffect(() => {
@@ -62,7 +63,13 @@ function AdminForm() {
       reset()
       navigate("/admin-list");
     }
-  }, [resAdmin?.isSuccess]);
+    if (resAdmin?.isError) {
+      setError("email", {
+        type: "manual",
+        message: resAdmin?.error?.data?.message,
+      })
+    }
+  }, [resAdmin?.isSuccess,resAdmin?.isError]);
   
 
    return (

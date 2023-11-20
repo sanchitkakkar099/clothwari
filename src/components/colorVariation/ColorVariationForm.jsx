@@ -207,7 +207,7 @@ function ColorVariationForm() {
                               control={control}
                               rules={{ 
                                   required: "Design Number is required",
-                                  validate:alphaNumericPattern
+                                  // validate:alphaNumericPattern
                               }}
                               render={({ field }) => (
                                 <Input

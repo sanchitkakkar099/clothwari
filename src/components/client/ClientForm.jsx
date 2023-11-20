@@ -22,6 +22,7 @@ function ClientForm() {
     handleSubmit,
     formState: { errors },
     reset,
+    setError
   } = useForm();
 
   useEffect(() => {
@@ -38,10 +39,10 @@ function ClientForm() {
 
   const onNext = (state) => {
     console.log("state", state);
-    // reqClient({...state,
-    //   allowLoginTime: '',
-    //   allowLoginSec: 0
-    // });
+    reqClient({...state,
+      allowLoginTime: '',
+      allowLoginSec: 0
+    });
   };
 
   useEffect(() => {
@@ -52,7 +53,13 @@ function ClientForm() {
       reset()
       navigate("/client-list");
     }
-  }, [resClient?.isSuccess]);
+    if (resClient?.isError) {
+      setError("email", {
+        type: "manual",
+        message: resClient?.error?.data?.message,
+      })
+    }
+  }, [resClient?.isSuccess,resClient?.isError]);
   
 
    return (

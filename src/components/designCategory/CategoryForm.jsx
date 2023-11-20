@@ -21,6 +21,7 @@ function CategoryForm() {
     handleSubmit,
     formState: { errors },
     reset,
+    setError
   } = useForm();
 
 
@@ -46,7 +47,13 @@ function CategoryForm() {
       reset()
       navigate("/category-list");
     }
-  }, [resCategory?.isSuccess]);
+    if (resCategory?.isError) {
+      setError("name", {
+        type: "manual",
+        message: resCategory?.error?.data?.message,
+      })
+    }
+  }, [resCategory?.isSuccess,resCategory?.isError]);
   
 
    return (
