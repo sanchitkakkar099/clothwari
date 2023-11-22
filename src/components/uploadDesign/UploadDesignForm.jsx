@@ -256,6 +256,8 @@ function AddDesign() {
     }
   };
 
+ 
+
   return (
     <div className="page-content">
       <div className="container-fluid">
@@ -652,12 +654,12 @@ function AddDesign() {
                                   >
                                     Upload MainFile
                                   </Label>
-                                  {fld?.variation_image?.filepath ?
+                                  {watch(`variations.${finx}.variation_image`) ?
                                   <div className="img_opc">
                                 <div className="row">
                                     <div className="col-sm-2">
                                       <div className="past_img">
-                                        <img src={fld?.variation_image?.filepath} alt="" />
+                                        <img src={watch(`variations.${finx}.variation_image`)?.filepath} alt="" />
                                         {!locationState?.isEdit && (
                                           <span onClick={(e) => setValue(`variations.${finx}.variation_image`,'')}>
                                             x
@@ -696,12 +698,12 @@ function AddDesign() {
                                   <Label className="form-label" for={`variations.${finx}.variation_thumbnail`}>
                                     Upload Thumbnail
                                   </Label>
-                                  {fld?.variation_thumbnail?.filepath ?
+                                  {watch(`variations.${finx}.variation_thumbnail`) ?
                                   <div className="img_opc">
                                 <div className="row">
                                     <div className="col-sm-2">
                                       <div className="past_img">
-                                        <img src={fld?.variation_thumbnail?.filepath} alt="" />
+                                        <img src={watch(`variations.${finx}.variation_thumbnail`)?.filepath} alt="" />
                                         {!locationState?.isEdit && (
                                           <span onClick={(e) => setValue(`variations.${finx}.variation_thumbnail`,'')}>
                                             x
