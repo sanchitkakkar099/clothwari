@@ -18,8 +18,9 @@ function ProductView() {
 
   const handleChangeVariation = (e,variation) => {
     e.preventDefault()
-    if(variation?.thumbnail?.filepath){
-      setVariationImg(variation?.thumbnail?.filepath)
+    if(variation?.label && (productView?.variations && Array.isArray(productView?.variations) && productView?.variations?.length > 0)){
+      const variationObj = productView?.variations?.find(el => el?.color === variation?.label)
+      setVariationImg(variationObj?.variation_thumbnail?.filepath)
     }
     console.log('variation',variation);
   }

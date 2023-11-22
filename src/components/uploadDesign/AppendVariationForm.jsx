@@ -7,7 +7,7 @@ import { useColorVariationByIdQuery, useFileUploadMutation, useSubmitColorVariat
 import { toast } from "react-hot-toast";
 import { alphaNumericPattern } from "../common/InputValidation";
 
-function ColorVariationForm() {
+function AppendVariationForm() {
   const navigate = useNavigate()
   const location = useLocation();
   const { state: locationState } = location;
@@ -48,15 +48,7 @@ function ColorVariationForm() {
   };
 
   
-  useEffect(() => {
-    if (resColorVariation?.isSuccess) {
-      toast.success(resColorVariation?.data?.message, {
-        position: "top-center",
-      });
-      reset()
-      navigate("/color-variation-list");
-    }
-  }, [resColorVariation?.isSuccess]);
+ 
 
   const handleFile  = (e,name) => {
     console.log('eeeee',name);
@@ -120,48 +112,7 @@ function ColorVariationForm() {
   
 
    return (
-    <div className="page-content">
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-12">
-            <div className="page-title-box d-flex align-items-center justify-content-between">
-              <h4 className="mb-0">Create Color Variation</h4>
-
-              <div className="page-title-right">
-                <ol className="breadcrumb m-0">
-                  <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Color Variation</a>
-                  </li>
-                  <li className="breadcrumb-item active">Create Color Variation</li>
-                </ol>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-lg-12">
-            <div id="addproduct-accordion" className="custom-accordion">
-              <div className="card">
-                <a
-                  href="#addproduct-productinfo-collapse"
-                  className="text-dark"
-                  data-bs-toggle="collapse"
-                  aria-expanded="true"
-                  aria-controls="addproduct-productinfo-collapse"
-                >
-                  <div className="p-4">
-                    <div className="d-flex align-items-center">
-                      <div className="flex-grow-1 overflow-hidden">
-                        <h5 className="font-size-16 mb-1">Color Variation Info</h5>
-                        <p className="text-muted text-truncate mb-0">
-                          Fill all information below
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-
+  
                 <div
                   id="addproduct-productinfo-collapse"
                   className="collapse show"
@@ -381,13 +332,8 @@ function ColorVariationForm() {
                     </Form>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+             
   );
 }
 
-export default ColorVariationForm;
+export default AppendVariationForm;

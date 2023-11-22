@@ -43,11 +43,12 @@ function UploadDesignListV1() {
     });
   };
 
-  const handleChangeVariation = (e,variation,dId) => {
+  const handleChangeVariation = (e,variation,designObj) => {
     e.preventDefault()
-    if(variation?.thumbnail?.filepath){
-      setVariationImg(variation?.thumbnail?.filepath)
-      setDesignId(dId)
+    if(variation?.label && (designObj?.variations && Array.isArray(designObj?.variations) && designObj?.variations?.length > 0)){
+      const variationObj = designObj?.variations?.find(el => el?.color === variation?.label)
+      setVariationImg(variationObj?.variation_thumbnail?.filepath)
+      setDesignId(designObj?._id)
     }
     console.log('variation',variation);
   }
@@ -190,7 +191,7 @@ function UploadDesignListV1() {
                                                         {el?.color?.map(
                                                           (cl, cinx) => {
                                                             return (
-                                                              <li class="list-inline-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl,el?._id)}>
+                                                              <li class="list-inline-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl,el)}>
                                                                 <i class="mdi mdi-circle" style={{color:cl?.value}}></i>
                                                               </li>
                                                             );

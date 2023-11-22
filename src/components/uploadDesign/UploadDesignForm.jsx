@@ -1,20 +1,33 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { Controller,useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { useCategoryDropdownListQuery, useColorVariationDropdownListQuery, useDesignUploadByIdQuery, useFileUploadMutation, useMultipleFileUploadMutation, useSubmitDesignUploadMutation, useTagDropdownListQuery } from "../../service";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import {
+  useCategoryDropdownListQuery,
+  useColorVariationDropdownListQuery,
+  useDesignUploadByIdQuery,
+  useFileUploadMutation,
+  useMultipleFileUploadMutation,
+  useSubmitDesignUploadMutation,
+  useTagDropdownListQuery,
+} from "../../service";
 import toast from "react-hot-toast";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { alphaNumericPattern } from "../common/InputValidation";
 
 function AddDesign() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { state: locationState } = location;
-  const userInfo = useSelector((state) => state?.authState.userInfo)
+  const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqDesignUpload, resDesignUpload] = useSubmitDesignUploadMutation();
   const resDesignById = useDesignUploadByIdQuery(locationState?.designID, {
     skip: !locationState?.designID,
@@ -24,66 +37,84 @@ function AddDesign() {
 
   const resTagListDropdown = useTagDropdownListQuery();
 
-  console.log('resCategoryListDropdown',resCategoryListDropdown);
+  console.log("resCategoryListDropdown", resCategoryListDropdown);
 
   const [reqFile] = useFileUploadMutation();
-  const [mainFile, setMainFile] = useState(null)
-  const [thumbnailFile, setThumbnailFile] = useState(null)
-  const [categoryDropdown, setCategoryDropdown] = useState([])
-  const [colorDropdown, setColorDropdown] = useState([])
+  const [mainFile, setMainFile] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [categoryDropdown, setCategoryDropdown] = useState([]);
+  const [colorDropdown, setColorDropdown] = useState([]);
 
-  const [tagDropdown, setTagDropdown] = useState([])
+  const [tagDropdown, setTagDropdown] = useState([]);
 
-  console.log('mainFile',mainFile);
+  console.log("mainFile", mainFile);
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
     setValue,
-    setError
+    setError,
+    watch,
   } = useForm();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variations",
+  });
+
+  console.log("fields", fields);
 
   useEffect(() => {
     if (resDesignById?.isSuccess && resDesignById?.data?.data) {
-      console.log('resDesignById?.data?.data',resDesignById?.data?.data);
+      console.log("resDesignById?.data?.data", resDesignById?.data?.data);
       reset({
         ...resDesignById.data.data,
-        image:resDesignById?.data?.data?.image  ? resDesignById?.data?.data?.image : null,
-        thumbnail:resDesignById?.data?.data?.thumbnail ? resDesignById?.data?.data?.thumbnail : null
+        image: resDesignById?.data?.data?.image
+          ? resDesignById?.data?.data?.image
+          : null,
+        thumbnail: resDesignById?.data?.data?.thumbnail
+          ? resDesignById?.data?.data?.thumbnail
+          : null,
+        variations:resDesignById?.data?.data?.variations
+        ? resDesignById?.data?.data?.variations
+        : null,
       });
-      if(resDesignById?.data?.data?.image){
-        setMainFile(resDesignById?.data?.data?.image)
+      if (resDesignById?.data?.data?.image) {
+        setMainFile(resDesignById?.data?.data?.image);
       }
-      if(resDesignById?.data?.data?.thumbnail){
-        setThumbnailFile(resDesignById?.data?.data?.thumbnail)
+      if (resDesignById?.data?.data?.thumbnail) {
+        setThumbnailFile(resDesignById?.data?.data?.thumbnail);
       }
     }
   }, [resDesignById]);
 
   useEffect(() => {
-    if(resCategoryListDropdown?.isSuccess && resCategoryListDropdown?.data?.data){
-      setCategoryDropdown(resCategoryListDropdown?.data?.data)
+    if (
+      resCategoryListDropdown?.isSuccess &&
+      resCategoryListDropdown?.data?.data
+    ) {
+      setCategoryDropdown(resCategoryListDropdown?.data?.data);
     }
-  },[resCategoryListDropdown])
+  }, [resCategoryListDropdown]);
 
   useEffect(() => {
-    if(resColorListDropdown?.isSuccess && resColorListDropdown?.data?.data){
-      setColorDropdown(resColorListDropdown?.data?.data)
+    if (resColorListDropdown?.isSuccess && resColorListDropdown?.data?.data) {
+      setColorDropdown(resColorListDropdown?.data?.data);
     }
-  },[resColorListDropdown])
+  }, [resColorListDropdown]);
 
   useEffect(() => {
-    if(resTagListDropdown?.isSuccess && resTagListDropdown?.data?.data){
-      setTagDropdown(resTagListDropdown?.data?.data)
+    if (resTagListDropdown?.isSuccess && resTagListDropdown?.data?.data) {
+      setTagDropdown(resTagListDropdown?.data?.data);
     }
-  },[resTagListDropdown])
-  
- const handleFile  = (e,name) => {
-  console.log('eeeee',name);
-  if(name === 'image' && e.target.files){
-    const formData = new FormData();
-    formData.append("file", e.target.files[0]);
+  }, [resTagListDropdown]);
+
+  const handleFile = (e, name) => {
+    console.log("eeeee", name);
+    if (name === "image" && e.target.files) {
+      const formData = new FormData();
+      formData.append("file", e.target.files[0]);
       const reqData = {
         file: formData,
         type: 1,
@@ -93,45 +124,44 @@ function AddDesign() {
           if (res?.data?.data) {
             setValue(name, res?.data?.data);
             setError(name, "");
-            setMainFile(res?.data?.data)
+            setMainFile(res?.data?.data);
           }
         })
         .catch((err) => {
           console.log("err", err);
         });
-  }
-  if(name === 'thumbnail' && e.target.files){
-    const formData = new FormData();
-    formData.append("file", e.target.files[0]);
+    }
+    if (name === "thumbnail" && e.target.files) {
+      const formData = new FormData();
+      formData.append("file", e.target.files[0]);
       const reqData = {
         file: formData,
         type: 1,
-        watermark:true
+        watermark: true,
       };
       reqFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
             setValue(name, res?.data?.data);
             setError(name, "");
-            setThumbnailFile(res?.data?.data)
+            setThumbnailFile(res?.data?.data);
           }
         })
         .catch((err) => {
           console.log("err", err);
         });
-  }
-  
- } 
-  
- const removeFile = (e) => {
-  e.preventDefault()
-  setMainFile(null)
- }
+    }
+  };
 
- const removeThumbnailFile = (e) => {
-  e.preventDefault()
-  setThumbnailFile(null)
- }
+  const removeFile = (e) => {
+    e.preventDefault();
+    setMainFile(null);
+  };
+
+  const removeThumbnailFile = (e) => {
+    e.preventDefault();
+    setThumbnailFile(null);
+  };
 
   const onNext = (state) => {
     console.log("state", state);
@@ -139,8 +169,9 @@ function AddDesign() {
       ...state,
       category: state?.category?.value,
       tag: state?.tag,
-      image: mainFile ?  mainFile?._id : null,
-      thumbnail: thumbnailFile ?  thumbnailFile?._id  : null,
+      image: mainFile ? mainFile?._id : null,
+      thumbnail: thumbnailFile ? thumbnailFile?._id : null,
+      variations:(state?.variations && Array.isArray(state?.variations) && state?.variations?.length > 0) ? state?.variations?.map(el => ({...el,variation_image:el?.variation_image?._id,variation_thumbnail:el?.variation_thumbnail?._id})) : null
     });
   };
 
@@ -149,18 +180,83 @@ function AddDesign() {
       toast.success(resDesignUpload?.data?.message, {
         position: "top-center",
       });
-      reset()
+      reset();
       navigate("/design-list-v2");
     }
     if (resDesignUpload?.isError) {
       setError("name", {
         type: "manual",
-        message: resDesignUpload?.error?.data?.message === "Already uploaded" ? 'Design Name Already Exist' : '',
-      })
+        message:
+          resDesignUpload?.error?.data?.message === "Already uploaded"
+            ? "Design Name Already Exist"
+            : "",
+      });
     }
-  }, [resDesignUpload?.isSuccess,resDesignUpload?.isError]);
+  }, [resDesignUpload?.isSuccess, resDesignUpload?.isError]);
 
-   return (
+  const handleVariationFile = (e, name,tag) => {
+    e.preventDefault()
+    if (tag === "image" && e.target.files) {
+      const formData = new FormData();
+      formData.append("file", e.target.files[0]);
+      const reqData = {
+        file: formData,
+        type: 1,
+      };
+      reqFile(reqData)
+        .then((res) => {
+          if (res?.data?.data) {
+            setValue(name, res?.data?.data);
+            setError(name, "");
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    }
+    if (tag === "thumbnail" && e.target.files) {
+      const formData = new FormData();
+      formData.append("file", e.target.files[0]);
+      const reqData = {
+        file: formData,
+        type: 1,
+        watermark: true,
+      };
+      reqFile(reqData)
+        .then((res) => {
+          if (res?.data?.data) {
+            setValue(name, res?.data?.data);
+            setError(name, "");
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    }
+  };
+
+
+  const appendVariation = (element, context) => {
+    console.log("context", context);
+    if (context?.action === "select-option") {
+      append({
+        color: context?.option?.label,
+        variation_name: "",
+        variation_designNo: "",
+        variation_image: null,
+        variation_thumbnail: null,
+      });
+    }
+    if (context?.action === "remove-value") {
+      const fIndex = fields.findIndex(
+        (fld) => fld?.color === context?.removedValue?.label
+      );
+      remove(fIndex);
+      console.log("fIndex", fields, fIndex);
+    }
+  };
+
+  return (
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -210,32 +306,33 @@ function AddDesign() {
                 >
                   <div className="p-4 border-top">
                     <Form onSubmit={handleSubmit(onNext)}>
-                      
                       <div className="row">
-                      <div className="col-md-6">
-                      <div className="mb-3">
-                        <Label className="form-label" for="name">
-                          Design Name
-                        </Label>
-                        <Controller
-                          id="name"
-                          name="name"
-                          control={control}
-                          rules={{ required: "Name is required" }}
-                          render={({ field }) => (
-                            <Input
-                              placeholder="Entare Name"
-                              className="form-control"
-                              {...field}
-                              type="text"
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label className="form-label" for="name">
+                              Design Name
+                            </Label>
+                            <Controller
+                              id="name"
+                              name="name"
+                              control={control}
+                              rules={{ required: "Name is required" }}
+                              render={({ field }) => (
+                                <Input
+                                  placeholder="Entare Name"
+                                  className="form-control"
+                                  {...field}
+                                  type="text"
+                                />
+                              )}
                             />
-                          )}
-                        />
-                        {errors.name && (
-                          <FormFeedback>{errors?.name?.message}</FormFeedback>
-                        )}
-                      </div>
-                      </div>
+                            {errors.name && (
+                              <FormFeedback>
+                                {errors?.name?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
 
                         <div className="col-md-6">
                           <div className="mb-3">
@@ -246,9 +343,9 @@ function AddDesign() {
                               id="designNo"
                               name="designNo"
                               control={control}
-                              rules={{ 
-                                  required: "Design Number is required",
-                                  // validate:alphaNumericPattern
+                              rules={{
+                                required: "Design Number is required",
+                                // validate:alphaNumericPattern
                               }}
                               render={({ field }) => (
                                 <Input
@@ -281,9 +378,7 @@ function AddDesign() {
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable
-                                  options={
-                                    categoryDropdown|| []
-                                  }
+                                  options={categoryDropdown || []}
                                   className="react-select"
                                   classNamePrefix="select"
                                   onChange={onChange}
@@ -310,15 +405,15 @@ function AddDesign() {
                               rules={{ required: "Tag is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Typeahead
-                                    allowNew
-                                    id="custom-selections-example"
-                                    multiple
-                                    newSelectionPrefix="Add Tag: "
-                                    options={[]}
-                                    placeholder="Type anything..."
-                                    onChange={onChange}
-                                    selected={value}
-                                  />
+                                  allowNew
+                                  id="custom-selections-example"
+                                  multiple
+                                  newSelectionPrefix="Add Tag: "
+                                  options={[]}
+                                  placeholder="Type anything..."
+                                  onChange={onChange}
+                                  selected={value}
+                                />
                               )}
                             />
                             {errors.tag && (
@@ -328,41 +423,6 @@ function AddDesign() {
                             )}
                           </div>
                         </div>
-                      </div>
-
-                      <div className="row">
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <Label for="color" className="form-label">
-                              Variation
-                            </Label>
-                            <Controller
-                              id="color"
-                              name="color"
-                              control={control}
-                              rules={{ required: "Variation is required" }}
-                              render={({ field: { onChange, value } }) => (
-                                <Select
-                                  isClearable
-                                  isMulti
-                                  options={
-                                    colorDropdown|| []
-                                  }
-                                  className="react-select"
-                                  classNamePrefix="select"
-                                  onChange={onChange}
-                                  value={value ? value : null}
-                                />
-                              )}
-                            />
-                            {errors.color && (
-                              <FormFeedback>
-                                {errors?.color?.message}
-                              </FormFeedback>
-                            )}
-                          </div>
-                        </div>
-                        
                       </div>
 
                       <div className="mb-0">
@@ -376,7 +436,6 @@ function AddDesign() {
                                 id="image"
                                 name="image"
                                 control={control}
-                                // rules={{ required: "Design File is required" }}
                                 render={({ field: { onChange, value } }) => (
                                   <Input
                                     type="file"
@@ -385,7 +444,10 @@ function AddDesign() {
                                       onChange(e.target.files);
                                       handleFile(e, "image");
                                     }}
-                                    disabled={locationState?.isEdit && userInfo?.onlyUpload}
+                                    disabled={
+                                      locationState?.isEdit &&
+                                      userInfo?.onlyUpload
+                                    }
                                   />
                                 )}
                               />
@@ -398,89 +460,20 @@ function AddDesign() {
                               <h4>Click to upload main file.</h4>
                             </div>
                           </form>
-                          {/* {errors.image && (
-                            <FormFeedback>
-                              {errors?.image?.message}
-                            </FormFeedback>
-                          )} */}
                           <div className="img_opc">
                             <div className="row">
-                            {mainFile &&
+                              {mainFile && (
                                 <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src={mainFile?.filepath}
-                                    alt=""
-                                  />
-                                  {!locationState?.isEdit && 
-                                  <span onClick={(e) => removeFile(e)}>x</span>
-                                  }
+                                  <div className="past_img">
+                                    <img src={mainFile?.filepath} alt="" />
+                                    {!locationState?.isEdit && (
+                                      <span onClick={(e) => removeFile(e)}>
+                                        x
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                              }
-                              {/* <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPiOzT5S40iGQK4a5dlk5GoDetf2vVByrepiK4LLt8HGp_Yp0TPZfSDcjnvsGTvsUkjWI&usqp=CAU"
-                                    alt=""
-                                  />
-                                  <span>x</span>
-                                </div>
-                              </div>
-                              <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPiOzT5S40iGQK4a5dlk5GoDetf2vVByrepiK4LLt8HGp_Yp0TPZfSDcjnvsGTvsUkjWI&usqp=CAU"
-                                    alt=""
-                                  />
-                                  <span>x</span>
-                                </div>
-                              </div>
-                              <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPiOzT5S40iGQK4a5dlk5GoDetf2vVByrepiK4LLt8HGp_Yp0TPZfSDcjnvsGTvsUkjWI&usqp=CAU"
-                                    alt=""
-                                  />
-                                  <span>x</span>
-                                </div>
-                              </div>
-                              <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPiOzT5S40iGQK4a5dlk5GoDetf2vVByrepiK4LLt8HGp_Yp0TPZfSDcjnvsGTvsUkjWI&usqp=CAU"
-                                    alt=""
-                                  />
-                                  <span>x</span>
-                                </div>
-                              </div>
-                              <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPiOzT5S40iGQK4a5dlk5GoDetf2vVByrepiK4LLt8HGp_Yp0TPZfSDcjnvsGTvsUkjWI&usqp=CAU"
-                                    alt=""
-                                  />
-                                  <span>x</span>
-                                </div>
-                              </div>
-                              <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPiOzT5S40iGQK4a5dlk5GoDetf2vVByrepiK4LLt8HGp_Yp0TPZfSDcjnvsGTvsUkjWI&usqp=CAU"
-                                    alt=""
-                                  />
-                                  <span>x</span>
-                                </div>
-                              </div>
-                              <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPiOzT5S40iGQK4a5dlk5GoDetf2vVByrepiK4LLt8HGp_Yp0TPZfSDcjnvsGTvsUkjWI&usqp=CAU"
-                                    alt=""
-                                  />
-                                  <span>x</span>
-                                </div>
-                              </div> */}
+                              )}
                             </div>
                           </div>
                         </div>
@@ -525,27 +518,234 @@ function AddDesign() {
                           )}
                           <div className="img_opc">
                             <div className="row">
-                            {thumbnailFile &&
+                              {thumbnailFile && (
                                 <div className="col-sm-2">
-                                <div className="past_img">
-                                  <img
-                                    src={thumbnailFile?.filepath}
-                                    alt=""
-                                  />
-                                  {!locationState?.isEdit &&
-                                  <span onClick={(e) => removeThumbnailFile(e)}>x</span>
-                                  }
+                                  <div className="past_img">
+                                    <img src={thumbnailFile?.filepath} alt="" />
+                                    {!locationState?.isEdit && (
+                                      <span
+                                        onClick={(e) => removeThumbnailFile(e)}
+                                      >
+                                        x
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
-                              </div>
-                              }
+                              )}
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="row">
+                        <div className="col-md-12">
+                          <div className="mb-3">
+                            <Label for="color" className="form-label">
+                              Variation
+                            </Label>
+                            <Controller
+                              id="color"
+                              name="color"
+                              control={control}
+                              rules={{ required: "Variation is required" }}
+                              render={({ field: { onChange, value } }) => (
+                                <Select
+                                  isClearable
+                                  isMulti
+                                  options={colorDropdown || []}
+                                  className="react-select"
+                                  classNamePrefix="select"
+                                  onChange={(v, c) => {
+                                    onChange(v);
+                                    appendVariation(v, c);
+                                  }}
+                                  value={value ? value : null}
+                                />
+                              )}
+                            />
+                            {errors.color && (
+                              <FormFeedback>
+                                {errors?.color?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr class="solid"></hr>
+
+                      {fields?.map((fld, finx) => {
+                        return (
+                          <div key={fld?.color}>
+                            <div className="row">
+                              <h5 className="mb-2">{fld?.color}</h5>
+                            </div>
+                            <div className="row">
+                              <div className="col-md-6">
+                                <div className="mb-3">
+                                  <Label
+                                    className="form-label"
+                                    for={`variations.${finx}.variation_name`}
+                                  >
+                                    Name
+                                  </Label>
+                                  <Controller
+                                    id={`variations.${finx}.variation_name`}
+                                    name={`variations.${finx}.variation_name`}
+                                    control={control}
+                                    rules={{ required: "Name is required" }}
+                                    render={({ field }) => (
+                                      <Input
+                                        placeholder="Entare Name"
+                                        className="form-control"
+                                        {...field}
+                                        type="text"
+                                      />
+                                    )}
+                                  />
+                                  {errors.variations && (
+                                    <FormFeedback>
+                                      {errors?.variations[finx]?.variation_name?.message}
+                                    </FormFeedback>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="col-md-6">
+                                <div className="mb-3">
+                                  <Label
+                                    className="form-label"
+                                    for={`variations.${finx}.variation_designNo`}
+                                  >
+                                    Design Number
+                                  </Label>
+                                  <Controller
+                                    id={`variations.${finx}.variation_designNo`}
+                                    name={`variations.${finx}.variation_designNo`}
+                                    control={control}
+                                    rules={{
+                                      required: "Design Number is required",
+                                    }}
+                                    render={({ field }) => (
+                                      <Input
+                                        placeholder="Entare Design Number"
+                                        className="form-control"
+                                        {...field}
+                                      />
+                                    )}
+                                  />
+                                  {errors.variations && (
+                                    <FormFeedback>
+                                      {errors?.variations[finx]?.variation_designNo?.message}
+                                    </FormFeedback>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="row">
+                              <div className="col-md-6">
+                                <div className="mb-3">
+                                  <Label
+                                    className="form-label"
+                                    for={`variations.${finx}.variation_image`}
+                                  >
+                                    Upload MainFile
+                                  </Label>
+                                  {fld?.variation_image?.filepath ?
+                                  <div className="img_opc">
+                                <div className="row">
+                                    <div className="col-sm-2">
+                                      <div className="past_img">
+                                        <img src={fld?.variation_image?.filepath} alt="" />
+                                        {!locationState?.isEdit && (
+                                          <span onClick={(e) => setValue(`variations.${finx}.variation_image`,'')}>
+                                            x
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                </div>
+                              </div>
+                              :
+                                  <Controller
+                                    id={`variations.${finx}.variation_image`}
+                                    name={`variations.${finx}.variation_image`}
+                                    control={control}
+                                    render={({
+                                      field: { onChange, value },
+                                    }) => (
+                                      <Input
+                                        type="file"
+                                        accept="image/png, image/gif, image/jpeg"
+                                        onChange={(e) => {
+                                          onChange(e.target.files);
+                                          handleVariationFile(e, `variations.${finx}.variation_image`,"image");
+
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                  }
+                                </div>
+                                
+                              </div>
+                              <div className="col-md-6">
+                                <div className="mb-3">
+                                  <Label className="form-label" for={`variations.${finx}.variation_thumbnail`}>
+                                    Upload Thumbnail
+                                  </Label>
+                                  {fld?.variation_thumbnail?.filepath ?
+                                  <div className="img_opc">
+                                <div className="row">
+                                    <div className="col-sm-2">
+                                      <div className="past_img">
+                                        <img src={fld?.variation_thumbnail?.filepath} alt="" />
+                                        {!locationState?.isEdit && (
+                                          <span onClick={(e) => setValue(`variations.${finx}.variation_thumbnail`,'')}>
+                                            x
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                </div>
+                              </div>
+                              :
+                                  <Controller
+                                    id={`variations.${finx}.variation_thumbnail`}
+                                    name={`variations.${finx}.variation_thumbnail`}
+                                    control={control}
+                                    render={({
+                                      field: { onChange, value },
+                                    }) => (
+                                      <Input
+                                        type="file"
+                                        accept="image/png, image/gif, image/jpeg"
+                                        onChange={(e) => {
+                                          onChange(e.target.files);
+                                          handleVariationFile(e, `variations.${finx}.variation_thumbnail`,"thumbnail");
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                  }
+                                </div>
+                              </div>
+                            </div>
+
+                            <hr class="solid"></hr>
+                          </div>
+                        );
+                      })}
+
+                      <div className="row">
                         <div className="col text-end">
-                          <Link to="/design-list-v2" className="btn btn-danger m-1">
+                          <Link
+                            to="/design-list-v2"
+                            className="btn btn-danger m-1"
+                          >
                             {" "}
                             <i className="bx bx-x mr-1"></i> Cancel{" "}
                           </Link>
