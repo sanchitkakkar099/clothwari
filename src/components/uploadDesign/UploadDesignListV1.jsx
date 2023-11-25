@@ -161,13 +161,14 @@ function UploadDesignListV1() {
                                             >
                                               <div class="product-box">
                                                 <div class="product-img pt-4 px-4">
-                                                  <img
+                                                <img src="https://www.bootdey.com/image/250x200/FFB6C1/000000" class="image" alt="image post"/>
+                                                  {/* <img
                                                     src={
                                                     (variationImg && el?._id === designID) ? variationImg :  el?.thumbnail?.filepath
                                                     }
                                                     alt=""
                                                     class="img-fluid mx-auto d-block"
-                                                  />
+                                                  /> */}
                                                 </div>
 
                                                 <div class="product-content p-4">
