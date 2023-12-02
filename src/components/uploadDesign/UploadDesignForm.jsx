@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { FormFeedback, Label, Form, Input } from "reactstrap";
+import { FormFeedback, Label, Form, Input, Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Link,
@@ -23,6 +23,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import { alphaNumericPattern } from "../common/InputValidation";
 import PDFICON from '../../assets/images/pdf_icon.svg'
 import IMGICON from '../../assets/images/image_icon.svg'
+import { bulkMainFilesDownload,bulkThumbnailFilesDownload } from "../../utils/bulkFileDownload";
 
 
 function AddDesign() {
@@ -454,6 +455,7 @@ function AddDesign() {
                         <Label className="form-label" for="image">
                           Upload MainFile
                         </Label>
+                        
                         <div className="border-top">
                               <Controller
                                 id="image"
@@ -476,7 +478,17 @@ function AddDesign() {
                                 )}
                               />
                             
-                          
+                        {(userInfo?.role === 'Super Admin') &&
+                        <Button 
+                            color="primary" 
+                            className="download-button" 
+                            size="sm" 
+                            type="button"
+                            onClick={(e) => bulkMainFilesDownload(e,mainFile)}
+                            >
+                          Download MainFile
+                        </Button>
+                        }
                           <div className="uploaded_img">
                           {mainFile && Array.isArray(mainFile) && mainFile?.length > 0 &&
                           mainFile?.map((el,minx) => {
@@ -526,6 +538,18 @@ function AddDesign() {
                               {errors?.thumbnail?.message}
                             </FormFeedback>
                           )}
+
+                          {(userInfo?.role === 'Super Admin') &&
+                        <Button
+                          color="primary" 
+                          className="download-button" 
+                          size="sm" 
+                          type="button"
+                          onClick={(e) => bulkThumbnailFilesDownload(e,thumbnailFile)}
+                          >
+                          Download Thumbnail
+                        </Button>
+                        }
                           
                           <div className="uploaded_img">
                           {thumbnailFile && Array.isArray(thumbnailFile) && thumbnailFile?.length > 0 &&
