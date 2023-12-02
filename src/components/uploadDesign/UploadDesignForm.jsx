@@ -22,8 +22,9 @@ import toast from "react-hot-toast";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { alphaNumericPattern } from "../common/InputValidation";
 import PDFICON from '../../assets/images/pdf_icon.svg'
-import IMGICON from '../../assets/images/image_icon.svg'
+import IMGICON from '../../assets/images/picture-circle.png'
 import { bulkMainFilesDownload,bulkThumbnailFilesDownload } from "../../utils/bulkFileDownload";
+import { ArrowDownCircle, Download } from "react-feather";
 
 
 function AddDesign() {
@@ -214,7 +215,7 @@ function AddDesign() {
     }
   }, [resDesignUpload?.isSuccess, resDesignUpload?.isError]);
 
-  const handleVariationFile = (e, name,tag) => {
+  const handleVariationFile = (e, name,tag,inx) => {
     e.preventDefault()
     if (tag === "image" && e.target.files) {
       const formData = new FormData();
@@ -228,6 +229,13 @@ function AddDesign() {
       reqFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
+            // const updatedFields = [...fields]; // Create a copy of fields array
+            // updatedFields[inx] = {
+            //   ...updatedFields[inx],
+            //   variation_image: !updatedFields[inx]?.variation_image ? res?.data?.data :  [...updatedFields[inx]?.variation_image, ...res?.data?.data], // Add a new property to the field object
+            // };
+            // console.log('updatedFields',updatedFields);
+            // setValue(`variations`, updatedFields);
             setValue(name, res?.data?.data);
             setError(name, "");
           }
@@ -249,6 +257,13 @@ function AddDesign() {
       reqFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
+            // const updatedFields = [...fields]; // Create a copy of fields array
+            // updatedFields[inx] = {
+            //   ...updatedFields[inx],
+            //   variation_thumbnail: !updatedFields[inx]?.variation_thumbnail ? res?.data?.data : [...updatedFields[inx]?.variation_thumbnail, ...res?.data?.data], // Add a new property to the field object
+            // };
+            // console.log('updatedFields',updatedFields);
+            // setValue(`variations`, updatedFields);
             setValue(name, res?.data?.data);
             setError(name, "");
           }
@@ -478,37 +493,26 @@ function AddDesign() {
                                 )}
                               />
                             
-                        {(userInfo?.role === 'Super Admin') &&
-                        <Button 
-                            color="primary" 
-                            className="download-button" 
-                            size="sm" 
-                            type="button"
-                            onClick={(e) => bulkMainFilesDownload(e,mainFile)}
-                            >
-                          Download MainFile
-                        </Button>
-                        }
-                          <div className="uploaded_img">
-                          {mainFile && Array.isArray(mainFile) && mainFile?.length > 0 &&
-                          mainFile?.map((el,minx) => {
+                        
+                        {mainFile && Array.isArray(mainFile) && mainFile?.length > 0 &&
+                          mainFile?.map((el,tinx) => {
                             return(
-                              <div key={minx}>
-                          <img
-                          key={minx}
-                          src={IMGICON}
-                          alt="File type icon"
-                          className="image__icon"
-                          height="80"
-                          width="50"
-
-                        />
-                        {/* <h6>{el?.originalname}</h6> */}
-                        </div>
-                        
-                        )})}
-                        
-                        </div>
+                          <div className="image-gallery" key={tinx}>
+                            <div className="image-item">
+                              <Link to="" download="image2.jpg" className="download-button">
+                                <img src={IMGICON} alt="Image 2"/>
+                                {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Uploaded Design Download"))
+                                && 
+                                  <ArrowDownCircle 
+                                    className="download-icon"  
+                                    size={'24px'} 
+                                    onClick={(e) => bulkMainFilesDownload(e,el)}                                     
+                                    />
+                                }
+                              </Link>
+                            </div>
+                          </div>
+                          )})}
                       </div>
                       </div>
 
@@ -539,41 +543,76 @@ function AddDesign() {
                             </FormFeedback>
                           )}
 
-                          {(userInfo?.role === 'Super Admin') &&
-                        <Button
-                          color="primary" 
-                          className="download-button" 
-                          size="sm" 
-                          type="button"
-                          onClick={(e) => bulkThumbnailFilesDownload(e,thumbnailFile)}
-                          >
-                          Download Thumbnail
-                        </Button>
-                        }
-                          
-                          <div className="uploaded_img">
                           {thumbnailFile && Array.isArray(thumbnailFile) && thumbnailFile?.length > 0 &&
                           thumbnailFile?.map((el,tinx) => {
                             return(
-                              <div key={tinx}>
-                              <img
-                                key={tinx}
-                                src={PDFICON}
-                                alt="File type icon"
-                                className=""
-                                height="50"
-                                width="50"
-                            />
-                            {/* <h6>{el?.originalname}</h6> */}
+                          <div className="image-gallery" key={tinx}>
+                            <div className="image-item">
+                              <Link to="" download="image2.jpg" className="download-button">
+                                <img src={PDFICON} alt="Image 2"/>
+                                {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Uploaded Design Download"))
+                                && 
+                                  <ArrowDownCircle 
+                                    className="download-icon"  
+                                    size={'24px'} 
+                                    onClick={(e) => bulkThumbnailFilesDownload(e,el)}                                     
+                                    />
+                                }
+                              </Link>
                             </div>
-                            )
-                          })
-                          }
-                          
-                        
-                        </div>
+                          </div>
+                          )})}
                         </div>
                       </div>
+                     
+                      <div className="mb-3">
+                        <Label className="form-label" for="primary_color_name">
+                        Primary Color Name
+                        </Label>
+                        <Controller
+                          id="primary_color_name"
+                          name="primary_color_name"
+                          control={control}
+                          rules={{ required: "Primary Color Name is required" }}
+                          render={({ field }) => (
+                            <Input
+                              placeholder="Entare Primary Color Name"
+                              className="form-control"
+                              {...field}
+                              type="text"
+                            />
+                          )}
+                        />
+                        {errors.primary_color_name && (
+                          <FormFeedback>{errors?.primary_color_name?.message}</FormFeedback>
+                        )}
+                      </div>
+                     
+                      
+                      <div className="mb-3">
+                        <Label className="form-label" for="primary_color_code">
+                        Primary Color Code
+                        </Label>
+                        <Controller
+                          id="primary_color_code"
+                          name="primary_color_code"
+                          control={control}
+                          rules={{ required: "Primary Color Code is required" }}
+                          render={({ field }) => (
+                            <Input
+                              placeholder="Entare Primary Color Code"
+                              className="form-control"
+                              {...field}
+                              type="color"
+                              style={{height:100}}
+                            />
+                          )}
+                        />
+                        {errors.primary_color_code && (
+                          <FormFeedback>{errors?.primary_color_code?.message}</FormFeedback>
+                        )}
+                      </div>
+                      
 
                       <div className="row">
                         <div className="col-md-12">
@@ -704,7 +743,7 @@ function AddDesign() {
                                         accept="image/tiff,image/tif"
                                         onChange={(e) => {
                                           onChange(e.target.files);
-                                          handleVariationFile(e, `variations.${finx}.variation_image`,"image");
+                                          handleVariationFile(e, `variations.${finx}.variation_image`,"image",finx);
 
                                         }}
                                       />
@@ -715,16 +754,21 @@ function AddDesign() {
                                   {watch(`variations.${finx}.variation_image`) && Array.isArray(watch(`variations.${finx}.variation_image`)) && watch(`variations.${finx}.variation_image`)?.length > 0 &&
                           watch(`variations.${finx}.variation_image`)?.map((el,minx) => {
                             return(
-                              <div key={minx}>
-                          <img
-                          src={IMGICON}
-                          alt="File type icon"
-                          className="image__icon"
-                          height="80"
-                          width="50"
-
-                        />
-                        </div>
+                              <div className="image-gallery" key={minx}>
+                            <div className="image-item">
+                              <Link to="" download="image2.jpg" className="download-button">
+                                <img src={IMGICON} alt="Image 2"/>
+                                {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Uploaded Design Download"))
+                                && 
+                                  <ArrowDownCircle 
+                                    className="download-icon"  
+                                    size={'24px'} 
+                                    onClick={(e) => bulkMainFilesDownload(e,el)}                                     
+                                    />
+                                }
+                              </Link>
+                            </div>
+                          </div>
                             )})}
                         </div>
                                 </div>
@@ -749,7 +793,7 @@ function AddDesign() {
                                         accept="application/pdf"
                                         onChange={(e) => {
                                           onChange(e.target.files);
-                                          handleVariationFile(e, `variations.${finx}.variation_thumbnail`,"thumbnail");
+                                          handleVariationFile(e, `variations.${finx}.variation_thumbnail`,"thumbnail",finx);
                                         }}
                                       />
                                     )}
@@ -758,16 +802,21 @@ function AddDesign() {
                                   {watch(`variations.${finx}.variation_thumbnail`) && Array.isArray(watch(`variations.${finx}.variation_thumbnail`)) && watch(`variations.${finx}.variation_thumbnail`)?.length > 0 &&
                           watch(`variations.${finx}.variation_thumbnail`)?.map((el,minx) => {
                             return(
-                              <div key={minx}>
-                          <img
-                          src={PDFICON}
-                          alt="File type icon"
-                          className=""
-                          // height="50"
-                          width="50"
-
-                        />
-                        </div>
+                              <div className="image-gallery" key={minx}>
+                            <div className="image-item">
+                              <Link to="" download="image2.jpg" className="download-button">
+                                <img src={PDFICON} alt="Image 2"/>
+                                {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Uploaded Design Download"))
+                                &&  
+                                  <ArrowDownCircle 
+                                    className="download-icon"  
+                                    size={'24px'} 
+                                    onClick={(e) => bulkThumbnailFilesDownload(e,el)}                                     
+                                    />
+                                }
+                              </Link>
+                            </div>
+                          </div>
                             )})}
                         
                         </div>

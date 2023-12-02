@@ -169,3 +169,74 @@ form.img__upload{margin-bottom: 25px;}
     float: right;
     margin-top: 10px;
 }
+
+
+
+/* Gallery layout styles */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    // justify-content: space-around;
+    padding: 10px;
+  }
+  
+  .image-item {
+    margin: 10px;
+    text-align: center;
+  }
+  
+  /* Style for the download button */
+  a.download-button {
+    display: inline-block;
+    position: relative;
+    text-decoration: none;
+  }
+  
+//   a.download-button:hover {
+//     background-color: #2980b9;
+//   }
+  
+  /* Hide the default underline on the image within the anchor */
+  a.download-button img {
+    border: none;
+    max-width: 100%;
+    height: 60px;
+  }
+  
+  /* Center the text inside the button */
+  a.download-button span {
+    display: block;
+    margin-top: 5px;
+    text-align: center;
+    color: #000;
+    cursor: pointer;
+  }
+
+  a.download-button span:hover {
+        color: #2980b9;
+      }
+
+
+      .image-container {
+        position: relative;
+        width: 50px; /* Set your desired width */
+        height: 50px; /* Set your desired height */
+        background-size: cover;
+        background-position: center;
+      }
+      
+      .download-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #000; /* Customize the icon color */
+        background-color: #fff; /* Customize the background color */
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+      }
+
+      .download-icon:hover {
+        color: rgba(0, 0, 0, 0.7); /* Customize the background color on hover */
+      }
+      

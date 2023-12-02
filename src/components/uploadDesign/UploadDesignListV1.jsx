@@ -8,11 +8,12 @@ import Six from "../../assets/images/product/six.jpg";
 import { useDesignUploadListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { DivideSquare } from "react-feather";
 
 function UploadDesignListV1() {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
@@ -161,7 +162,12 @@ function UploadDesignListV1() {
                                             >
                                               <div class="product-box">
                                                 <div class="product-img pt-4 px-4">
-                                                <img src="https://www.bootdey.com/image/250x200/FFB6C1/000000" class="image" alt="image post"/>
+                                                <img 
+                                                    src="https://www.bootdey.com/image/250x200/FFB6C1/000000" 
+                                                    class="image" 
+                                                    alt="image post"
+                                                    onClick={() => navigate(`/product-view/${el?._id}`)}
+                                                    />
                                                   {/* <img
                                                     src={
                                                     (variationImg && el?._id === designID) ? variationImg :  el?.thumbnail?.filepath
@@ -189,6 +195,11 @@ function UploadDesignListV1() {
 
                                                     <div>
                                                       <ul class="list-inline mb-0 text-muted product-color">
+                                                      {el?.primary_color_code  &&
+                                                      <li class="list-inline-item">
+                                                                <i class="mdi mdi-circle" style={{color:el?.primary_color_code}}></i>
+                                                        </li>
+                                                      }
                                                         {el?.color?.map(
                                                           (cl, cinx) => {
                                                             return (

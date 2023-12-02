@@ -49,29 +49,34 @@ function ProductView() {
         <div className="row">
           <div className="col-lg-12">
    
-            <div class="panel panel-white post panel-shadow">
+            <div className="panel panel-white post panel-shadow">
                 
-                <div class="post-image">
+                <div className="post-image">
                 {productView?.thumbnail?.filepath ? 
-                  <img src={variationImg ? variationImg : productView?.thumbnail?.filepath} class="image" alt="image post"/>
+                  <img src={variationImg ? variationImg : productView?.thumbnail?.filepath} className="image" alt="image post"/>
 :
-                    <img src="https://www.bootdey.com/image/400x200/FFB6C1/000000" class="image" alt="image post"/>
+                    <img src="https://www.bootdey.com/image/400x200/FFB6C1/000000" className="image" alt="image post"/>
                 }
                 </div>
                 <div className='product_details'>
-                <div class="post-description">
+                <div className="post-description">
                     <h4>{productView?.name}</h4>
                     <p>Category : {productView?.category?.label}</p>
                     <p>Tags : {productView?.tag && Array.isArray(productView?.tag) && productView?.tag?.length > 0 ? productView?.tag?.map(el => el?.label)?.join(',') : ''}</p>
 
                     
                 </div>
-                <div class="stats">
+                <div className="stats">
+                {productView?.primary_color_code  &&
+                        <Link to="" className="stat-item">
+                          <i className="mdi mdi-circle" style={{color:productView?.primary_color_code,fontSize:'18px'}}/>
+                        </Link>
+                }
                 {productView?.color && Array.isArray(productView?.color) && productView?.color?.length > 0 && 
                   productView?.color?.map((cl, cinx) => {
                     return(
-                      <Link to="" class="stat-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl)}>
-                        <i class="mdi mdi-circle" style={{color:cl?.value,fontSize:'18px'}}/>
+                      <Link to="" className="stat-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl)}>
+                        <i className="mdi mdi-circle" style={{color:cl?.value,fontSize:'18px'}}/>
                         </Link>
                     )
                   })}
