@@ -21,11 +21,13 @@ import {
 import toast from "react-hot-toast";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { alphaNumericPattern } from "../common/InputValidation";
-import PDFICON from '../../assets/images/pdf_icon.svg'
-import IMGICON from '../../assets/images/picture-circle.png'
-import { bulkMainFilesDownload,bulkThumbnailFilesDownload } from "../../utils/bulkFileDownload";
+import PDFICON from "../../assets/images/pdf_icon.svg";
+import IMGICON from "../../assets/images/picture-circle.png";
+import {
+  bulkMainFilesDownload,
+  bulkThumbnailFilesDownload,
+} from "../../utils/bulkFileDownload";
 import { ArrowDownCircle, Download } from "react-feather";
-
 
 function AddDesign() {
   const dispatch = useDispatch();
@@ -51,12 +53,12 @@ function AddDesign() {
   const [variationThumbnailFile, setVariationThumbnailFile] = useState([]);
   const [categoryDropdown, setCategoryDropdown] = useState([]);
   const [colorDropdown, setColorDropdown] = useState([]);
-  console.log('thumbnailFile',thumbnailFile);
+  console.log("thumbnailFile", thumbnailFile);
 
   const [tagDropdown, setTagDropdown] = useState([]);
 
   console.log("mainFile", mainFile);
-  console.log('variationMainFile',variationMainFile);
+  console.log("variationMainFile", variationMainFile);
   const {
     control,
     handleSubmit,
@@ -65,7 +67,7 @@ function AddDesign() {
     setValue,
     setError,
     watch,
-    getValues
+    getValues,
   } = useForm();
 
   const { fields, append, remove } = useFieldArray({
@@ -86,9 +88,9 @@ function AddDesign() {
         thumbnail: resDesignById?.data?.data?.thumbnail
           ? resDesignById?.data?.data?.thumbnail
           : null,
-        variations:resDesignById?.data?.data?.variations
-        ? resDesignById?.data?.data?.variations
-        : null,
+        variations: resDesignById?.data?.data?.variations
+          ? resDesignById?.data?.data?.variations
+          : [],
       });
       if (resDesignById?.data?.data?.image) {
         setMainFile(resDesignById?.data?.data?.image);
@@ -125,7 +127,7 @@ function AddDesign() {
     if (name === "image" && e.target.files) {
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
-        formData.append('file', e.target.files[i]);
+        formData.append("file", e.target.files[i]);
       }
       const reqData = {
         file: formData,
@@ -146,7 +148,7 @@ function AddDesign() {
     if (name === "thumbnail" && e.target.files) {
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
-        formData.append('file', e.target.files[i]);
+        formData.append("file", e.target.files[i]);
       }
       const reqData = {
         file: formData,
@@ -182,17 +184,51 @@ function AddDesign() {
       ...state,
       category: state?.category?.value,
       tag: state?.tag,
-      image: (mainFile && Array.isArray(mainFile) && mainFile?.length > 0) ? mainFile?.map(mf => mf?._id) : null,
-      thumbnail: (thumbnailFile && Array.isArray(thumbnailFile) && thumbnailFile?.length > 0) ? thumbnailFile?.map(tf => tf?._id) : null,
-      variations:(state?.variations && Array.isArray(state?.variations) && state?.variations?.length > 0) ? state?.variations?.map(el => ({...el,variation_image:el?.variation_image?.map(vi => vi?._id),variation_thumbnail:el?.variation_thumbnail?.map(vt => vt._id)})) : null
+      image:
+        mainFile && Array.isArray(mainFile) && mainFile?.length > 0
+          ? mainFile?.map((mf) => mf?._id)
+          : null,
+      thumbnail:
+        thumbnailFile &&
+        Array.isArray(thumbnailFile) &&
+        thumbnailFile?.length > 0
+          ? thumbnailFile?.map((tf) => tf?._id)
+          : null,
+      variations:
+        state?.variations &&
+        Array.isArray(state?.variations) &&
+        state?.variations?.length > 0
+          ? state?.variations?.map((el) => ({
+              ...el,
+              variation_image: el?.variation_image?.map((vi) => vi?._id),
+              variation_thumbnail: el?.variation_thumbnail?.map((vt) => vt._id),
+            }))
+          : [],
     });
     reqDesignUpload({
       ...state,
       category: state?.category?.value,
       tag: state?.tag,
-      image: (mainFile && Array.isArray(mainFile) && mainFile?.length > 0) ? mainFile?.map(mf => mf?._id) : null,
-      thumbnail: (thumbnailFile && Array.isArray(thumbnailFile) && thumbnailFile?.length > 0) ? thumbnailFile?.map(tf => tf?._id) : null,
-      variations:(state?.variations && Array.isArray(state?.variations) && state?.variations?.length > 0) ? state?.variations?.map(el => ({...el,variation_image:el?.variation_image?.map(vi => vi?._id),variation_thumbnail:el?.variation_thumbnail?.map(vt => vt._id)})) : null
+      image:
+        mainFile && Array.isArray(mainFile) && mainFile?.length > 0
+          ? mainFile?.map((mf) => mf?._id)
+          : null,
+      thumbnail:
+        thumbnailFile &&
+        Array.isArray(thumbnailFile) &&
+        thumbnailFile?.length > 0
+          ? thumbnailFile?.map((tf) => tf?._id)
+          : null,
+      variations:
+        state?.variations &&
+        Array.isArray(state?.variations) &&
+        state?.variations?.length > 0
+          ? state?.variations?.map((el) => ({
+              ...el,
+              variation_image: el?.variation_image?.map((vi) => vi?._id),
+              variation_thumbnail: el?.variation_thumbnail?.map((vt) => vt._id),
+            }))
+          : [],
     });
   };
 
@@ -215,12 +251,16 @@ function AddDesign() {
     }
   }, [resDesignUpload?.isSuccess, resDesignUpload?.isError]);
 
-  const handleVariationFile = (e, name,tag,inx) => {
-    e.preventDefault()
+  const handleVariationFile = (e, name, tag, inx, fld) => {
+    e.preventDefault();
+    const existingVal = getValues("variations")[inx];
+    console.log("fld", existingVal);
+    const variationCopys = getValues("variations")
+    console.log('variationCopys',variationCopys);
     if (tag === "image" && e.target.files) {
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
-        formData.append('file', e.target.files[i]);
+        formData.append("file", e.target.files[i]);
       }
       const reqData = {
         file: formData,
@@ -229,15 +269,18 @@ function AddDesign() {
       reqFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
-            // const updatedFields = [...fields]; // Create a copy of fields array
-            // updatedFields[inx] = {
-            //   ...updatedFields[inx],
-            //   variation_image: !updatedFields[inx]?.variation_image ? res?.data?.data :  [...updatedFields[inx]?.variation_image, ...res?.data?.data], // Add a new property to the field object
-            // };
-            // console.log('updatedFields',updatedFields);
-            // setValue(`variations`, updatedFields);
-            setValue(name, res?.data?.data);
-            setError(name, "");
+            const updatedFields = [...variationCopys]; // Create a copy of fields array
+            if (existingVal) {
+              updatedFields[inx] = {
+                ...existingVal,
+                variation_image: !fld?.variation_image
+                  ? res?.data?.data
+                  : [...fld?.variation_image, ...res?.data?.data], // Add a new property to the field object
+              };
+              console.log("updatedFields", updatedFields);
+              setValue(`variations`, updatedFields);
+              setError(name, "");
+            }
           }
         })
         .catch((err) => {
@@ -247,7 +290,7 @@ function AddDesign() {
     if (tag === "thumbnail" && e.target.files) {
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
-        formData.append('file', e.target.files[i]);
+        formData.append("file", e.target.files[i]);
       }
       const reqData = {
         file: formData,
@@ -257,15 +300,18 @@ function AddDesign() {
       reqFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
-            // const updatedFields = [...fields]; // Create a copy of fields array
-            // updatedFields[inx] = {
-            //   ...updatedFields[inx],
-            //   variation_thumbnail: !updatedFields[inx]?.variation_thumbnail ? res?.data?.data : [...updatedFields[inx]?.variation_thumbnail, ...res?.data?.data], // Add a new property to the field object
-            // };
-            // console.log('updatedFields',updatedFields);
-            // setValue(`variations`, updatedFields);
-            setValue(name, res?.data?.data);
-            setError(name, "");
+            const updatedFields = [...variationCopys]; // Create a copy of fields array
+            if (existingVal) {
+              updatedFields[inx] = {
+                ...existingVal,
+                variation_thumbnail: !fld?.variation_thumbnail
+                  ? res?.data?.data
+                  : [...fld?.variation_thumbnail, ...res?.data?.data], // Add a new property to the field object
+              };
+              console.log("updatedFields", updatedFields);
+              setValue(`variations`, updatedFields);
+              setError(name, "");
+            }
           }
         })
         .catch((err) => {
@@ -273,7 +319,6 @@ function AddDesign() {
         });
     }
   };
-
 
   const appendVariation = (element, context) => {
     console.log("context", context);
@@ -294,8 +339,6 @@ function AddDesign() {
       console.log("fIndex", fields, fIndex);
     }
   };
-
- 
 
   return (
     <div className="page-content">
@@ -470,50 +513,60 @@ function AddDesign() {
                         <Label className="form-label" for="image">
                           Upload MainFile
                         </Label>
-                        
+
                         <div className="border-top">
-                              <Controller
-                                id="image"
-                                name="image"
-                                control={control}
-                                render={({ field: { onChange, value } }) => (
-                                  <Input
-                                    multiple
-                                    type="file"
-                                    accept="image/tiff,.tif"
-                                    onChange={(e) => {
-                                      onChange(e.target.files);
-                                      handleFile(e, "image");
-                                    }}
-                                    disabled={
-                                      locationState?.isEdit &&
-                                      userInfo?.onlyUpload
-                                    }
-                                  />
-                                )}
-                              />
-                            
-                        
-                        {mainFile && Array.isArray(mainFile) && mainFile?.length > 0 &&
-                          mainFile?.map((el,tinx) => {
-                            return(
-                          <div className="image-gallery" key={tinx}>
-                            <div className="image-item">
-                              <Link to="" download="image2.jpg" className="download-button">
-                                <img src={IMGICON} alt="Image 2"/>
-                                {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Uploaded Design Download"))
-                                && 
-                                  <ArrowDownCircle 
-                                    className="download-icon"  
-                                    size={'24px'} 
-                                    onClick={(e) => bulkMainFilesDownload(e,el)}                                     
-                                    />
+                          <Controller
+                            id="image"
+                            name="image"
+                            control={control}
+                            render={({ field: { onChange, value } }) => (
+                              <Input
+                                multiple
+                                type="file"
+                                accept="image/tiff,.tif"
+                                onChange={(e) => {
+                                  onChange(e.target.files);
+                                  handleFile(e, "image");
+                                }}
+                                disabled={
+                                  locationState?.isEdit && userInfo?.onlyUpload
                                 }
-                              </Link>
-                            </div>
-                          </div>
-                          )})}
-                      </div>
+                              />
+                            )}
+                          />
+
+                          {mainFile &&
+                            Array.isArray(mainFile) &&
+                            mainFile?.length > 0 &&
+                            mainFile?.map((el, tinx) => {
+                              return (
+                                <div className="image-gallery" key={tinx}>
+                                  <div className="image-item">
+                                    <Link
+                                      to=""
+                                      download="image2.jpg"
+                                      className="download-button"
+                                    >
+                                      <img src={IMGICON} alt="Image 2" />
+                                      {(userInfo?.role === "Super Admin" ||
+                                        userInfo?.permissions?.some(
+                                          (el) =>
+                                            el === "Uploaded Design Download"
+                                        )) && (
+                                        <ArrowDownCircle
+                                          className="download-icon"
+                                          size={"24px"}
+                                          onClick={(e) =>
+                                            bulkMainFilesDownload(e, el)
+                                          }
+                                        />
+                                      )}
+                                    </Link>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
                       </div>
 
                       <div className="mb-3">
@@ -521,53 +574,65 @@ function AddDesign() {
                           Upload Thumbnail
                         </Label>
                         <div className="border-top">
-                              <Controller
-                                id="thumbnail"
-                                name="thumbnail"
-                                control={control}
-                                render={({ field: { onChange, value } }) => (
-                                  <Input
-                                    multiple
-                                    type="file"
-                                    accept="application/pdf"
-                                    onChange={(e) => {
-                                      onChange(e.target.files);
-                                      handleFile(e, "thumbnail");
-                                    }}
-                                  />
-                                )}
+                          <Controller
+                            id="thumbnail"
+                            name="thumbnail"
+                            control={control}
+                            render={({ field: { onChange, value } }) => (
+                              <Input
+                                multiple
+                                type="file"
+                                accept="application/pdf"
+                                onChange={(e) => {
+                                  onChange(e.target.files);
+                                  handleFile(e, "thumbnail");
+                                }}
                               />
+                            )}
+                          />
                           {errors.thumbnail && (
                             <FormFeedback>
                               {errors?.thumbnail?.message}
                             </FormFeedback>
                           )}
 
-                          {thumbnailFile && Array.isArray(thumbnailFile) && thumbnailFile?.length > 0 &&
-                          thumbnailFile?.map((el,tinx) => {
-                            return(
-                          <div className="image-gallery" key={tinx}>
-                            <div className="image-item">
-                              <Link to="" download="image2.jpg" className="download-button">
-                                <img src={PDFICON} alt="Image 2"/>
-                                {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Uploaded Design Download"))
-                                && 
-                                  <ArrowDownCircle 
-                                    className="download-icon"  
-                                    size={'24px'} 
-                                    onClick={(e) => bulkThumbnailFilesDownload(e,el)}                                     
-                                    />
-                                }
-                              </Link>
-                            </div>
-                          </div>
-                          )})}
+                          {thumbnailFile &&
+                            Array.isArray(thumbnailFile) &&
+                            thumbnailFile?.length > 0 &&
+                            thumbnailFile?.map((el, tinx) => {
+                              return (
+                                <div className="image-gallery" key={tinx}>
+                                  <div className="image-item">
+                                    <Link
+                                      to=""
+                                      download="image2.jpg"
+                                      className="download-button"
+                                    >
+                                      <img src={PDFICON} alt="Image 2" />
+                                      {(userInfo?.role === "Super Admin" ||
+                                        userInfo?.permissions?.some(
+                                          (el) =>
+                                            el === "Uploaded Design Download"
+                                        )) && (
+                                        <ArrowDownCircle
+                                          className="download-icon"
+                                          size={"24px"}
+                                          onClick={(e) =>
+                                            bulkThumbnailFilesDownload(e, el)
+                                          }
+                                        />
+                                      )}
+                                    </Link>
+                                  </div>
+                                </div>
+                              );
+                            })}
                         </div>
                       </div>
-                     
+
                       <div className="mb-3">
                         <Label className="form-label" for="primary_color_name">
-                        Primary Color Name
+                          Primary Color Name
                         </Label>
                         <Controller
                           id="primary_color_name"
@@ -584,14 +649,15 @@ function AddDesign() {
                           )}
                         />
                         {errors.primary_color_name && (
-                          <FormFeedback>{errors?.primary_color_name?.message}</FormFeedback>
+                          <FormFeedback>
+                            {errors?.primary_color_name?.message}
+                          </FormFeedback>
                         )}
                       </div>
-                     
-                      
+
                       <div className="mb-3">
                         <Label className="form-label" for="primary_color_code">
-                        Primary Color Code
+                          Primary Color Code
                         </Label>
                         <Controller
                           id="primary_color_code"
@@ -604,15 +670,16 @@ function AddDesign() {
                               className="form-control"
                               {...field}
                               type="color"
-                              style={{height:100}}
+                              style={{ height: 100 }}
                             />
                           )}
                         />
                         {errors.primary_color_code && (
-                          <FormFeedback>{errors?.primary_color_code?.message}</FormFeedback>
+                          <FormFeedback>
+                            {errors?.primary_color_code?.message}
+                          </FormFeedback>
                         )}
                       </div>
-                      
 
                       <div className="row">
                         <div className="col-md-12">
@@ -624,7 +691,7 @@ function AddDesign() {
                               id="color"
                               name="color"
                               control={control}
-                              rules={{ required: "Variation is required" }}
+                              // rules={{ required: "Variation is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable
@@ -682,7 +749,10 @@ function AddDesign() {
                                   />
                                   {errors.variations && (
                                     <FormFeedback>
-                                      {errors?.variations[finx]?.variation_name?.message}
+                                      {
+                                        errors?.variations[finx]?.variation_name
+                                          ?.message
+                                      }
                                     </FormFeedback>
                                   )}
                                 </div>
@@ -713,7 +783,10 @@ function AddDesign() {
                                   />
                                   {errors.variations && (
                                     <FormFeedback>
-                                      {errors?.variations[finx]?.variation_designNo?.message}
+                                      {
+                                        errors?.variations[finx]
+                                          ?.variation_designNo?.message
+                                      }
                                     </FormFeedback>
                                   )}
                                 </div>
@@ -729,7 +802,7 @@ function AddDesign() {
                                   >
                                     Upload MainFile
                                   </Label>
-                                 
+
                                   <Controller
                                     id={`variations.${finx}.variation_image`}
                                     name={`variations.${finx}.variation_image`}
@@ -743,43 +816,83 @@ function AddDesign() {
                                         accept="image/tiff,image/tif"
                                         onChange={(e) => {
                                           onChange(e.target.files);
-                                          handleVariationFile(e, `variations.${finx}.variation_image`,"image",finx);
-
+                                          handleVariationFile(
+                                            e,
+                                            `variations.${finx}.variation_image`,
+                                            "image",
+                                            finx,
+                                            fld
+                                          );
                                         }}
                                       />
                                     )}
                                   />
-                                  
+
                                   <div className="uploaded_img">
-                                  {watch(`variations.${finx}.variation_image`) && Array.isArray(watch(`variations.${finx}.variation_image`)) && watch(`variations.${finx}.variation_image`)?.length > 0 &&
-                          watch(`variations.${finx}.variation_image`)?.map((el,minx) => {
-                            return(
-                              <div className="image-gallery" key={minx}>
-                            <div className="image-item">
-                              <Link to="" download="image2.jpg" className="download-button">
-                                <img src={IMGICON} alt="Image 2"/>
-                                {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Uploaded Design Download"))
-                                && 
-                                  <ArrowDownCircle 
-                                    className="download-icon"  
-                                    size={'24px'} 
-                                    onClick={(e) => bulkMainFilesDownload(e,el)}                                     
-                                    />
-                                }
-                              </Link>
-                            </div>
-                          </div>
-                            )})}
-                        </div>
+                                    {watch(
+                                      `variations.${finx}.variation_image`
+                                    ) &&
+                                      Array.isArray(
+                                        watch(
+                                          `variations.${finx}.variation_image`
+                                        )
+                                      ) &&
+                                      watch(
+                                        `variations.${finx}.variation_image`
+                                      )?.length > 0 &&
+                                      watch(
+                                        `variations.${finx}.variation_image`
+                                      )?.map((el, minx) => {
+                                        return (
+                                          <div
+                                            className="image-gallery"
+                                            key={minx}
+                                          >
+                                            <div className="image-item">
+                                              <Link
+                                                to=""
+                                                download="image2.jpg"
+                                                className="download-button"
+                                              >
+                                                <img
+                                                  src={IMGICON}
+                                                  alt="Image 2"
+                                                />
+                                                {(userInfo?.role ===
+                                                  "Super Admin" ||
+                                                  userInfo?.permissions?.some(
+                                                    (el) =>
+                                                      el ===
+                                                      "Uploaded Design Download"
+                                                  )) && (
+                                                  <ArrowDownCircle
+                                                    className="download-icon"
+                                                    size={"24px"}
+                                                    onClick={(e) =>
+                                                      bulkMainFilesDownload(
+                                                        e,
+                                                        el
+                                                      )
+                                                    }
+                                                  />
+                                                )}
+                                              </Link>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                  </div>
                                 </div>
-                                
                               </div>
                               <div className="col-md-6">
                                 <div className="mb-3">
-                                  <Label className="form-label" for={`variations.${finx}.variation_thumbnail`}>
+                                  <Label
+                                    className="form-label"
+                                    for={`variations.${finx}.variation_thumbnail`}
+                                  >
                                     Upload Thumbnail
                                   </Label>
-                                  
+
                                   <Controller
                                     id={`variations.${finx}.variation_thumbnail`}
                                     name={`variations.${finx}.variation_thumbnail`}
@@ -793,33 +906,71 @@ function AddDesign() {
                                         accept="application/pdf"
                                         onChange={(e) => {
                                           onChange(e.target.files);
-                                          handleVariationFile(e, `variations.${finx}.variation_thumbnail`,"thumbnail",finx);
+                                          handleVariationFile(
+                                            e,
+                                            `variations.${finx}.variation_thumbnail`,
+                                            "thumbnail",
+                                            finx,
+                                            fld
+                                          );
                                         }}
                                       />
                                     )}
                                   />
                                   <div className="uploaded_img">
-                                  {watch(`variations.${finx}.variation_thumbnail`) && Array.isArray(watch(`variations.${finx}.variation_thumbnail`)) && watch(`variations.${finx}.variation_thumbnail`)?.length > 0 &&
-                          watch(`variations.${finx}.variation_thumbnail`)?.map((el,minx) => {
-                            return(
-                              <div className="image-gallery" key={minx}>
-                            <div className="image-item">
-                              <Link to="" download="image2.jpg" className="download-button">
-                                <img src={PDFICON} alt="Image 2"/>
-                                {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Uploaded Design Download"))
-                                &&  
-                                  <ArrowDownCircle 
-                                    className="download-icon"  
-                                    size={'24px'} 
-                                    onClick={(e) => bulkThumbnailFilesDownload(e,el)}                                     
-                                    />
-                                }
-                              </Link>
-                            </div>
-                          </div>
-                            )})}
-                        
-                        </div>
+                                    {watch(
+                                      `variations.${finx}.variation_thumbnail`
+                                    ) &&
+                                      Array.isArray(
+                                        watch(
+                                          `variations.${finx}.variation_thumbnail`
+                                        )
+                                      ) &&
+                                      watch(
+                                        `variations.${finx}.variation_thumbnail`
+                                      )?.length > 0 &&
+                                      watch(
+                                        `variations.${finx}.variation_thumbnail`
+                                      )?.map((el, minx) => {
+                                        return (
+                                          <div
+                                            className="image-gallery"
+                                            key={minx}
+                                          >
+                                            <div className="image-item">
+                                              <Link
+                                                to=""
+                                                download="image2.jpg"
+                                                className="download-button"
+                                              >
+                                                <img
+                                                  src={PDFICON}
+                                                  alt="Image 2"
+                                                />
+                                                {(userInfo?.role ===
+                                                  "Super Admin" ||
+                                                  userInfo?.permissions?.some(
+                                                    (el) =>
+                                                      el ===
+                                                      "Uploaded Design Download"
+                                                  )) && (
+                                                  <ArrowDownCircle
+                                                    className="download-icon"
+                                                    size={"24px"}
+                                                    onClick={(e) =>
+                                                      bulkThumbnailFilesDownload(
+                                                        e,
+                                                        el
+                                                      )
+                                                    }
+                                                  />
+                                                )}
+                                              </Link>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                  </div>
                                   {/* } */}
                                 </div>
                               </div>
