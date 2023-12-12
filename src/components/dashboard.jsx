@@ -83,7 +83,8 @@ function DashboardComponent() {
                                     </span>
                                 </div>
                                 <p className="text-muted mt-4 mb-0">Design</p>
-                                <h4 className="mt-1 mb-0">{dashData?.uploaddesign ? dashData?.uploaddesign : 0}</h4> 
+                                {/* <h4 className="mt-1 mb-0">{dashData?.uploaddesign ? dashData?.uploaddesign : 0}</h4>  */}
+                                <h4 className="mt-1 mb-0">{dashData?.uploaddesignwithvariant ? dashData?.uploaddesignwithvariant : 0}</h4> 
                             </div>
                         </div>
                     </div>

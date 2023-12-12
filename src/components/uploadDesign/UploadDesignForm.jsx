@@ -630,7 +630,7 @@ function AddDesign() {
                         </div>
                       </div>
 
-                      <div className="mb-3">
+                      {/* <div className="mb-3">
                         <Label className="form-label" for="primary_color_name">
                           Primary Color Name
                         </Label>
@@ -653,9 +653,9 @@ function AddDesign() {
                             {errors?.primary_color_name?.message}
                           </FormFeedback>
                         )}
-                      </div>
+                      </div> */}
 
-                      <div className="mb-3">
+                      {/* <div className="mb-3">
                         <Label className="form-label" for="primary_color_code">
                           Primary Color Code
                         </Label>
@@ -679,7 +679,7 @@ function AddDesign() {
                             {errors?.primary_color_code?.message}
                           </FormFeedback>
                         )}
-                      </div>
+                      </div> */}
 
                       <div className="row">
                         <div className="col-md-12">

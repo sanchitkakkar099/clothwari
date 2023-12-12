@@ -6,7 +6,7 @@ import { FormFeedback, Input, Label } from "reactstrap";
 import { Controller, useForm } from "react-hook-form";
 import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { setAllowTime, setLoginTime, setUserInfo, setUserToken } from "../../redux/authSlice";
+import { setAllowTime, setIsLoggedIn, setLoginTime, setTimer, setUserInfo, setUserToken } from "../../redux/authSlice";
 const cookies = new Cookies();
 
 function Login() {
@@ -42,12 +42,31 @@ function Login() {
   };
   console.log('loginRes',loginRes);
 
+  console.log('lastInActiveTime',Date.now() - parseInt(cookies.get('lastInActiveTime'),10));
+
   useEffect(() => {
     if(loginRes?.isSuccess){
         cookies.set("clothwari", loginRes?.data?.data?.token, { path: "/" });
         cookies.set("clothwari_user", loginRes?.data?.data, { path: "/" });
         cookies.set("client_allow_time", 30, { path: "/" });
         cookies.set("client_login_time", new Date(), { path: "/" });
+        if(loginRes?.data?.data?.role === 'Client'){
+          dispatch(setIsLoggedIn(true))
+
+          const currentTime = Date.now();
+          const lastInActiveTime = cookies.get('lastInActiveTime');
+          const timeDifference = currentTime - parseInt(lastInActiveTime, 10);
+          console.log('sssssssssssss',timeDifference,timeDifference < 30 * 60 * 1000,parseInt(lastInActiveTime, 10) < 30 * 60 * 1000);
+          const remainingTime = parseInt(lastInActiveTime, 10) < 30 * 60 * 1000 ? lastInActiveTime : 30 * 60 * 1000; // Resume remaining time or set full duration          
+         console.log('remainingTime',remainingTime,);
+          dispatch(setTimer(remainingTime))
+          cookies.set('isLoggedIn', true, { maxAge: 30 * 60 }); // Set the combined session duration in seconds
+          cookies.set('lastActiveTime', currentTime.toString());
+          cookies.set('savedTimerValue', remainingTime.toString());
+          
+          // cookies.set('isLoggedIn', true, { maxAge: 30 * 60 }); // Max age is in seconds (30 minutes)
+          // cookies.set('lastActiveTime', new Date().getTime().toString());
+        }
         dispatch(setUserToken(loginRes?.data?.data?.token))
         dispatch(setUserInfo(loginRes?.data?.data))
         setErrorMessage('')

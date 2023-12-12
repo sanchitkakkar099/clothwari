@@ -6,7 +6,9 @@ const initState = {
     userInfo: cookies?.get('clothwari_user'), // for user object
     userToken: cookies?.get('clothwari'), // for storing the JWT,
     allowTime: cookies?.get('client_allow_time'),
-    loginTime: cookies?.get('client_login_time')
+    loginTime: cookies?.get('client_login_time'),
+    isLoggedIn: false,
+    timer:0
 };
 
 export const authSlice = createSlice({
@@ -31,6 +33,12 @@ export const authSlice = createSlice({
     setLoginTime: (state, { payload }) => {
       state.loginTime = payload;
     },
+    setIsLoggedIn: (state, { payload }) => {
+      state.isLoggedIn = payload;
+    },
+    setTimer: (state, { payload }) => {
+      state.timer = payload;
+    },
   },
 });
 
@@ -40,7 +48,9 @@ export const {
   getUserToken,
   getUserInfo,
   setAllowTime,
-  setLoginTime
+  setLoginTime,
+  setIsLoggedIn,
+  setTimer
 } = authSlice.actions;
 
 export default authSlice.reducer;

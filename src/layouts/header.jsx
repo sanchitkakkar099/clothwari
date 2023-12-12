@@ -4,9 +4,10 @@ import Avatar1 from '../assets/images/users/avatar-1.jpg'
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserInfo, setUserToken } from "../redux/authSlice";
+import { setTimer, setUserInfo, setUserToken } from "../redux/authSlice";
 import { useLoginAsAdminMutation } from "../service";
 import TimeElapsedApp from "../components/TimeElapsed";
+import SessionTimer from "../components/SessionTimer";
 const cookies = new Cookies();
 
 function HeaderComponent() {
@@ -14,6 +15,7 @@ function HeaderComponent() {
   const dispatch = useDispatch()
   const [loginBackAdminReq, loginBackAdminRes] = useLoginAsAdminMutation();
   const userInfo = useSelector((state) => state?.authState.userInfo)
+  const timer = useSelector((state) => state?.authState.timer)
   const [openMenu,setOpenMenu] = useState(false)
   
   const handleLogout = () => {
@@ -21,6 +23,15 @@ function HeaderComponent() {
     cookies.remove("clothwari_user", { path: "/" });
     cookies.remove("client_allow_time", { path: "/" });
     cookies.remove("client_login_time", { path: "/" });
+    clearInterval(timer);
+    const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
+    console.log('remainingTime',remainingTime);
+    cookies.set('lastInActiveTime', remainingTime.toString());
+    cookies.remove('isLoggedIn');
+    cookies.remove('lastActiveTime');
+    cookies.remove('savedTimerValue');
+    dispatch(setTimer(0))
+    // cookies.set('lastInActiveTime', new Date().getTime().toString());
     dispatch(setUserInfo({}))
     dispatch(setUserToken(''))
     setOpenMenu(false)
@@ -129,6 +140,7 @@ function HeaderComponent() {
             </button>
           </div>
           {/* <TimeElapsedApp/> */}
+          {/* <SessionTimer/> */}
           <div className="dropdown d-inline-block">
             <button
               type="button"
