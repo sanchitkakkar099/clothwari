@@ -48,24 +48,19 @@ function Login() {
     if(loginRes?.isSuccess){
         cookies.set("clothwari", loginRes?.data?.data?.token, { path: "/" });
         cookies.set("clothwari_user", loginRes?.data?.data, { path: "/" });
-        cookies.set("client_allow_time", 30, { path: "/" });
-        cookies.set("client_login_time", new Date(), { path: "/" });
         if(loginRes?.data?.data?.role === 'Client'){
           dispatch(setIsLoggedIn(true))
-
+          const client_allow_time = loginRes?.data?.data?.client_allow_time !== 0 ? loginRes?.data?.data?.client_allow_time : 30
           const currentTime = Date.now();
-          const lastInActiveTime = cookies.get('lastInActiveTime');
-          const timeDifference = currentTime - parseInt(lastInActiveTime, 10);
-          console.log('sssssssssssss',timeDifference,timeDifference < 30 * 60 * 1000,parseInt(lastInActiveTime, 10) < 30 * 60 * 1000);
-          const remainingTime = parseInt(lastInActiveTime, 10) < 30 * 60 * 1000 ? lastInActiveTime : 30 * 60 * 1000; // Resume remaining time or set full duration          
-         console.log('remainingTime',remainingTime,);
+          // const lastInActiveTime = cookies.get('lastInActiveTime');
+          const lastInActiveTime = loginRes?.data?.data?.lastInActiveTime
+          const remainingTime = (lastInActiveTime && parseInt(lastInActiveTime, 10) < client_allow_time * 60 * 1000) ? lastInActiveTime : client_allow_time * 60 * 1000; // Resume remaining time or set full duration          
+          console.log('remainingTime',remainingTime);
           dispatch(setTimer(remainingTime))
-          cookies.set('isLoggedIn', true, { maxAge: 30 * 60 }); // Set the combined session duration in seconds
+          cookies.set("client_allow_time", client_allow_time, { path: "/" });
+          cookies.set('isLoggedIn', true, { maxAge: client_allow_time * 60 }); // Set the combined session duration in seconds
           cookies.set('lastActiveTime', currentTime.toString());
           cookies.set('savedTimerValue', remainingTime.toString());
-          
-          // cookies.set('isLoggedIn', true, { maxAge: 30 * 60 }); // Max age is in seconds (30 minutes)
-          // cookies.set('lastActiveTime', new Date().getTime().toString());
         }
         dispatch(setUserToken(loginRes?.data?.data?.token))
         dispatch(setUserInfo(loginRes?.data?.data))

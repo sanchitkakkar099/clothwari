@@ -27,11 +27,29 @@ export const authApi = createApi({
       }),
       invalidatesTags: ["auth"],
     }),
+    logoutUser: builder.mutation({
+      query: (payload) => ({
+        url: "user/logout",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["auth"],
+    }),
+    clientLastActiveTime: builder.mutation({
+      query: (payload) => ({
+        url: "user/lastactivetime",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["auth"],
+    }),
   }),
 });
 export const {
   useLoginAuthMutation,
-  useLoginAsAdminMutation
+  useLoginAsAdminMutation,
+  useLogoutUserMutation,
+  useClientLastActiveTimeMutation
 } = authApi;  
 
 export const adminApi = createApi({

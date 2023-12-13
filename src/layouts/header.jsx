@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { setTimer, setUserInfo, setUserToken } from "../redux/authSlice";
-import { useLoginAsAdminMutation } from "../service";
+import { useLoginAsAdminMutation, useLogoutUserMutation } from "../service";
 import TimeElapsedApp from "../components/TimeElapsed";
 import SessionTimer from "../components/SessionTimer";
 const cookies = new Cookies();
@@ -13,30 +13,63 @@ const cookies = new Cookies();
 function HeaderComponent() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [logoutReq, logoutRes] = useLogoutUserMutation();
   const [loginBackAdminReq, loginBackAdminRes] = useLoginAsAdminMutation();
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const timer = useSelector((state) => state?.authState.timer)
   const [openMenu,setOpenMenu] = useState(false)
   
   const handleLogout = () => {
-    cookies.remove("clothwari", { path: "/" });
-    cookies.remove("clothwari_user", { path: "/" });
-    cookies.remove("client_allow_time", { path: "/" });
-    cookies.remove("client_login_time", { path: "/" });
-    clearInterval(timer);
-    const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
-    console.log('remainingTime',remainingTime);
-    cookies.set('lastInActiveTime', remainingTime.toString());
-    cookies.remove('isLoggedIn');
-    cookies.remove('lastActiveTime');
-    cookies.remove('savedTimerValue');
-    dispatch(setTimer(0))
-    // cookies.set('lastInActiveTime', new Date().getTime().toString());
-    dispatch(setUserInfo({}))
-    dispatch(setUserToken(''))
-    setOpenMenu(false)
-    navigate('/')
+    if(userInfo?.role === 'Client'){
+      const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
+      cookies.set('lastInActiveTime', remainingTime.toString());
+      logoutReq({
+        userId:userInfo?._id,
+        lastInActiveTime:remainingTime.toString()
+      })
+    }else{
+      logoutReq({
+        userId:userInfo?._id,
+      })
+    }
+    // cookies.remove("clothwari", { path: "/" });
+    // cookies.remove("clothwari_user", { path: "/" });
+    // if(userInfo?.role === 'Client'){
+    //   cookies.remove("client_allow_time", { path: "/" });
+    //   clearInterval(timer);
+    //   const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
+    //   console.log('remainingTime',remainingTime);
+    //   cookies.set('lastInActiveTime', remainingTime.toString());
+    //   cookies.remove('isLoggedIn');
+    //   cookies.remove('lastActiveTime');
+    //   cookies.remove('savedTimerValue');
+    //   dispatch(setTimer(0))
+    //   dispatch(setUserInfo({}))
+    //   dispatch(setUserToken(''))
+    // }
+    // dispatch(setUserInfo({}))
+    // dispatch(setUserToken(''))
+    // setOpenMenu(false)
+    // navigate('/')
   }
+
+  useEffect(() => {
+    if(logoutRes?.isSuccess){
+      cookies.remove("clothwari", { path: "/" });
+      cookies.remove("clothwari_user", { path: "/" });
+      cookies.remove("client_allow_time", { path: "/" });
+      clearInterval(timer);
+      // const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
+      // cookies.set('lastInActiveTime', remainingTime.toString());
+      cookies.remove('isLoggedIn');
+      cookies.remove('lastActiveTime');
+      cookies.remove('savedTimerValue');
+      dispatch(setTimer(0))
+      dispatch(setUserInfo({}))
+      dispatch(setUserToken(''))
+      navigate('/')
+    }
+  },[logoutRes?.isSuccess])
 
   const handleBackToAdmin = (e,adminId) => {
     e.preventDefault();
@@ -140,7 +173,9 @@ function HeaderComponent() {
             </button>
           </div>
           {/* <TimeElapsedApp/> */}
-          {/* <SessionTimer/> */}
+          {userInfo?.role === 'Client' &&
+          <SessionTimer/>
+          }
           <div className="dropdown d-inline-block">
             <button
               type="button"

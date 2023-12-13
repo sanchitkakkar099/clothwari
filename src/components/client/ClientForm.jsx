@@ -31,18 +31,14 @@ function ClientForm() {
         _id: resClientById?.data?.data?._id,
         name: resClientById?.data?.data?.name,
         email: resClientById?.data?.data?.email,
-        allowLoginTime: resClientById?.data?.data?.allowLoginTime,
-        allowLoginSec: 0
+        client_allow_time: resClientById?.data?.data?.client_allow_time,
       });
     }
   }, [resClientById]);
 
   const onNext = (state) => {
     console.log("state", state);
-    reqClient({...state,
-      allowLoginTime: '',
-      allowLoginSec: 0
-    });
+    reqClient({...state});
   };
 
   useEffect(() => {
@@ -202,29 +198,31 @@ function ClientForm() {
                         <div className="col-md-6">
                           <div className="mb-3">
                             <Label for="category" className="form-label">
-                              Stay Activate
+                              Allow Time
                             </Label>
                             <Controller
-                              id="stay_activate"
-                              name="stay_activate"
+                              id="client_allow_time"
+                              name="client_allow_time"
                               control={control}
-                              rules={{ required: "Stay Activate is required" }}
+                              rules={{ required: "Allow Time is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
                                   isClearable
                                   options={
                                     [{
-                                      label:'30 min',value:1800,
+                                      label:'5 min',value:5,
+                                    },{
+                                      label:'30 min',value:30,
                                     },
                                     {
-                                      label:'1 hrs',value:3600,
+                                      label:'1 hrs',value:60,
                                     },
                                     {
-                                      label:'2 hrs',value:7200,
+                                      label:'2 hrs',value:120,
                                     },
                                     {
-                                      label:'3 hrs',value:10800,
-                                    }]|| []
+                                      label:'3 hrs',value:180,
+                                    }] || []
                                   }
                                   className="react-select"
                                   classNamePrefix="select"
@@ -233,9 +231,9 @@ function ClientForm() {
                                 />
                               )}
                             />
-                            {errors.stay_activate && (
+                            {errors.client_allow_time && (
                               <FormFeedback>
-                                {errors?.stay_activate?.message}
+                                {errors?.client_allow_time?.message}
                               </FormFeedback>
                             )}
                           </div>

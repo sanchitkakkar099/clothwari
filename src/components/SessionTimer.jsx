@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Cookies from "universal-cookie";
-import { setIsLoggedIn, setTimer } from '../redux/authSlice';
+import { setIsLoggedIn, setTimer, setUserInfo, setUserToken } from '../redux/authSlice';
+import { useClientLastActiveTimeMutation, useLogoutUserMutation } from '../service';
+import { useNavigate } from 'react-router-dom';
 const cookies = new Cookies();
 const SessionTimer = () => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     // const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [lastActiveReq,lastActiveRes] = useClientLastActiveTimeMutation();
+    const [logoutReq, logoutRes] = useLogoutUserMutation();
     const isLoggedIn = useSelector((state) => state?.authState.isLoggedIn)
     const timer = useSelector((state) => state?.authState.timer)
+    const userInfo = useSelector((state) => state?.authState.userInfo)
+    console.log('lastActiveRes',lastActiveRes);
+
 
     console.log('isLoggedIn',isLoggedIn);
 
@@ -53,8 +61,11 @@ const SessionTimer = () => {
             console.log('newTimer',newTimer);
             dispatch(setTimer(timer - 1000))  
             if (newTimer <= 0) {
-              clearInterval(interval);
-              dispatch(setTimer(0))
+               clearInterval(interval);
+              logoutReq({
+                userId:userInfo?._id,
+                lastInActiveTime:"0"
+              })
             }            
         }, 1000);
       }
@@ -68,6 +79,10 @@ const SessionTimer = () => {
       const handleBeforeUnload = () => {
         if (isLoggedIn) {
           cookies.set('savedTimerValue', timer.toString());
+          lastActiveReq({
+            userId:userInfo?._id,
+            lastInActiveTime:timer.toString()
+          })
         }
       };
       window.addEventListener('beforeunload', handleBeforeUnload);
@@ -83,6 +98,23 @@ const SessionTimer = () => {
     //   cookies.remove('lastActiveTime');
     //   dispatch(setTimer(0));
     // };
+
+    useEffect(() => {
+      if(logoutRes?.isSuccess){
+          cookies.remove("client_allow_time", { path: "/" });
+          // clearInterval(interval);
+          cookies.remove("clothwari", { path: "/" });
+          cookies.remove("clothwari_user", { path: "/" });
+          // cookies.set('lastInActiveTime', 0);
+          cookies.remove('isLoggedIn');
+          cookies.remove('lastActiveTime');
+          cookies.remove('savedTimerValue');
+          dispatch(setTimer(0))
+          dispatch(setUserInfo({}))
+          dispatch(setUserToken(''))
+          navigate('/')
+      }
+    },[logoutRes?.isSuccess])
   
     return (
       <div>
