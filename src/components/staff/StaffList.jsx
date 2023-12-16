@@ -123,9 +123,12 @@ function StaffList() {
       Filter: TextSearchFilter,
     },
     {
-      Header: "Phone",
-      accessor: "phone",
+      Header: "Permissions",
+      accessor: "permissions",
       Filter: TextSearchFilter,
+      Cell: ({row}) => (row?.original?.permissions && Array.isArray(row?.original?.permissions) && row?.original?.permissions?.length > 0) ? row?.original?.permissions?.map(el => {
+      return <li className="list-group-item">{el?.label}</li>
+      }) : 'No Permissions',
     },
     {
       Header: "Action",

@@ -89,6 +89,23 @@ function DashboardComponent() {
                         </div>
                     </div>
                     }
+
+                    {(userInfo?.role === 'Designer') &&
+                    <div className="col-lg-3 col-md-6">
+                        <div className="card" style={{cursor: 'pointer'}} onClick={() => navigateToPage('/design-list-v1')}>
+                            <div className="card-body">
+                                <div className="avatar">
+                                    <span className="avatar-title bg-soft-success rounded">
+                                        <i className="mdi mdi-eye-outline text-success font-size-24"></i>
+                                    </span>
+                                </div>
+                                <p className="text-muted mt-4 mb-0">My Design</p>
+                                <h4 className="mt-1 mb-0">{dashData?.uploaddesign ? dashData?.uploaddesign : 0}</h4> 
+                            </div>
+                        </div>
+                    </div>
+                    }
+
                     {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Staff Create" || el === "Staff View" || el === "Staff Edit" || el === "Staff Delete")) &&
                     <div className="col-lg-3 col-md-6">
                         <div className="card" style={{cursor: 'pointer'}} onClick={() => navigateToPage('/staff-list')}>

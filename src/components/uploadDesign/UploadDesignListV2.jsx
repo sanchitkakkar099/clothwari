@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Filter";
 import DataTable from "../common/DataTable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useDeleteDesignUploadMutation, useDesignUploadListMutation, useMultipleFileUploadMutation } from "../../service";
 import { getDesignUpload } from "../../redux/designUploadSlice";
@@ -98,6 +98,7 @@ function UploadDesignListV2() {
       accessor: "name",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
+      Cell: (row) => <Link to="" onClick={(e) => onEditAction(e,row)}>{row?.row?.original?.name}</Link>
     },
     // {
     //   Header: "Date",

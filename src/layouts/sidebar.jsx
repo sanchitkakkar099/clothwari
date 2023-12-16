@@ -181,7 +181,7 @@ function SidebarComponent() {
                 </li>
                 }
 
-                {userInfo?.role === 'Super Admin' &&
+                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Color Variation")) &&
                 <li>
                     <Link to="/color-variation-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
