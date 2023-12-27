@@ -24,6 +24,9 @@ import ColorVariationList from "../components/colorVariation/ColorVariationList"
 import StaffApprovalList from "../components/staff/StaffApprovalList";
 import ProductView from "../components/uploadDesign/ProductView";
 
+import ChangePassword from "../components/auth/changePassword";
+
+
 export const privateRoutes = [
   { path: "/dashboard", Component: Dashboard },
 
@@ -57,5 +60,5 @@ export const privateRoutes = [
 export const publicRoutes = [
   { path: "/login", Component: LoginComponent },
   { path: "/time", Component: TimeElapsedApp },
-
+  { path: "/change-password", Component: ChangePassword },
 ]

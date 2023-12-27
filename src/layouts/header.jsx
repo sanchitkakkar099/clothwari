@@ -90,6 +90,15 @@ function HeaderComponent() {
     }
   },[loginBackAdminRes])
 
+  const handleChangePassword = (e) => {
+    e.preventDefault()
+      navigate('/change-password',{
+        state:{
+            isChangePassword:true
+        }
+      })
+  }
+
   return (
     <header id="page-topbar" className="isvertical-topbar">
       <div className="navbar-header">
@@ -226,6 +235,17 @@ function HeaderComponent() {
                 <i className="bx bx-user-circle text-muted font-size-18 align-middle me-1"></i>{" "}
                 <span className="align-middle text-capitalize">{(userInfo?.firstName || userInfo?.lastName) ? `${userInfo?.firstName} ${userInfo?.lastName}` : userInfo?.name}</span>
               </Link>
+
+              {/* {userInfo?.role !== 'Super Admin' && */}
+              <Link
+                className="dropdown-item"
+                to=""
+                onClick={(e) => handleChangePassword(e)}
+              >
+                <i className="bx bx-user-circle text-muted font-size-18 align-middle me-1"></i>{" "}
+                <span className="align-middle text-capitalize">Change Password</span>
+              </Link>
+              {/* } */}
               {userInfo?.asAdminFlag ?
                 <Link className="dropdown-item" to="" onClick={(e) => handleBackToAdmin(e,userInfo?.adminId)}>
                 <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}

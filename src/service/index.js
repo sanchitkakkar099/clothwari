@@ -49,7 +49,7 @@ export const {
   useLoginAuthMutation,
   useLoginAsAdminMutation,
   useLogoutUserMutation,
-  useClientLastActiveTimeMutation
+  useClientLastActiveTimeMutation,
 } = authApi;  
 
 export const adminApi = createApi({
@@ -110,6 +110,14 @@ export const adminApi = createApi({
       }),
       providesTags: ["admin"],
     }),
+    changePassword: builder.mutation({
+      query: (payload) => ({
+        url: "user/password/change",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["auth"],
+    }),
   }),
 });
 export const {
@@ -118,7 +126,8 @@ export const {
  useAdminByIdQuery,
  useDeleteAdminMutation,
  useGetAdminPermissionListQuery,
- useAdminStaffApprovalListMutation
+ useAdminStaffApprovalListMutation,
+ useChangePasswordMutation
 } = adminApi;
 
 export const categoryApi = createApi({
