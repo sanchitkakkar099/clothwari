@@ -239,4 +239,36 @@ form.img__upload{margin-bottom: 25px;}
       .download-icon:hover {
         color: rgba(0, 0, 0, 0.7); /* Customize the background color on hover */
       }
+
+    
+
+
+      // .image-item {
+      //   position: relative;
+      //   display: inline-block;
+      // }
+      
+      
+      
+      
+      .remove-wrapper {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+      }
+      
+      .remove-icon {
+        position: relative;
+        color: #fff; /* Customize the download icon color */
+        background-color: rgba(0, 0, 0, 0.5); /* Customize the download icon background color */
+        border-radius: 50%;
+        padding: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      
+      .remove-icon:hover {
+        color: darkred; /* Customize the remove icon color on hover */
+      }
+      
       

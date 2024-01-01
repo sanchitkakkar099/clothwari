@@ -20,7 +20,9 @@ function ProductView() {
     e.preventDefault()
     if(variation?.label && (productView?.variations && Array.isArray(productView?.variations) && productView?.variations?.length > 0)){
       const variationObj = productView?.variations?.find(el => el?.color === variation?.label)
-      setVariationImg(variationObj?.variation_thumbnail?.filepath)
+      if(variationObj?.variation_thumbnail[0]?.pdf_extract_img){
+        setVariationImg(variationObj?.variation_thumbnail[0]?.pdf_extract_img)
+      }
     }
     console.log('variation',variation);
   }
@@ -52,8 +54,8 @@ function ProductView() {
             <div className="panel panel-white post panel-shadow">
                 
                 <div className="post-image">
-                {productView?.thumbnail?.filepath ? 
-                  <img src={variationImg ? variationImg : productView?.thumbnail?.filepath} className="image" alt="image post"/>
+                {Array.isArray(productView?.thumbnail) && productView?.thumbnail[0]?.pdf_extract_img  ? 
+                  <img src={variationImg ? variationImg : productView?.thumbnail[0]?.pdf_extract_img} className="image" alt="image post"/>
 :
                     <img src="https://www.bootdey.com/image/400x200/FFB6C1/000000" className="image" alt="image post"/>
                 }

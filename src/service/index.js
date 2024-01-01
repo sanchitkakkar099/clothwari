@@ -342,10 +342,18 @@ export const fileApi = createApi({
       }),
       invalidatesTags: ["file"],
     }),
+    multipleThumbnailUpload: builder.mutation({
+      query: (payload) => ({
+        url: `uploads/multiple/pdf/?type=${payload?.type}`,
+        method: "POST",
+        body: payload?.file,
+      }),
+      invalidatesTags: ["file"],
+    }),
   }),
 });
 
-export const { useFileUploadMutation,useMultipleFileUploadMutation } = fileApi;
+export const { useFileUploadMutation,useMultipleFileUploadMutation,useMultipleThumbnailUploadMutation } = fileApi;
 
 
 export const designerApi = createApi({

@@ -48,8 +48,11 @@ function UploadDesignListV1() {
     e.preventDefault()
     if(variation?.label && (designObj?.variations && Array.isArray(designObj?.variations) && designObj?.variations?.length > 0)){
       const variationObj = designObj?.variations?.find(el => el?.color === variation?.label)
-      setVariationImg(variationObj?.variation_thumbnail?.filepath)
-      setDesignId(designObj?._id)
+      if(variationObj?.variation_thumbnail[0]?.pdf_extract_img){
+        setVariationImg(variationObj?.variation_thumbnail[0]?.pdf_extract_img)
+        setDesignId(designObj?._id)
+      }
+      
     }
     console.log('variation',variation);
   }
@@ -163,30 +166,36 @@ function UploadDesignListV1() {
                                               <div class="product-box">
                                                 <div class="product-img pt-4 px-4">
                                                 {Array.isArray(el?.thumbnail) && el?.thumbnail[0]?.pdf_extract_img ?
-                                                  <img 
+                                                  
+                                                  <img
+                                                    src={
+                                                      (variationImg && el?._id === designID) ? variationImg :  el?.thumbnail[0]?.pdf_extract_img
+                                                    }
+                                                    alt="image post"
+                                                    height={200}
+                                                    width={250}
+                                                    class="image"
+                                                  />
+                                                :
+                                                <img 
+                                                    src="https://www.bootdey.com/image/250x200/FFB6C1/000000" 
+                                                    class="image" 
+                                                    alt="image post"
+                                                    
+                                                    onClick={() => navigate(`/product-view/${el?._id}`)}
+                                                    />
+                                                }
+
+                                                {/* <img 
                                                     src={el?.thumbnail[0]?.pdf_extract_img} 
                                                     class="image" 
                                                     alt="image post"
                                                     height={200}
                                                     width={250}
                                                     onClick={() => navigate(`/product-view/${el?._id}`)}
-                                                    />
-                                                :
-                                                <img 
-                                                    src="https://www.bootdey.com/image/250x200/FFB6C1/000000" 
-                                                    class="image" 
-                                                    alt="image post"
-                                                    onClick={() => navigate(`/product-view/${el?._id}`)}
-                                                    />
-                                                }
+                                                    /> */}
                                                  
-                                                  {/* <img
-                                                    src={
-                                                    (variationImg && el?._id === designID) ? variationImg :  el?.thumbnail?.filepath
-                                                    }
-                                                    alt=""
-                                                    class="img-fluid mx-auto d-block"
-                                                  /> */}
+                                                  
                                                 </div>
 
                                                 <div class="product-content p-4">

@@ -15,6 +15,7 @@ import {
   useDesignUploadByIdQuery,
   useFileUploadMutation,
   useMultipleFileUploadMutation,
+  useMultipleThumbnailUploadMutation,
   useSubmitDesignUploadMutation,
   useTagDropdownListQuery,
 } from "../../service";
@@ -27,7 +28,7 @@ import {
   bulkMainFilesDownload,
   bulkThumbnailFilesDownload,
 } from "../../utils/bulkFileDownload";
-import { ArrowDownCircle, Download } from "react-feather";
+import { ArrowDownCircle, Download, X } from "react-feather";
 
 function AddDesign() {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ function AddDesign() {
   console.log("resCategoryListDropdown", resCategoryListDropdown);
 
   const [reqFile] = useMultipleFileUploadMutation();
+  const [reqThunmbnailFile] = useMultipleThumbnailUploadMutation();
   const [mainFile, setMainFile] = useState([]);
   const [thumbnailFile, setThumbnailFile] = useState([]);
   const [variationMainFile, setVariationMainFile] = useState([]);
@@ -152,10 +154,10 @@ function AddDesign() {
       }
       const reqData = {
         file: formData,
-        type: 1,
+        type: 5,
         watermark: true,
       };
-      reqFile(reqData)
+      reqThunmbnailFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
             setValue(name, res?.data?.data);
@@ -167,16 +169,6 @@ function AddDesign() {
           console.log("err", err);
         });
     }
-  };
-
-  const removeFile = (e) => {
-    e.preventDefault();
-    setMainFile(null);
-  };
-
-  const removeThumbnailFile = (e) => {
-    e.preventDefault();
-    setThumbnailFile(null);
   };
 
   const onNext = (state) => {
@@ -251,12 +243,27 @@ function AddDesign() {
     }
   }, [resDesignUpload?.isSuccess, resDesignUpload?.isError]);
 
+  const removeFile = (e, name, fld) => {
+    e.preventDefault();
+    console.log("eeeee", name, fld, mainFile, thumbnailFile);
+    if (name === "image") {
+      setValue(name, "");
+      const res1 = mainFile?.filter((el) => el?._id !== fld?._id);
+      setMainFile(res1);
+    }
+    if (name === "thumbnail") {
+      setValue(name, "");
+      const res1 = thumbnailFile?.filter((el) => el?._id !== fld?._id);
+      setThumbnailFile(res1);
+    }
+  };
+
   const handleVariationFile = (e, name, tag, inx, fld) => {
     e.preventDefault();
     const existingVal = getValues("variations")[inx];
     console.log("fld", existingVal);
-    const variationCopys = getValues("variations")
-    console.log('variationCopys',variationCopys);
+    const variationCopys = getValues("variations");
+    console.log("variationCopys", variationCopys);
     if (tag === "image" && e.target.files) {
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
@@ -294,10 +301,10 @@ function AddDesign() {
       }
       const reqData = {
         file: formData,
-        type: 1,
+        type: 5,
         watermark: true,
       };
-      reqFile(reqData)
+      reqThunmbnailFile(reqData)
         .then((res) => {
           if (res?.data?.data) {
             const updatedFields = [...variationCopys]; // Create a copy of fields array
@@ -337,6 +344,40 @@ function AddDesign() {
       );
       remove(fIndex);
       console.log("fIndex", fields, fIndex);
+    }
+  };
+
+  const removeVariationFile = (e, tag, inx, fld) => {
+    e.preventDefault();
+    const existingVal = getValues("variations")[inx];
+    console.log("fld", existingVal);
+    const variationCopys = getValues("variations");
+    console.log("variationCopys", variationCopys, fld);
+    if (tag === "image") {
+      const updatedFields = [...variationCopys]; // Create a copy of fields array
+      if (existingVal) {
+        updatedFields[inx] = {
+          ...existingVal,
+          variation_image: updatedFields[inx]?.variation_image?.filter(
+            (el) => el?._id !== fld?._id
+          ),
+        };
+        console.log("updatedFields", updatedFields);
+        setValue(`variations`, updatedFields);
+      }
+    }
+    if (tag === "thumbnail") {
+      const updatedFields = [...variationCopys]; // Create a copy of fields array
+      if (existingVal) {
+        updatedFields[inx] = {
+          ...existingVal,
+          variation_thumbnail: updatedFields[inx]?.variation_thumbnail?.filter(
+            (el) => el?._id !== fld?._id
+          ), // Add a new property to the field object
+        };
+        console.log("updatedFields", updatedFields);
+        setValue(`variations`, updatedFields);
+      }
     }
   };
 
@@ -561,6 +602,14 @@ function AddDesign() {
                                           }
                                         />
                                       )}
+                                      <div className="remove-wrapper">
+                                        <X
+                                          className="remove-icon"
+                                          onClick={(e) =>
+                                            removeFile(e, "image", el)
+                                          }
+                                        />
+                                      </div>
                                     </Link>
                                   </div>
                                 </div>
@@ -622,6 +671,14 @@ function AddDesign() {
                                           }
                                         />
                                       )}
+                                      <div className="remove-wrapper">
+                                        <X
+                                          className="remove-icon"
+                                          onClick={(e) =>
+                                            removeFile(e, "thumbnail", el)
+                                          }
+                                        />
+                                      </div>
                                     </Link>
                                   </div>
                                 </div>
@@ -876,6 +933,19 @@ function AddDesign() {
                                                     }
                                                   />
                                                 )}
+                                                <div className="remove-wrapper">
+                                                  <X
+                                                    className="remove-icon"
+                                                    onClick={(e) =>
+                                                      removeVariationFile(
+                                                        e,
+                                                        "image",
+                                                        finx,
+                                                        el
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
                                               </Link>
                                             </div>
                                           </div>
@@ -965,6 +1035,19 @@ function AddDesign() {
                                                     }
                                                   />
                                                 )}
+                                                <div className="remove-wrapper">
+                                                  <X
+                                                    className="remove-icon"
+                                                    onClick={(e) =>
+                                                      removeVariationFile(
+                                                        e,
+                                                        "thumbnail",
+                                                        finx,
+                                                        el
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
                                               </Link>
                                             </div>
                                           </div>
