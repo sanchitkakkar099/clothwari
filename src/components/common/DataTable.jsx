@@ -3,7 +3,7 @@ import { useTable, useFilters, usePagination,useRowSelect } from "react-table";
 
 // utilities
 import { matchSorterFn } from "../common/Filter";
-import Pagination from "./Pagination";
+import Pagination from "./DataTablePagination";
 
 const DataTable = (props) => {
   // MEMOS

@@ -3,7 +3,7 @@ import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Fi
 import DataTable from "../common/DataTable";
 import { useNavigate,Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useDeleteDesignUploadMutation, useDesignUploadListMutation, useMultipleFileUploadMutation } from "../../service";
+import { useDeleteDesignUploadMutation, useDesignUploadList2Mutation, useDesignUploadListMutation, useMultipleFileUploadMutation } from "../../service";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
@@ -12,13 +12,15 @@ import UploadDesignView from "./UploadDesignView";
 import { Download, Edit, Eye, MoreVertical, Trash } from "react-feather";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { useRef } from "react";
+import Pagination from "../common/Pagination";
 
 
 function UploadDesignListV2() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const userInfo = useSelector((state) => state?.authState.userInfo)
-  const [reqDesign,resDesign] = useDesignUploadListMutation()
+  // const [reqDesign,resDesign] = useDesignUploadListMutation()
+  const [reqDesign,resDesign] = useDesignUploadList2Mutation()
   const [reqDelete, resDelete] = useDeleteDesignUploadMutation();
   const [reqFile] = useMultipleFileUploadMutation();
   const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
@@ -30,18 +32,29 @@ function UploadDesignListV2() {
   const [mainFiles, setMainFiles] = useState([])
   console.log('mainFiles',mainFiles);
 
+  // pagination 
+  const [TBLData, setTBLData] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
+  const [totalCount, setTotalCount] = useState(0)
+
+  // filter
+  const [filterName, setFilterName] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterUploadedBy, setFilterUploadedBy] = useState('');
 
   useEffect(() => {
     reqDesign({
-      page: 0,
-      limit: 0,
-      search: "",
+      page: currentPage,
+      limit: pageSize
     });
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
       dispatch(getDesignUpload(resDesign?.data?.data?.docs));
+      setTBLData(resDesign?.data?.data?.docs)
+      setTotalCount(resDesign?.data?.data?.totalDocs)
     }
   }, [resDesign]);
 
@@ -50,21 +63,21 @@ function UploadDesignListV2() {
     console.log("sssss", st.row.original);
   };
 
-  const onEditAction = (e, st) => {
+  const onEditAction = (e, ID) => {
     e.preventDefault();
     navigate("/upload-design-form", {
       state: {
-        designID: st?.row?.original?._id,
+        designID: ID,
         isEdit:true
       },
     });
   };
 
-  const onViewAction = (e, st) => {
+  const onViewAction = (e, ID) => {
     e.preventDefault();
     // setModalView(true)
     // setViewData(st?.row?.original)
-    navigate(`/product-view/${st?.row?.original?._id}`)
+    navigate(`/product-view/${ID}`)
   };
 
   const handleDelete = (e, st) => {
@@ -92,100 +105,8 @@ function UploadDesignListV2() {
     }
   }, [resDelete]);
 
-  const columns = [
-    {
-      Header: "Design Name",
-      accessor: "name",
-      Filter: TextSearchFilter,
-      filter: "rankedMatchSorter",
-      Cell: (row) => <Link to="" onClick={(e) => onEditAction(e,row)}>{row?.row?.original?.name}</Link>
-    },
-    // {
-    //   Header: "Date",
-    //   accessor: "Date",
-    //   Filter: DateSearchFilter,
-    // },
-    {
-      Header: "Category",
-      accessor: "category.label",
-      Filter: DropdownFilter,
-    },
-    // {
-    //   Header: "Color",
-    //   accessor: "color.label",
-    //   Filter: DropdownFilter,
-    // },
-    {
-      Header: "Upload By",
-      accessor: "uploadedBy.name",
-      Filter: TextSearchFilter,
-      filter: "rankedMatchSorter",
-    },
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: (row) => (
-        ((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?
-        <UncontrolledDropdown>
-                                <DropdownToggle
-                                  className="icon-btn hide-arrow moreOption"
-                                  color="transparent"
-                                  size="sm"
-                                  caret
-                                >
-                                  <MoreVertical size={15} />
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design View")) &&
-                                  <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => onViewAction(e,row)}
-                                  >
-                                    <Eye className="me-50" size={15} />{" "}
-                                    <span className="align-middle">View</span>
-                                  </DropdownItem>
-                                }
-                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
+ 
 
-                                  <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => onEditAction(e,row)}
-                                  >
-                                    <Edit className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Edit</span>
-                                  </DropdownItem>
-                                }
-                                {(userInfo?.role === 'Super Admin' && userInfo?.permissions?.includes("Upload Design Download")) &&
-                                <DropdownItem
-                                    href="#!"
-                                  >
-                                    <Download className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Download</span>
-                                  </DropdownItem>
-                                }
-                                  {/* <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => handleDelete(e,row)}
-                                  >
-                                    <Trash className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Delete</span>
-                                  </DropdownItem> */}
-                                </DropdownMenu>
-                              </UncontrolledDropdown>
-                              :'No Permission'
-      ),
-    },
-  ];
-
-  // <div>
-  //       <MoreVertical/>
-  //         <button onClick={(e) => onViewAction(e,row)}>View</button>
-  //         <button onClick={(e) => onEditAction(e,row)} className='ms-2'>Edit</button>
-  //         {(userInfo?.role === 'Super Admin' || !userInfo?.onlyUpload) &&
-  //         <button onClick={(e) => downloadFile(e,row?.row?.original?.image?.filepath,row?.row?.original?.name)} className='ms-2'>Download</button>
-  //         }
-  //         <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
-  //       </div>
   const hiddenFileInput = useRef(null);
   const handleClickBulkUpload = (event) => {
     hiddenFileInput.current.click();
@@ -211,6 +132,41 @@ function UploadDesignListV2() {
           console.log("err", err);
         });
   }
+
+  const handleNameFilter = (e) => {
+    setFilterName(e.target.value)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      name:e.target.value,
+      category:filterCategory,
+      uploadedBy:filterUploadedBy
+    })
+  }
+
+  const handleCategoryFilter = (e) => {
+    setFilterCategory(e.target.value)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      name:filterName,
+      category:e.target.value,
+      uploadedBy:filterUploadedBy
+    })
+  }
+
+  const handleUploadedByFilter = (e) => {
+    setFilterUploadedBy(e.target.value)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      name:filterName,
+      category:filterCategory,
+      uploadedBy:e.target.value
+    })
+  }
+
+  
   return (
     <>
     <div className="page-content">
@@ -266,7 +222,97 @@ function UploadDesignListV2() {
                   </div>
                   }
                 </div>                
-                  <DataTable data={designUploadList} columns={columns} />
+                  {/* <DataTable data={designUploadList} columns={columns} /> */}
+                  <table className="filter-table">
+                    <thead>
+                      <tr>
+                        <th>Design Name</th>
+                        <th>Category</th>
+                        <th>Uploaded By</th>
+                        <th>Action</th>
+                      </tr>
+                      <tr>
+                        <td><input type="text" value={filterName} onChange={(e) => handleNameFilter(e)}/></td>
+                        <td><input type="text" value={filterCategory} onChange={(e) => handleCategoryFilter(e)}/></td>
+                        <td><input type="text" value={filterUploadedBy} onChange={(e) => handleUploadedByFilter(e)}/></td>
+                        <td/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {(TBLData && Array.isArray(TBLData) && TBLData?.length > 0) ? 
+                      TBLData?.map((ele) => {
+                        return(
+                          <tr key={ele?._id}>
+                          <td><Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link></td>
+                          <td>{ele?.category?.label}</td>
+                          <td>{ele?.uploadedBy?.name}</td>
+                          <td>
+                          {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?
+        <UncontrolledDropdown>
+                                <DropdownToggle
+                                  className="icon-btn hide-arrow moreOption"
+                                  color="transparent"
+                                  size="sm"
+                                  caret
+                                >
+                                  <MoreVertical size={15} />
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design View")) &&
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onViewAction(e,ele?._id)}
+                                  >
+                                    <Eye className="me-50" size={15} />{" "}
+                                    <span className="align-middle">View</span>
+                                  </DropdownItem>
+                                }
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
+
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onEditAction(e,ele?._id)}
+                                  >
+                                    <Edit className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Edit</span>
+                                  </DropdownItem>
+                                }
+                                {(userInfo?.role === 'Super Admin' && userInfo?.permissions?.includes("Upload Design Download")) &&
+                                <DropdownItem
+                                    href="#!"
+                                  >
+                                    <Download className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Download</span>
+                                  </DropdownItem>
+                                }
+                                  {/* <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleDelete(e,row)}
+                                  >
+                                    <Trash className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Delete</span>
+                                  </DropdownItem> */}
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                              :'No Permission'}
+                          </td>
+                          </tr>
+                        )
+                      }):
+                      <tr><td colSpan={4} className="text-center">No Data To Display</td></tr>
+                    
+                    }
+                     
+                    
+                    </tbody>
+                  </table>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalCount={totalCount}
+                    pageSize={pageSize}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    TBLData={TBLData}
+                  />
               </div>
             </div>
           </div>
@@ -284,6 +330,7 @@ function UploadDesignListV2() {
         modalDetails={modalDetails}
         confirmAction={reqDelete}
       />
+
       </>
   );
 }

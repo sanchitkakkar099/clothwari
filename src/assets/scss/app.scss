@@ -68,8 +68,8 @@
 .list_table thead tr th div div{margin-top: 0px;}
 .list_table tbody tr td button{background: #3980c0;padding: 0.25rem 0.5rem;border: 0;color: #fff;font-size: 14px;border-radius: 4px;}
 .pagination{padding: 0.75rem 0.75rem;align-items: center;display: flex;justify-content: space-between;}
-.pagination button{padding: 5px 8px;border-radius: 5px;margin: 0 2px;border: 1px solid #eff0f2;background: #88b2d9;color: #fff;font-size: 18px;}
-.pagination button:disabled {background: rgb(136 178 217 / 50%) !important;}
+// .pagination button{padding: 5px 8px;border-radius: 5px;margin: 0 2px;border: 1px solid #eff0f2;background: #88b2d9;color: #fff;font-size: 18px;}
+// .pagination button:disabled {background: rgb(136 178 217 / 50%) !important;}
 .pagination input{font-size: 13px;color: #082a3e;background-color:#fff;border-color:#e2e5e8;-webkit-appearance: none;-moz-appearance: none;appearance: none;background-color: #fff;border: 1px solid #d2d6dc;border-radius: 5px;font-size: 14px;line-height: 1.45;outline: none;padding: 5px 13px;}
 .pagination select{padding: 5px 13px;color: #082a3e;border-color: #e2e5e8;background-color: #fff;border: 1px solid #d2d6dc;border-radius: 5px;font-size: 14px;line-height: 1.45;}
 .pagination span{margin-left: 15px;margin-right: 15px;}
@@ -270,5 +270,167 @@ form.img__upload{margin-bottom: 25px;}
       .remove-icon:hover {
         color: darkred; /* Customize the remove icon color on hover */
       }
+
+     
       
+      .filter-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+      }
+      
+      .filter-table th,
+      .filter-table td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd; /* Add bottom border for each cell */
+      }
+      
+      .filter-table th {
+        background-color: #f2f2f2;
+      }
+      
+      .filter-table input {
+        width: calc(100% - 16px);
+        padding: 4px;
+        box-sizing: border-box;
+      }
+      
+      .filter-table tbody tr:last-child td {
+        border-bottom: none; /* Remove bottom border for the last row */
+      }
+      
+      .filter-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      
+      .filter-table button {
+        padding: 6px 12px;
+        // background-color: #007bff;
+        // color: white;
+        border: none;
+        cursor: pointer;
+      }
+      
+      // .filter-table button:hover {
+      //   background-color: #0056b3;
+      // }
+      
+      .filter-table button:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        font-family: Arial, sans-serif;
+      }
+      
+      .records-info {
+        font-size: 14px;
+      }
+      
+      .pagination-controls {
+        display: flex;
+        align-items: center;
+      }
+      
+      .page-numbers {
+        display: flex;
+        align-items: center;
+      }
+      
+      .page-numbers span,
+      .page-numbers a {
+        padding: 5px 10px;
+        margin: 0 2px;
+        border: 1px solid #ccc;
+        text-decoration: none;
+        color: #333;
+        border-radius: 3px;
+      }
+
+      /* Add styles for active page */
+.active-page {
+  background-color: #007bff; /* Change to your preferred active background color */
+  color: #fff !important; /* Change to your preferred active text color */
+  border: 1px solid #007bff; /* Change to your preferred active border color */
+  padding: 5px 10px;
+  margin-right: 5px; /* Adjust margin as needed */
+  cursor: pointer;
+  border-radius: 4px;
+}
+      
+      .page-numbers a:hover {
+        background-color: #f2f2f2;
+      }
+      
+      .previous-page-btn,
+.next-page-btn{
+  padding: 8px 12px;
+  margin: 0 5px;
+  border: none;
+  background: none;
+  color: #007bff;
+  cursor: pointer;
+}
+      
+.previous-page-btn:hover,
+.next-page-btn:hover {
+  text-decoration: underline;
+}
+      
+      /* Added additional CSS to display inline */
+      .previous-page-btn,
+      .page-numbers,
+      .next-page-btn {
+        display: inline-block;
+      }
+
+      // view more less
+
+      /* Styles for the element container */
+.element-container {
+  max-height: 200px; /* Limit container height */
+  overflow: hidden; /* Hide overflow content */
+  text-align: center; /* Center-align child elements */
+}
+
+/* Styles for list items */
+.elements-list {
+  padding: 0;
+  list-style: none;
+}
+
+/* Style for the button container */
+.button-container {
+  margin-top: 10px; /* Adjust top margin as needed */
+}
+
+/* Style for the "view more" and "view less" buttons */
+.view-more-btn,
+.view-less-btn {
+  margin-top: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  border-radius: 4px;
+}
+
+.view-more-btn {
+  background-color: #3498db; /* Blue background color */
+}
+
+.view-less-btn {
+  background-color: #e74c3c; /* Red background color */
+}
+
+/* Style for hiding overflow content */
+.show-all {
+  max-height: none;
+}
+
       

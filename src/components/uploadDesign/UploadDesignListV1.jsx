@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { DivideSquare } from "react-feather";
+import Pagination from "../common/Pagination";
 
 function UploadDesignListV1() {
   const dispatch = useDispatch();
@@ -22,24 +23,32 @@ function UploadDesignListV1() {
   const [designID,setDesignId] = useState(null)
   const [variationImg,setVariationImg] = useState(null)
 
+  // pagination 
+  const [TBLData, setTBLData] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 9
+  const [totalCount, setTotalCount] = useState(0)
+
   useEffect(() => {
     reqDesign({
-      page: 1,
-      limit: 6,
+      page: currentPage,
+      limit: pageSize,
       search: "",
     });
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
       dispatch(getDesignUpload(resDesign?.data?.data?.docs));
+      setTBLData(resDesign?.data?.data?.docs)
+      setTotalCount(resDesign?.data?.data?.totalDocs)
     }
   }, [resDesign]);
 
   const handleSearch = (search) => {
     reqDesign({
-      page: 1,
-      limit: 6,
+      page: currentPage,
+      limit: pageSize,
       search: search,
     });
   };
@@ -297,9 +306,18 @@ function UploadDesignListV1() {
                                 </div> */}
                               </div>
                             </div>
+                            <Pagination
+                    currentPage={currentPage}
+                    totalCount={totalCount}
+                    pageSize={pageSize}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    TBLData={TBLData}
+                  />
                           </div>
                         </div>
+                        
                       </div>
+                      
                     </div>
                   </div>
 

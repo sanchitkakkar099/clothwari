@@ -1,67 +1,71 @@
 import React from "react";
+import { DOTS, usePagination } from "../../hook/usePagination";
+import { Link } from "react-router-dom";
 
 function Pagination({
-  previousPage,
-  nextPage,
-  gotoPage,
-  pageIndex,
-  pageOptions,
-  setPageSize,
+  onPageChange,
+  totalCount,
+  siblingCount = 1,
+  currentPage,
   pageSize,
-  canPreviousPage,
-  canNextPage,
-  pageCount 
+  TBLData
 }) {
+  const paginationRange = usePagination({
+    currentPage,
+    totalCount,
+    siblingCount,
+    pageSize
+  })
+  if(paginationRange?.length < 2){
+    return(
+      <div className="pagination">
+      <div className="records-info">
+        {`Showing ${TBLData?.length} of ${totalCount} records`}
+      </div>
+      </div>
+    )
+  }
+
+  const onNext = (e) => {
+    e.preventDefault()
+    onPageChange(currentPage + 1)
+  }
+
+  const onPrevious = (e) => {
+    e.preventDefault()
+    onPageChange(currentPage - 1)
+  }
+
+  const onPageChangeFunc = (e,pageNum) => {
+    e.preventDefault()
+    onPageChange(pageNum)
+  }
+
+  const start  =currentPage * pageSize - (pageSize - 1)
+  const end = Math.min(start + pageSize - 1,totalCount)
+  const lastPage = paginationRange[paginationRange.length - 1]
   return (
     <div className="pagination">
-      <div className="left_btn">
-        <span>
-          Page{" "}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{" "}
-        </span>
-        |
-        <span>
-          Go to page:{" "}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              gotoPage(page);
-            }}
-            style={{ width: "100px" }}
-          />
-        </span>{" "}
-        <select
-          value={pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="right_btn">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {"<<"}
-        </button>{" "}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {"<"}
-        </button>{" "}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {">"}
-        </button>{" "}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {">>"}
-        </button>{" "}
-      </div>
+  <div className="records-info">
+  {`Showing ${start} - ${end}  of ${totalCount} records`}
+  </div>
+  <div className="pagination-controls">
+    <button className="previous-page-btn" onClick={(e) => onPrevious(e)} disabled={currentPage === 1}>Previous</button>
+    <div className="page-numbers">
+    {paginationRange && Array.isArray(paginationRange) && paginationRange?.length > 0 && 
+      paginationRange?.map((pgn,i) => {
+        if(pgn === DOTS){
+          return <Link to="" key={i}>...</Link>
+        }
+        return(
+          <Link to="" className={currentPage === pgn ? "active-page" : ''} onClick={(e) => onPageChangeFunc(e,pgn)}>{pgn}</Link>
+        )
+      })
+    }
     </div>
+    <button className="next-page-btn" onClick={(e) => onNext(e)} disabled={currentPage === lastPage}>Next</button>
+  </div>
+</div>
   );
 }
 
