@@ -56,7 +56,14 @@ function ColorVariationForm() {
       reset()
       navigate("/color-variation-list");
     }
-  }, [resColorVariation?.isSuccess]);
+    if (resColorVariation?.isError) {
+      setError("name", {
+        type: "manual",
+        message:
+        resColorVariation?.error?.data?.message
+      });
+    }
+  }, [resColorVariation?.isSuccess,resColorVariation?.isError]);
 
   const handleFile  = (e,name) => {
     console.log('eeeee',name);

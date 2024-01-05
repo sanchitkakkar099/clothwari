@@ -191,7 +191,7 @@ function SidebarComponent() {
                 </li>
                 }
 
-                {userInfo?.role === 'Super Admin' &&
+                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Staff Approval")) &&
                 <li>
                     <Link to="/staff-approval">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}

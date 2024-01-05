@@ -208,7 +208,7 @@ function UploadDesignListV1() {
                                                 </div>
 
                                                 <div class="product-content p-4">
-                                                  <div class="d-flex justify-content-between align-items-end">
+                                                  <div>
                                                     <div>
                                                       <h5 class="mb-1">
                                                         <Link to={`/product-view/${el?._id}`}
