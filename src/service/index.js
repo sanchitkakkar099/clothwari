@@ -1,4 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import axios from "axios";
+import { setUploadProgress } from "../redux/designUploadSlice";
 const baseUrl =
   import.meta.env.MODE === "development"
     ? import.meta.env.VITE_APP_DEV_URL
@@ -344,21 +346,63 @@ export const fileApi = createApi({
       invalidatesTags: ["file"],
     }),
     multipleFileUpload: builder.mutation({
-      query: (payload) => ({
-        url: `uploads/multiple?type=${payload?.type}`,
-        method: "POST",
-        body: payload?.file,
-      }),
-      invalidatesTags: ["file"],
+      queryFn: async ({ url, data}, api) => {
+          try {
+              const result = await axios.post(url, data, {
+                  onUploadProgress: upload => {
+                    let uploadloadProgress = Math.round((100 * upload.loaded) / upload.total);                         
+                    api.dispatch(setUploadProgress(uploadloadProgress ));
+                  },
+              });
+          return { data: result.data }
+    } catch (axiosError) {
+          let err = axiosError
+          return {
+                error: {
+                  status: err?.response?.status,
+                  data: err?.response?.data || err?.message,
+                },
+          }
+    }
+    }
     }),
     multipleThumbnailUpload: builder.mutation({
-      query: (payload) => ({
-        url: `uploads/multiple/pdf/?type=${payload?.type}`,
-        method: "POST",
-        body: payload?.file,
-      }),
-      invalidatesTags: ["file"],
-    }),
+      queryFn: async ({ url, data}, api) => {
+        try {
+            const result = await axios.post(url, data, {
+                onUploadProgress: upload => {
+                  let uploadloadProgress = Math.round((100 * upload.loaded) / upload.total);                         
+                  api.dispatch(setUploadProgress(uploadloadProgress ));
+                },
+            });
+        return { data: result.data }
+  } catch (axiosError) {
+        let err = axiosError
+        return {
+              error: {
+                status: err?.response?.status,
+                data: err?.response?.data || err?.message,
+              },
+        }
+  }
+  }
+    })
+    // multipleFileUpload: builder.mutation({
+    //   query: (payload) => ({
+    //     url: `uploads/multiple?type=${payload?.type}`,
+    //     method: "POST",
+    //     body: payload?.file,
+    //   }),
+    //   invalidatesTags: ["file"],
+    // }),
+    // multipleThumbnailUpload: builder.mutation({
+    //   query: (payload) => ({
+    //     url: `uploads/multiple/pdf/?type=${payload?.type}`,
+    //     method: "POST",
+    //     body: payload?.file,
+    //   }),
+    //   invalidatesTags: ["file"],
+    // }),
   }),
 });
 

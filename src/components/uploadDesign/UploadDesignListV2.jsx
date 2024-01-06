@@ -82,10 +82,10 @@ function UploadDesignListV2() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st?.row?.original);
+    console.log("sssss", st);
     setModalDetails({
-      title: st?.row?.original?.name,
-      id: st?.row?.original?._id,
+      title: st?.name,
+      id: st?._id,
     });
     setShowModal(true);
   };
@@ -287,7 +287,7 @@ function UploadDesignListV2() {
                                 }
                                   {/* <DropdownItem
                                     href="#!"
-                                    onClick={(e) => handleDelete(e,row)}
+                                    onClick={(e) => handleDelete(e,ele)}
                                   >
                                     <Trash className="me-50" size={15} />{" "}
                                     <span className="align-middle">Delete</span>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { FormFeedback, Label, Form, Input, Button } from "reactstrap";
+import { FormFeedback, Label, Form, Input, Button, Progress } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Link,
@@ -29,6 +29,11 @@ import {
   bulkThumbnailFilesDownload,
 } from "../../utils/bulkFileDownload";
 import { ArrowDownCircle, Download, X } from "react-feather";
+import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
+const baseUrl =
+  import.meta.env.MODE === "development"
+    ? import.meta.env.VITE_APP_DEV_URL
+    :  import.meta.env.VITE_APP_PROD_URL;
 
 function AddDesign() {
   const dispatch = useDispatch();
@@ -36,6 +41,13 @@ function AddDesign() {
   const location = useLocation();
   const { state: locationState } = location;
   const userInfo = useSelector((state) => state?.authState.userInfo);
+  const uploadProgress = useSelector(
+    (state) => state?.designUploadState.uploadProgress
+  );
+  const uploadTag= useSelector(
+    (state) => state?.designUploadState.uploadTag
+  );
+  console.log('uploadProgress',uploadProgress,'uploadTag',uploadTag);
   const [reqDesignUpload, resDesignUpload] = useSubmitDesignUploadMutation();
   const resDesignById = useDesignUploadByIdQuery(locationState?.designID, {
     skip: !locationState?.designID,
@@ -47,8 +59,14 @@ function AddDesign() {
 
   console.log("resCategoryListDropdown", resCategoryListDropdown);
 
-  const [reqFile] = useMultipleFileUploadMutation();
+  const [reqFile,resFile] = useMultipleFileUploadMutation();
+  console.log('resFile',resFile.pro);
   const [reqThunmbnailFile] = useMultipleThumbnailUploadMutation();
+
+
+  // const [uploadProgress, setUploadProgress] = useState({});
+  // console.log('uploadProgress',uploadProgress);
+
   const [mainFile, setMainFile] = useState([]);
   const [thumbnailFile, setThumbnailFile] = useState([]);
   const [variationMainFile, setVariationMainFile] = useState([]);
@@ -124,9 +142,10 @@ function AddDesign() {
     }
   }, [resTagListDropdown]);
 
-  const handleFile = (e, name) => {
+  const handleFile = async (e, name) => {
     console.log("eeeee", name);
     if (name === "image" && e.target.files) {
+      dispatch(setUploadTag({image:true}))
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
         formData.append("file", e.target.files[i]);
@@ -135,19 +154,36 @@ function AddDesign() {
         file: formData,
         type: 1,
       };
-      reqFile(reqData)
-        .then((res) => {
-          if (res?.data?.data) {
-            setValue(name, res?.data?.data);
-            setError(name, "");
-            setMainFile([...mainFile, ...res?.data?.data]);
-          }
+      const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/multiple?type=${reqData?.type}`, data:reqData?.file });
+      if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
+        if (fileResponse?.data?.data) {
+          setValue(name, fileResponse?.data?.data);
+          setError(name, "");
+          setMainFile([...mainFile, ...fileResponse?.data?.data]);
+          dispatch(setUploadProgress(null))
+          dispatch(setUploadTag(null))
+        }
+      }else{
+        toast.error('Something went wrong',{
+          position:"top-center"
         })
-        .catch((err) => {
-          console.log("err", err);
-        });
+        dispatch(setUploadProgress(null))
+        dispatch(setUploadTag(null))
+      }
+      // reqFile(reqData)
+      //   .then((res) => {
+      //     if (res?.data?.data) {
+      //       setValue(name, res?.data?.data);
+      //       setError(name, "");
+      //       setMainFile([...mainFile, ...res?.data?.data]);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log("err", err);
+      //   });
     }
     if (name === "thumbnail" && e.target.files) {
+      dispatch(setUploadTag({thumbnail:true}))
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
         formData.append("file", e.target.files[i]);
@@ -157,17 +193,33 @@ function AddDesign() {
         type: 5,
         watermark: true,
       };
-      reqThunmbnailFile(reqData)
-        .then((res) => {
-          if (res?.data?.data) {
-            setValue(name, res?.data?.data);
-            setError(name, "");
-            setThumbnailFile([...thumbnailFile, ...res?.data?.data]);
+      const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/multiple/pdf/?type=${reqData?.type}`, data:reqData?.file });
+      if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
+      if (fileResponse?.data?.data) {
+              setValue(name, fileResponse?.data?.data);
+              setError(name, "");
+              setThumbnailFile([...thumbnailFile, ...fileResponse?.data?.data]);
+              dispatch(setUploadProgress(null))
+              dispatch(setUploadTag(null))
+            }
+          }else{
+            toast.error('Something went wrong',{
+              position:"top-center"
+            })
+            dispatch(setUploadProgress(null))
+            dispatch(setUploadTag(null))
           }
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
+      // reqThunmbnailFile(reqData)
+      //   .then((res) => {
+      //     if (res?.data?.data) {
+      //       setValue(name, res?.data?.data);
+      //       setError(name, "");
+      //       setThumbnailFile([...thumbnailFile, ...res?.data?.data]);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log("err", err);
+      //   });
     }
   };
 
@@ -258,13 +310,14 @@ function AddDesign() {
     }
   };
 
-  const handleVariationFile = (e, name, tag, inx, fld) => {
+  const handleVariationFile = async (e, name, tag, inx, fld) => {
     e.preventDefault();
     const existingVal = getValues("variations")[inx];
     console.log("fld", existingVal);
     const variationCopys = getValues("variations");
     console.log("variationCopys", variationCopys);
     if (tag === "image" && e.target.files) {
+      dispatch(setUploadTag({variation_image:true,color:fld?.color}))
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
         formData.append("file", e.target.files[i]);
@@ -273,28 +326,55 @@ function AddDesign() {
         file: formData,
         type: 1,
       };
-      reqFile(reqData)
-        .then((res) => {
-          if (res?.data?.data) {
-            const updatedFields = [...variationCopys]; // Create a copy of fields array
-            if (existingVal) {
-              updatedFields[inx] = {
-                ...existingVal,
-                variation_image: !fld?.variation_image
-                  ? res?.data?.data
-                  : [...fld?.variation_image, ...res?.data?.data], // Add a new property to the field object
-              };
-              console.log("updatedFields", updatedFields);
-              setValue(`variations`, updatedFields);
-              setError(name, "");
-            }
-          }
+      const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/multiple?type=${reqData?.type}`, data:reqData?.file });
+      console.log('fileResponse',fileResponse);
+      if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
+        if (fileResponse?.data?.data) {
+                const updatedFields = [...variationCopys]; // Create a copy of fields array
+                if (existingVal) {
+                  updatedFields[inx] = {
+                    ...existingVal,
+                    variation_image: !fld?.variation_image
+                      ? fileResponse?.data?.data
+                      : [...fld?.variation_image, ...fileResponse?.data?.data], // Add a new property to the field object
+                  };
+                  console.log("updatedFields", updatedFields);
+                  setValue(`variations`, updatedFields);
+                  setError(name, "");
+                  dispatch(setUploadProgress(null))
+                  dispatch(setUploadTag(null))
+                }
+              }
+      }else{
+        toast.error('Something went wrong',{
+          position:"top-center"
         })
-        .catch((err) => {
-          console.log("err", err);
-        });
+        dispatch(setUploadProgress(null))
+        dispatch(setUploadTag(null))
+      }
+      // reqFile(reqData)
+      //   .then((res) => {
+      //     if (res?.data?.data) {
+      //       const updatedFields = [...variationCopys]; // Create a copy of fields array
+      //       if (existingVal) {
+      //         updatedFields[inx] = {
+      //           ...existingVal,
+      //           variation_image: !fld?.variation_image
+      //             ? res?.data?.data
+      //             : [...fld?.variation_image, ...res?.data?.data], // Add a new property to the field object
+      //         };
+      //         console.log("updatedFields", updatedFields);
+      //         setValue(`variations`, updatedFields);
+      //         setError(name, "");
+      //       }
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log("err", err);
+      //   });
     }
     if (tag === "thumbnail" && e.target.files) {
+      dispatch(setUploadTag({variation_thumbnail:true,color:fld?.color}))
       const formData = new FormData();
       for (let i = 0; i < e.target.files.length; i++) {
         formData.append("file", e.target.files[i]);
@@ -304,26 +384,51 @@ function AddDesign() {
         type: 5,
         watermark: true,
       };
-      reqThunmbnailFile(reqData)
-        .then((res) => {
-          if (res?.data?.data) {
-            const updatedFields = [...variationCopys]; // Create a copy of fields array
-            if (existingVal) {
-              updatedFields[inx] = {
-                ...existingVal,
-                variation_thumbnail: !fld?.variation_thumbnail
-                  ? res?.data?.data
-                  : [...fld?.variation_thumbnail, ...res?.data?.data], // Add a new property to the field object
-              };
-              console.log("updatedFields", updatedFields);
-              setValue(`variations`, updatedFields);
-              setError(name, "");
-            }
-          }
+      const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/multiple/pdf/?type=${reqData?.type}`, data:reqData?.file });
+      if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
+        if (fileResponse?.data?.data) {
+                const updatedFields = [...variationCopys]; // Create a copy of fields array
+                if (existingVal) {
+                  updatedFields[inx] = {
+                    ...existingVal,
+                    variation_thumbnail: !fld?.variation_thumbnail
+                      ? fileResponse?.data?.data
+                      : [...fld?.variation_thumbnail, ...fileResponse?.data?.data], // Add a new property to the field object
+                  };
+                  console.log("updatedFields", updatedFields);
+                  setValue(`variations`, updatedFields);
+                  setError(name, "");
+                  dispatch(setUploadProgress(null))
+                  dispatch(setUploadTag(null))
+                }
+              }
+      }else{
+        toast.error('Something went wrong',{
+          position:"top-center"
         })
-        .catch((err) => {
-          console.log("err", err);
-        });
+        dispatch(setUploadProgress(null))
+        dispatch(setUploadTag(null))
+      }
+      // reqThunmbnailFile(reqData)
+      //   .then((res) => {
+      //     if (res?.data?.data) {
+      //       const updatedFields = [...variationCopys]; // Create a copy of fields array
+      //       if (existingVal) {
+      //         updatedFields[inx] = {
+      //           ...existingVal,
+      //           variation_thumbnail: !fld?.variation_thumbnail
+      //             ? res?.data?.data
+      //             : [...fld?.variation_thumbnail, ...res?.data?.data], // Add a new property to the field object
+      //         };
+      //         console.log("updatedFields", updatedFields);
+      //         setValue(`variations`, updatedFields);
+      //         setError(name, "");
+      //       }
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log("err", err);
+      //   });
     }
   };
 
@@ -570,19 +675,25 @@ function AddDesign() {
                                   handleFile(e, "image");
                                 }}
                                 disabled={
-                                  locationState?.isEdit && userInfo?.onlyUpload
+                                  (locationState?.isEdit && userInfo?.onlyUpload) || uploadProgress
                                 }
                               />
                             )}
                           />
-
+                          {(uploadProgress && uploadTag?.image) &&
+                                  <div style={{marginTop:'10px'}}>
+                                    <Progress animated color="success" value={uploadProgress} />
+                                    <p>Progress: {uploadProgress}%</p>
+                                  </div>
+                          }
                           {mainFile &&
                             Array.isArray(mainFile) &&
                             mainFile?.length > 0 &&
-                            mainFile?.map((el, tinx) => {
+                        
+                                <div className="image-gallery">
+                                {mainFile?.map((el, tinx) => {
                               return (
-                                <div className="image-gallery" key={tinx}>
-                                  <div className="image-item">
+                                  <div className="image-item"  key={tinx}>
                                     <Link
                                       to=""
                                       download="image2.jpg"
@@ -612,9 +723,11 @@ function AddDesign() {
                                       </div>
                                     </Link>
                                   </div>
-                                </div>
-                              );
+                                  );
                             })}
+                                </div>
+                             
+                          }
                         </div>
                       </div>
 
@@ -636,6 +749,7 @@ function AddDesign() {
                                   onChange(e.target.files);
                                   handleFile(e, "thumbnail");
                                 }}
+                                disabled={uploadProgress}
                               />
                             )}
                           />
@@ -645,13 +759,21 @@ function AddDesign() {
                             </FormFeedback>
                           )}
 
+                          {(uploadProgress && uploadTag?.thumbnail) &&
+                                  <div style={{marginTop:'10px'}}>
+                                    <Progress animated color="success" value={uploadProgress} />
+                                    <p>Progress: {uploadProgress}%</p>
+                                  </div>
+                          }
+
                           {thumbnailFile &&
                             Array.isArray(thumbnailFile) &&
                             thumbnailFile?.length > 0 &&
-                            thumbnailFile?.map((el, tinx) => {
+                            
+                                <div className="image-gallery">
+                                {thumbnailFile?.map((el, tinx) => {
                               return (
-                                <div className="image-gallery" key={tinx}>
-                                  <div className="image-item">
+                                  <div className="image-item"  key={tinx}>
                                     <Link
                                       to=""
                                       download="image2.jpg"
@@ -681,9 +803,11 @@ function AddDesign() {
                                       </div>
                                     </Link>
                                   </div>
-                                </div>
-                              );
+                                  );
                             })}
+                                </div>
+                              
+                            }
                         </div>
                       </div>
 
@@ -881,10 +1005,16 @@ function AddDesign() {
                                             fld
                                           );
                                         }}
+                                        disabled={uploadProgress}
                                       />
                                     )}
                                   />
-
+                                  {(uploadProgress && uploadTag?.variation_image && uploadTag?.color === fld?.color) &&
+                                  <div style={{marginTop:'10px'}}>
+                                    <Progress animated color="success" value={uploadProgress} />
+                                    <p>Progress: {uploadProgress}%</p>
+                                  </div>
+                                  }
                                   <div className="uploaded_img">
                                     {watch(
                                       `variations.${finx}.variation_image`
@@ -897,15 +1027,17 @@ function AddDesign() {
                                       watch(
                                         `variations.${finx}.variation_image`
                                       )?.length > 0 &&
-                                      watch(
+                                     
+                                        
+                                          <div
+                                            className="image-gallery"
+                                           
+                                          >
+                                           {watch(
                                         `variations.${finx}.variation_image`
                                       )?.map((el, minx) => {
                                         return (
-                                          <div
-                                            className="image-gallery"
-                                            key={minx}
-                                          >
-                                            <div className="image-item">
+                                            <div className="image-item"  key={minx}>
                                               <Link
                                                 to=""
                                                 download="image2.jpg"
@@ -948,9 +1080,11 @@ function AddDesign() {
                                                 </div>
                                               </Link>
                                             </div>
-                                          </div>
-                                        );
+                                            )
                                       })}
+                                          </div>
+                                       
+                                      }
                                   </div>
                                 </div>
                               </div>
@@ -984,9 +1118,16 @@ function AddDesign() {
                                             fld
                                           );
                                         }}
+                                        disabled={uploadProgress}
                                       />
                                     )}
                                   />
+                                   {(uploadProgress && uploadTag?.variation_thumbnail && uploadTag?.color === fld?.color) &&
+                                  <div style={{marginTop:'10px'}}>
+                                    <Progress animated color="success" value={uploadProgress} />
+                                    <p>Progress: {uploadProgress}%</p>
+                                  </div>
+                                  }
                                   <div className="uploaded_img">
                                     {watch(
                                       `variations.${finx}.variation_thumbnail`
@@ -999,15 +1140,16 @@ function AddDesign() {
                                       watch(
                                         `variations.${finx}.variation_thumbnail`
                                       )?.length > 0 &&
-                                      watch(
+                                      
+                                          <div
+                                            className="image-gallery"
+                                            
+                                          >
+                                          {watch(
                                         `variations.${finx}.variation_thumbnail`
                                       )?.map((el, minx) => {
                                         return (
-                                          <div
-                                            className="image-gallery"
-                                            key={minx}
-                                          >
-                                            <div className="image-item">
+                                            <div className="image-item" key={minx}>
                                               <Link
                                                 to=""
                                                 download="image2.jpg"
@@ -1050,9 +1192,11 @@ function AddDesign() {
                                                 </div>
                                               </Link>
                                             </div>
-                                          </div>
-                                        );
+                                            );
                                       })}
+                                          </div>
+                                        
+                                      }
                                   </div>
                                   {/* } */}
                                 </div>
