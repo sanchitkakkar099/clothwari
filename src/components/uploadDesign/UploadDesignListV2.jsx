@@ -30,7 +30,7 @@ function UploadDesignListV2() {
   const [modalView, setModalView] = useState(false);
   const [viewData, setViewData] = useState(null);
   const [mainFiles, setMainFiles] = useState([])
-  console.log('mainFiles',mainFiles);
+  console.log('mainFiless',mainFiles);
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
