@@ -105,8 +105,6 @@ function UploadDesignListV2() {
     }
   }, [resDelete]);
 
- 
-
   const hiddenFileInput = useRef(null);
   const handleClickBulkUpload = (event) => {
     hiddenFileInput.current.click();
@@ -166,7 +164,6 @@ function UploadDesignListV2() {
     })
   }
 
-  
   return (
     <>
     <div className="page-content">
@@ -285,7 +282,7 @@ function UploadDesignListV2() {
                                     <span className="align-middle">Download</span>
                                   </DropdownItem>
                                 }
-                                  {/* <DropdownItem
+                                   {/* <DropdownItem
                                     href="#!"
                                     onClick={(e) => handleDelete(e,ele)}
                                   >

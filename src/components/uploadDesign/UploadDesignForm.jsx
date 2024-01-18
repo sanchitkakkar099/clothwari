@@ -18,6 +18,8 @@ import {
   useMultipleThumbnailUploadMutation,
   useSubmitDesignUploadMutation,
   useTagDropdownListQuery,
+  useUniqueDesignNameCheckMutation,
+  useUniqueDesignNumberCheckMutation,
 } from "../../service";
 import toast from "react-hot-toast";
 import { Typeahead } from "react-bootstrap-typeahead";
@@ -30,6 +32,7 @@ import {
 } from "../../utils/bulkFileDownload";
 import { ArrowDownCircle, Download, X } from "react-feather";
 import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
+import { useDebounce } from "../../hook/useDebpunce";
 const baseUrl =
   import.meta.env.MODE === "development"
     ? import.meta.env.VITE_APP_DEV_URL
@@ -63,6 +66,11 @@ function AddDesign() {
   console.log('resFile',resFile.pro);
   const [reqThunmbnailFile] = useMultipleThumbnailUploadMutation();
 
+  const [reqUniqueNameCheck,resUniqueNameCheck] = useUniqueDesignNameCheckMutation();
+  const [reqUniqueNumberCheck,resUniqueNumberCheck] = useUniqueDesignNumberCheckMutation();
+
+
+
 
   // const [uploadProgress, setUploadProgress] = useState({});
   // console.log('uploadProgress',uploadProgress);
@@ -90,12 +98,46 @@ function AddDesign() {
     getValues,
   } = useForm();
 
+  const debounceValue1 = useDebounce(watch('name'),500)
+  const debounceValue2 = useDebounce(watch('designNo'),500)
+
+  console.log('debounceValue1',debounceValue1);
+  console.log('debounceValue2',debounceValue2);
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "variations",
   });
 
   console.log("fields", fields);
+
+  useEffect(() => {
+    if(debounceValue1 && !locationState?.designID ){
+      reqUniqueNameCheck({type:1,value:debounceValue1}).then(res => {
+        if(res?.error?.status === 400 && res?.error?.data?.message === 'Already uploaded'){
+          setError("name", {
+            type: "manual",
+            message:'Design name is already exist',
+          })
+        }else{
+          debugger
+          setError('name','')
+        }
+      })
+    }
+    if(debounceValue2 && !locationState?.designID ){
+      reqUniqueNumberCheck({type:2,value:debounceValue2}).then(res => {
+        if(res?.error?.status === 400 && res?.error?.data?.message === 'Already uploaded'){
+          setError("designNo", {
+            type: "manual",
+            message:'Design number is already exist',
+          })
+        }else{
+          setError('designNo','')
+        }
+      })
+    }
+  },[debounceValue1,debounceValue2,locationState])
 
   useEffect(() => {
     if (resDesignById?.isSuccess && resDesignById?.data?.data) {

@@ -313,6 +313,22 @@ export const designUploadApi = createApi({
       }),
       invalidatesTags: ["designeUpload"],
     }),
+    uniqueDesignNameCheck: builder.mutation({
+      query: (payload) => ({
+        url: "designupload/name/check",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["designeUpload"],
+    }),
+    uniqueDesignNumberCheck: builder.mutation({
+      query: (payload) => ({
+        url: "designupload/designNo/check",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["designeUpload"],
+    }),
   }),
 });
 export const {
@@ -321,7 +337,9 @@ export const {
   useSubmitDesignUploadMutation,
   useSubmitMultipleDesignUploadMutation,
   useDesignUploadByIdQuery,
-  useDeleteDesignUploadMutation
+  useDeleteDesignUploadMutation,
+  useUniqueDesignNameCheckMutation,
+  useUniqueDesignNumberCheckMutation
 } = designUploadApi;
 
 export const fileApi = createApi({
