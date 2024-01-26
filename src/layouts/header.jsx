@@ -182,9 +182,9 @@ function HeaderComponent() {
             </button>
           </div>
           {/* <TimeElapsedApp/> */}
-          {userInfo?.role === 'Client' &&
+          {/* {userInfo?.role === 'Client' &&
           <SessionTimer/>
-          }
+          } */}
           <div className="dropdown d-inline-block">
             <button
               type="button"

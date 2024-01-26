@@ -229,6 +229,14 @@ export const designTagApi = createApi({
       }),
       invalidatesTags: ["designTag"],
     }),
+    searchTag: builder.mutation({
+      query: (payload) => ({
+        url: "tag/search",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["designTag"],
+    }),
     tagById: builder.query({
       query: (id) => ({
         url: `tag/byId/${id}`,
@@ -248,6 +256,7 @@ export const designTagApi = createApi({
 export const {
   useTagListMutation,
   useSubmitTagMutation,
+  useSearchTagMutation,
   useDeleteTagMutation,
   useTagByIdQuery,
   useTagDropdownListQuery

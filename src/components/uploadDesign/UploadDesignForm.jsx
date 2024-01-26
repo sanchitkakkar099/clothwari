@@ -16,7 +16,9 @@ import {
   useFileUploadMutation,
   useMultipleFileUploadMutation,
   useMultipleThumbnailUploadMutation,
+  useSearchTagMutation,
   useSubmitDesignUploadMutation,
+  useSubmitTagMutation,
   useTagDropdownListQuery,
   useUniqueDesignNameCheckMutation,
   useUniqueDesignNumberCheckMutation,
@@ -69,6 +71,11 @@ function AddDesign() {
   const [reqUniqueNameCheck,resUniqueNameCheck] = useUniqueDesignNameCheckMutation();
   const [reqUniqueNumberCheck,resUniqueNumberCheck] = useUniqueDesignNumberCheckMutation();
 
+  const [reqCreateTag, resCreateTag] = useSubmitTagMutation();
+  const [reqSearchTag, resSearchTag] = useSearchTagMutation();
+  
+
+
 
 
 
@@ -84,6 +91,13 @@ function AddDesign() {
   console.log("thumbnailFile", thumbnailFile);
 
   const [tagDropdown, setTagDropdown] = useState([]);
+
+
+    // tag state
+    const [tagOptions, setTagOptions] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [tagInput, setTagInput] = useState('');
+    console.log('tags',tags,'tagInput',tagInput,'tagOptions',tagOptions);
 
   console.log("mainFile", mainFile);
   console.log("variationMainFile", variationMainFile);
@@ -120,7 +134,6 @@ function AddDesign() {
             message:'Design name is already exist',
           })
         }else{
-          debugger
           setError('name','')
         }
       })
@@ -154,6 +167,9 @@ function AddDesign() {
           ? resDesignById?.data?.data?.variations
           : [],
       });
+      if(resDesignById?.data?.data?.tag && Array.isArray(resDesignById?.data?.data?.tag) && resDesignById?.data?.data?.tag?.length > 0){
+        setTags(resDesignById?.data?.data?.tag)
+      }
       if (resDesignById?.data?.data?.image) {
         setMainFile(resDesignById?.data?.data?.image);
       }
@@ -528,6 +544,53 @@ function AddDesign() {
     }
   };
 
+
+
+  const handleTagInputChange = (input) => {
+    console.log('inputval',input);
+    setTagInput(input);
+    reqSearchTag({search:input}).then(res => {
+      if(res.data?.data && res?.data?.data && res?.data?.data?.length > 0){
+        if(tags && Array.isArray(tags) && tags?.length > 0){
+         const res1 =  res?.data?.data?.filter(rs => !tags?.some(ts => ts?.label === rs?.label))
+         setTagOptions(res1)
+        }else{
+         setTagOptions(res?.data?.data)
+        }
+      }else{
+        setTagOptions([])
+      }
+    })
+  };
+  
+  const handleTagSelection = (selected) => {
+    console.log('selected',selected,tags);
+    if ((selected && Array.isArray(selected)) &&
+        (tags && Array.isArray(tags)) &&
+        (selected.length > tags.length)) {
+        setValue('tag',selected)
+        setError('tag','')
+        setTags(selected);
+        if(tagOptions && Array.isArray(tagOptions) && tagOptions?.length > 0){
+          setTagOptions(tagOptions?.filter(el => !selected?.some(ts => ts?.label === el?.label)))
+        }
+        if(tagOptions && Array.isArray(tagOptions) && !tagOptions?.some(el => selected?.some(ts => ts?.label === el?.label))){
+          reqCreateTag(selected[selected.length - 1])
+        }
+        setTagInput('');
+    }else{
+      setValue('tag',selected)
+      setTags(selected);
+      setTagInput(''); // Clear the input field after selection
+    }
+    if(Array.isArray(selected) && !selected.length){
+      setError('tag', {
+        type: 'manual',
+        message: 'Tag is required',
+      })
+    }
+  };
+
   return (
     <div className="page-content">
       <div className="container-fluid">
@@ -677,14 +740,16 @@ function AddDesign() {
                               rules={{ required: "Tag is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Typeahead
-                                  allowNew
+                                  allowNew={(tags && Array.isArray(tags) && !tags?.some(el => el?.label === tagInput)) && (tagOptions && Array.isArray(tagOptions) && tagOptions?.length === 0)}
                                   id="custom-selections-example"
+                                  labelKey={'label'}
                                   multiple
-                                  newSelectionPrefix="Add Tag: "
-                                  options={[]}
+                                  newSelectionPrefix={(tags && Array.isArray(tags) && !tags?.some(el => el?.label === tagInput)) && (tagOptions && Array.isArray(tagOptions) && tagOptions?.length === 0) ? "Add Tag: " : ""}
+                                  options={tagOptions || []}
                                   placeholder="Type anything..."
-                                  onChange={onChange}
-                                  selected={value}
+                                  onChange={handleTagSelection}
+                                  onInputChange={handleTagInputChange}
+                                  selected={tags || []}
                                 />
                               )}
                             />
@@ -852,57 +917,6 @@ function AddDesign() {
                             }
                         </div>
                       </div>
-
-                      {/* <div className="mb-3">
-                        <Label className="form-label" for="primary_color_name">
-                          Primary Color Name
-                        </Label>
-                        <Controller
-                          id="primary_color_name"
-                          name="primary_color_name"
-                          control={control}
-                          rules={{ required: "Primary Color Name is required" }}
-                          render={({ field }) => (
-                            <Input
-                              placeholder="Entare Primary Color Name"
-                              className="form-control"
-                              {...field}
-                              type="text"
-                            />
-                          )}
-                        />
-                        {errors.primary_color_name && (
-                          <FormFeedback>
-                            {errors?.primary_color_name?.message}
-                          </FormFeedback>
-                        )}
-                      </div> */}
-
-                      {/* <div className="mb-3">
-                        <Label className="form-label" for="primary_color_code">
-                          Primary Color Code
-                        </Label>
-                        <Controller
-                          id="primary_color_code"
-                          name="primary_color_code"
-                          control={control}
-                          rules={{ required: "Primary Color Code is required" }}
-                          render={({ field }) => (
-                            <Input
-                              placeholder="Entare Primary Color Code"
-                              className="form-control"
-                              {...field}
-                              type="color"
-                              style={{ height: 100 }}
-                            />
-                          )}
-                        />
-                        {errors.primary_color_code && (
-                          <FormFeedback>
-                            {errors?.primary_color_code?.message}
-                          </FormFeedback>
-                        )}
-                      </div> */}
 
                       <div className="row">
                         <div className="col-md-12">
