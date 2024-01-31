@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
   clientList: [],
+  selectedBagItems:[]
 };
 
 export const clientSlice = createSlice({
@@ -11,11 +12,23 @@ export const clientSlice = createSlice({
     getClient: (state, { payload }) => {
       state.clientList = payload;
     },
+    addedBagItems: (state, { payload }) => {
+      state.selectedBagItems = [...state.selectedBagItems, payload];
+    },
+    removeBagItems: (state, { payload }) => {
+      state.selectedBagItems =  payload;
+    },
+    clearBagItems: (state, { payload }) => {
+      state.selectedBagItems =  payload;
+    },
   },
 });
 
 export const {
-  getClient
+  getClient,
+  addedBagItems,
+  removeBagItems,
+  clearBagItems
 } = clientSlice.actions;
 
 export default clientSlice.reducer;

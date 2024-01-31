@@ -644,3 +644,66 @@ export const dashboardApi = createApi({
 export const {
   useDashboardCountQuery
 } = dashboardApi;
+
+
+export const clientBagApi = createApi({
+  tagTypes: ["clientBag"],
+  reducerPath: "clientBagApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}/`,
+    prepareHeaders: (headers, { getState }) => {
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
+      return headers
+    },
+  }),
+  endpoints: (builder) => ({
+    clientBagListByAdmin: builder.mutation({
+      query: (payload) => ({
+        url: "admin/client/cart/data",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["clientBag"],
+    }),
+    myBagList: builder.mutation({
+      query: (payload) => ({
+        url: "client/my/design",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["clientBag"],
+    }),
+    addToBagByClient: builder.mutation({
+      query: (payload) => ({
+        url: "client/add/cart",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["clientBag"],
+    }),
+    getBagNotification: builder.query({
+      query: () => ({
+        url: `admin/notication/count`,
+        method: "GET",
+      }),
+      providesTags: ["clientBag"],
+    }),
+    myBagCounting: builder.query({
+      query: () => ({
+        url: `admin/notication/count`,
+        method: "GET",
+      }),
+      providesTags: ["clientBag"],
+    }),
+    
+  }),
+});
+export const {
+ useClientBagListByAdminMutation,
+ useGetBagNotificationQuery,
+ useAddToBagByClientMutation,
+ useMyBagListMutation,
+ useMyBagCountingQuery
+} = clientBagApi;

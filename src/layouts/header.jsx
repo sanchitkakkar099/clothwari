@@ -1,36 +1,55 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Logosm from "../assets/images/logo-sm.svg";
-import Avatar1 from '../assets/images/users/avatar-1.jpg'
+import Avatar1 from "../assets/images/users/avatar-1.jpg";
+import Avatar3 from "../assets/images/users/avatar-3.jpg";
+import Avatar4 from "../assets/images/users/avatar-4.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { setTimer, setUserInfo, setUserToken } from "../redux/authSlice";
-import { useLoginAsAdminMutation, useLogoutUserMutation } from "../service";
+import { useClientBagListByAdminMutation, useGetBagNotificationQuery, useLoginAsAdminMutation, useLogoutUserMutation } from "../service";
 import TimeElapsedApp from "../components/TimeElapsed";
 import SessionTimer from "../components/SessionTimer";
+import { Bell, ShoppingCart } from "react-feather";
+import SimpleBar from "simplebar-react";
 const cookies = new Cookies();
 
 function HeaderComponent() {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [logoutReq, logoutRes] = useLogoutUserMutation();
   const [loginBackAdminReq, loginBackAdminRes] = useLoginAsAdminMutation();
-  const userInfo = useSelector((state) => state?.authState.userInfo)
-  const timer = useSelector((state) => state?.authState.timer)
-  const [openMenu,setOpenMenu] = useState(false)
-  
+  const notication = useGetBagNotificationQuery()
+  const [reqBagListByAdmin, resBagListByAdmin] = useClientBagListByAdminMutation();
+  const userInfo = useSelector((state) => state?.authState.userInfo);
+  const timer = useSelector((state) => state?.authState.timer);
+  const selectedBagItems = useSelector(
+    (state) => state?.clientState.selectedBagItems
+  );
+  const [openMenu, setOpenMenu] = useState(false);
+  useEffect(() => {
+    reqBagListByAdmin({
+      page: 1,
+      limit: '',
+      search: "",
+    });
+  }, []);
+
+  console.log('resBagListByAdmin',resBagListByAdmin?.data);
+  console.log('notication',notication);
+
   const handleLogout = () => {
-    if(userInfo?.role === 'Client'){
+    if (userInfo?.role === "Client") {
       const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
-      cookies.set('lastInActiveTime', remainingTime.toString());
+      cookies.set("lastInActiveTime", remainingTime.toString());
       logoutReq({
-        userId:userInfo?._id,
-        lastInActiveTime:remainingTime.toString()
-      })
-    }else{
+        userId: userInfo?._id,
+        lastInActiveTime: remainingTime.toString(),
+      });
+    } else {
       logoutReq({
-        userId:userInfo?._id,
-      })
+        userId: userInfo?._id,
+      });
     }
     // cookies.remove("clothwari", { path: "/" });
     // cookies.remove("clothwari_user", { path: "/" });
@@ -51,53 +70,79 @@ function HeaderComponent() {
     // dispatch(setUserToken(''))
     // setOpenMenu(false)
     // navigate('/')
-  }
+  };
 
   useEffect(() => {
-    if(logoutRes?.isSuccess){
+    if (logoutRes?.isSuccess) {
       cookies.remove("clothwari", { path: "/" });
       cookies.remove("clothwari_user", { path: "/" });
       cookies.remove("client_allow_time", { path: "/" });
       clearInterval(timer);
       // const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
       // cookies.set('lastInActiveTime', remainingTime.toString());
-      cookies.remove('isLoggedIn');
-      cookies.remove('lastActiveTime');
-      cookies.remove('savedTimerValue');
-      dispatch(setTimer(0))
-      dispatch(setUserInfo({}))
-      dispatch(setUserToken(''))
-      navigate('/')
+      cookies.remove("isLoggedIn");
+      cookies.remove("lastActiveTime");
+      cookies.remove("savedTimerValue");
+      dispatch(setTimer(0));
+      dispatch(setUserInfo({}));
+      dispatch(setUserToken(""));
+      navigate("/");
     }
-  },[logoutRes?.isSuccess])
+  }, [logoutRes?.isSuccess]);
 
-  const handleBackToAdmin = (e,adminId) => {
+  const handleBackToAdmin = (e, adminId) => {
     e.preventDefault();
     loginBackAdminReq({
-      designerById: adminId
-    })
-    setOpenMenu(false)
-  }
+      designerById: adminId,
+    });
+    setOpenMenu(false);
+  };
 
   useEffect(() => {
-    if(loginBackAdminRes?.isSuccess && loginBackAdminRes?.data?.data){
-      console.log('loginAs',loginBackAdminRes?.data);
-      cookies.set("clothwari", loginBackAdminRes?.data?.data?.token, { path: "/" });
-      cookies.set("clothwari_user", loginBackAdminRes?.data?.data, { path: "/" });
-      dispatch(setUserToken(loginBackAdminRes?.data?.data?.token))
-      dispatch(setUserInfo(loginBackAdminRes?.data?.data))
-      navigate('/dashboard')
+    if (loginBackAdminRes?.isSuccess && loginBackAdminRes?.data?.data) {
+      console.log("loginAs", loginBackAdminRes?.data);
+      cookies.set("clothwari", loginBackAdminRes?.data?.data?.token, {
+        path: "/",
+      });
+      cookies.set("clothwari_user", loginBackAdminRes?.data?.data, {
+        path: "/",
+      });
+      dispatch(setUserToken(loginBackAdminRes?.data?.data?.token));
+      dispatch(setUserInfo(loginBackAdminRes?.data?.data));
+      navigate("/dashboard");
     }
-  },[loginBackAdminRes])
+  }, [loginBackAdminRes]);
 
   const handleChangePassword = (e) => {
-    e.preventDefault()
-      navigate('/change-password',{
-        state:{
-            isChangePassword:true
-        }
-      })
-  }
+    e.preventDefault();
+    navigate("/change-password", {
+      state: {
+        isChangePassword: true,
+      },
+    });
+  };
+
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const dropdownRef = useRef(null);
+  const simpleBarRef = useRef();
+
+  const toggleDropdown = (event) => {
+    event.stopPropagation();
+    setDropdownVisible(!isDropdownVisible);
+  };
+
+  const handleOutsideClick = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleOutsideClick);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
 
   return (
     <header id="page-topbar" className="isvertical-topbar">
@@ -185,6 +230,189 @@ function HeaderComponent() {
           {/* {userInfo?.role === 'Client' &&
           <SessionTimer/>
           } */}
+          {userInfo?.role === 'Super Admin' &&
+          <div className="dropdown d-inline-block">
+            <button
+              type="button"
+              className={`btn header-item noti-icon ${
+                isDropdownVisible ? "show" : ""
+              }`}
+              id="page-header-notifications-dropdown"
+              onClick={toggleDropdown}
+            >
+              <Bell />
+              {(notication?.isSuccess && notication?.data?.data) ?
+              <span className="noti-dot bg-danger rounded-pill">{notication?.data?.data}</span>
+              :""}
+            </button>
+            {isDropdownVisible && (
+              <div
+                className="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 show"
+                style={{
+                  position: "absolute",
+                  inset: "0px 0px auto auto",
+                  margin: "0px",
+                  transform: "translate(0px, 72px)",
+                }}
+                ref={dropdownRef}
+              >
+                <div className="p-3">
+                  <div className="row align-items-center">
+                    <div className="col">
+                      <h5 className="m-0 font-size-15"> Notifications </h5>
+                    </div>
+                  </div>
+                </div>
+                <SimpleBar style={{ maxHeight: "250px" }} ref={simpleBarRef}>
+                  <div style={{ maxHeight: "250px" }}>
+                    <h6 className="dropdown-header bg-light">New</h6>
+                    {resBagListByAdmin?.isSuccess &&
+                      resBagListByAdmin?.data?.data?.docs
+                      && Array.isArray(resBagListByAdmin?.data?.data?.docs)
+                      && resBagListByAdmin?.data?.data?.docs?.length > 0
+                      &&
+                      resBagListByAdmin?.data?.data?.docs?.map((el,inx) => {
+                        return(
+                          <Link to="" className="text-reset notification-item" key={inx}>
+                      <div className="d-flex border-bottom align-items-start">
+                        {/* <div className="flex-shrink-0">
+                          <img
+                            src={Avatar3}
+                            className="me-3 rounded-circle avatar-sm"
+                            alt="user-pic"
+                          />
+                        </div> */}
+                        <div className="flex-grow-1">
+                          <h6 className="mb-1">{el?.userId?.name}</h6>
+                          <div className="text-muted">
+                            <p className="mb-1 font-size-13">
+                              {`${el?.userId?.name} orders ${el?.designId?.length} designs`}
+                              {/* <span className="badge badge-soft-success">
+                                Review
+                              </span> */}
+                            </p>
+                            {/* <p className="mb-0 font-size-10 text-uppercase fw-bold">
+                              <i className="mdi mdi-clock-outline"></i> 1 hour
+                              ago
+                            </p> */}
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                        )
+                      })
+                    
+                    }
+                  
+                    {/* <a href="" className="text-reset notification-item">
+                      <div className="d-flex border-bottom align-items-start">
+                        <div className="flex-shrink-0">
+                          <div className="avatar-sm me-3">
+                            <span className="avatar-title bg-primary rounded-circle font-size-16">
+                              <i className="bx bx-shopping-bag"></i>
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-grow-1">
+                          <h6 className="mb-1">New order has been placed</h6>
+                          <div className="text-muted">
+                            <p className="mb-1 font-size-13">
+                              Open the order confirmation or shipment
+                              confirmation.
+                            </p>
+                            <p className="mb-0 font-size-10 text-uppercase fw-bold">
+                              <i className="mdi mdi-clock-outline"></i> 5 hours
+                              ago
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </a> */}
+                    {/* <h6 className="dropdown-header bg-light">Earlier</h6>
+                    <a href="" className="text-reset notification-item">
+                      <div className="d-flex border-bottom align-items-start">
+                        <div className="flex-shrink-0">
+                          <div className="avatar-sm me-3">
+                            <span className="avatar-title bg-soft-success text-success rounded-circle font-size-16">
+                              <i className="bx bx-cart"></i>
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex-grow-1">
+                          <h6 className="mb-1">Your item is shipped</h6>
+                          <div className="text-muted">
+                            <p className="mb-1 font-size-13">
+                              Here is somthing that you might light like to
+                              know.
+                            </p>
+                            <p className="mb-0 font-size-10 text-uppercase fw-bold">
+                              <i className="mdi mdi-clock-outline"></i> 1 day
+                              ago
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </a> */}
+
+                    {/* <a href="" className="text-reset notification-item">
+                      <div className="d-flex border-bottom align-items-start">
+                        <div className="flex-shrink-0">
+                          <img
+                            src={Avatar4}
+                            className="me-3 rounded-circle avatar-sm"
+                            alt="user-pic"
+                          />
+                        </div>
+                        <div className="flex-grow-1">
+                          <h6 className="mb-1">Salena Layfield</h6>
+                          <div className="text-muted">
+                            <p className="mb-1 font-size-13">
+                              Yay ! Everything worked!
+                            </p>
+                            <p className="mb-0 font-size-10 text-uppercase fw-bold">
+                              <i className="mdi mdi-clock-outline"></i> 3 days
+                              ago
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </a> */}
+                  </div>
+                </SimpleBar>
+                {/* <div className="p-2 border-top d-grid">
+                  <a
+                    className="btn btn-sm btn-link font-size-14 btn-block text-center"
+                    href="javascript:void(0)"
+                  >
+                    <i className="uil-arrow-circle-right me-1"></i>{" "}
+                    <span>View More..</span>
+                  </a>
+                </div> */}
+              </div>
+            )}
+          </div>
+          }
+          {userInfo?.role === 'Client' &&
+          <div className="dropdown d-inline-block">
+            <button
+              type="button"
+              className="btn header-item noti-icon"
+              id="page-header-notifications-dropdown"
+              onClick={() => navigate('/view-bag')}
+              // onClick={toggleDropdown}
+            >
+              <ShoppingCart />
+              {selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0 ?
+              <span className="noti-dot bg-danger rounded-pill">
+          
+          
+              {selectedBagItems?.length}
+              </span>
+             : ''
+              }
+            </button>
+            </div>
+          }
           <div className="dropdown d-inline-block">
             <button
               type="button"
@@ -201,39 +429,18 @@ function HeaderComponent() {
                 alt="Header Avatar"
               />
             </button>
-            <div className={`dropdown-menu dropdown-menu-end pt-0 ${openMenu ? "show" : ""} dropdown-user`}>
-              {/* <a
-                className="dropdown-item"
-                href="#!"
-              >
+            <div
+              className={`dropdown-menu dropdown-menu-end pt-0 ${
+                openMenu ? "show" : ""
+              } dropdown-user`}
+            >
+              <Link className="dropdown-item" to="">
                 <i className="bx bx-user-circle text-muted font-size-18 align-middle me-1"></i>{" "}
-                <span className="align-middle">My Account</span>
-              </a>
-              <a className="dropdown-item" href="#!">
-                <i className="bx bx-chat text-muted font-size-18 align-middle me-1"></i>{" "}
-                <span className="align-middle">Chat</span>
-              </a>
-              <a
-                className="dropdown-item"
-                href="#!"
-              >
-                <i className="bx bx-buoy text-muted font-size-18 align-middle me-1"></i>{" "}
-                <span className="align-middle">Support</span>
-              </a>
-              <div className="dropdown-divider"></div>
-              <a
-                className="dropdown-item"
-                href="#!"
-              >
-                <i className="bx bx-lock text-muted font-size-18 align-middle me-1"></i>{" "}
-                <span className="align-middle">Lock screen</span>
-              </a> */}
-              <Link
-                className="dropdown-item"
-                to=""
-              >
-                <i className="bx bx-user-circle text-muted font-size-18 align-middle me-1"></i>{" "}
-                <span className="align-middle text-capitalize">{(userInfo?.firstName || userInfo?.lastName) ? `${userInfo?.firstName} ${userInfo?.lastName}` : userInfo?.name}</span>
+                <span className="align-middle text-capitalize">
+                  {userInfo?.firstName || userInfo?.lastName
+                    ? `${userInfo?.firstName} ${userInfo?.lastName}`
+                    : userInfo?.name}
+                </span>
               </Link>
 
               {/* {userInfo?.role !== 'Super Admin' && */}
@@ -243,20 +450,26 @@ function HeaderComponent() {
                 onClick={(e) => handleChangePassword(e)}
               >
                 <i className="bx bx-user-circle text-muted font-size-18 align-middle me-1"></i>{" "}
-                <span className="align-middle text-capitalize">Change Password</span>
+                <span className="align-middle text-capitalize">
+                  Change Password
+                </span>
               </Link>
               {/* } */}
-              {userInfo?.asAdminFlag ?
-                <Link className="dropdown-item" to="" onClick={(e) => handleBackToAdmin(e,userInfo?.adminId)}>
-                <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
-                <span className="align-middle">Bact To Admin</span>
-              </Link>
-              :
-              <Link className="dropdown-item" to="" onClick={handleLogout}>
-                <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
-                <span className="align-middle">Logout</span>
-              </Link>
-              }
+              {userInfo?.asAdminFlag ? (
+                <Link
+                  className="dropdown-item"
+                  to=""
+                  onClick={(e) => handleBackToAdmin(e, userInfo?.adminId)}
+                >
+                  <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
+                  <span className="align-middle">Bact To Admin</span>
+                </Link>
+              ) : (
+                <Link className="dropdown-item" to="" onClick={handleLogout}>
+                  <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
+                  <span className="align-middle">Logout</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>

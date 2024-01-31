@@ -136,6 +136,37 @@ function DashboardComponent() {
                         </div>
                     </div>
                     }
+                    {(userInfo?.role === 'Client') &&
+                    <div className="col-lg-3 col-md-6">
+                        <div className="card" style={{cursor: 'pointer'}}>
+                            <div className="card-body">
+                                <div className="avatar">
+                                    <span className="avatar-title bg-soft-success rounded">
+                                        <i className="mdi mdi-eye-outline text-success font-size-24"></i>
+                                    </span>
+                                </div>
+                                <p className="text-muted mt-4 mb-0">My Orders</p>
+                                <h4 className="mt-1 mb-0">{dashData?.clientBagCount ? dashData?.clientBagCount : 0}</h4> 
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    {(userInfo?.role === 'Super Admin') &&
+                    <div className="col-lg-3 col-md-6">
+                        <div className="card" style={{cursor: 'pointer'}}>
+                            <div className="card-body">
+                                <div className="avatar">
+                                    <span className="avatar-title bg-soft-success rounded">
+                                        <i className="mdi mdi-eye-outline text-success font-size-24"></i>
+                                    </span>
+                                </div>
+                                <p className="text-muted mt-4 mb-0">Client Orders</p>
+                                <h4 className="mt-1 mb-0">{dashData?.clientBagCount ? dashData?.clientBagCount : 0}</h4> 
+                            </div>
+                        </div>
+                    </div>
+                    }
                 </div>
             </div>
         </div>

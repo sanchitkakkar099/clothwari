@@ -201,6 +201,15 @@ function SidebarComponent() {
                 </li>
                 }
 
+                {/* {(userInfo?.role === 'Super Admin') &&
+                <li>
+                    <Link to="/client-orders">
+                        <span className="menu-item" data-key="t-dashboards">Client Orders</span>
+                    </Link>
+                </li>
+                } */}
+
+
             </ul>
         </div>
     </div>

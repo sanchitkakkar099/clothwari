@@ -25,6 +25,7 @@ import StaffApprovalList from "../components/staff/StaffApprovalList";
 import ProductView from "../components/uploadDesign/ProductView";
 
 import ChangePassword from "../components/auth/changePassword";
+import ClientBagItem from "../components/client/BagItem";
 
 
 export const privateRoutes = [
@@ -52,6 +53,8 @@ export const privateRoutes = [
   { path: "/client-list", Component: ClientList },
   { path: "/client-form", Component: ClientForm },
   { path: "/client-view-design", Component: ClientViewDesign },
+  { path: "/view-bag", Component: ClientBagItem },
+
 
   { path: "/color-variation-list", Component: ColorVariationList },
   { path: "/color-variation-form", Component: ColorVariationForm },

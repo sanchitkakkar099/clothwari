@@ -740,11 +740,11 @@ function AddDesign() {
                               rules={{ required: "Tag is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Typeahead
-                                  allowNew={(tags && Array.isArray(tags) && !tags?.some(el => el?.label === tagInput)) && (tagOptions && Array.isArray(tagOptions) && tagOptions?.length === 0)}
+                                  allowNew={(tags && Array.isArray(tags) && !tags?.some(el => el?.label?.toLowerCase() === tagInput?.toLowerCase())) && (tagOptions && Array.isArray(tagOptions) && tagOptions?.length === 0)}
                                   id="custom-selections-example"
                                   labelKey={'label'}
                                   multiple
-                                  newSelectionPrefix={(tags && Array.isArray(tags) && !tags?.some(el => el?.label === tagInput)) && (tagOptions && Array.isArray(tagOptions) && tagOptions?.length === 0) ? "Add Tag: " : ""}
+                                  newSelectionPrefix={(tags && Array.isArray(tags) && !tags?.some(el => el?.label?.toLowerCase() === tagInput?.toLowerCase())) && (tagOptions && Array.isArray(tagOptions) && tagOptions?.length === 0) ? "Add Tag: " : ""}
                                   options={tagOptions || []}
                                   placeholder="Type anything..."
                                   onChange={handleTagSelection}
