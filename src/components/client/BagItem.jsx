@@ -14,6 +14,7 @@ function ClientBagItem() {
     (state) => state?.clientState.selectedBagItems
   );
 
+
   const saveBagItems = () => {
     if(selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0){
       reqAdd({designId:selectedBagItems?.map((el) => el?._id)})
@@ -41,6 +42,8 @@ function ClientBagItem() {
     const res = selectedBagItems?.filter((sb) => sb?._id !== el?._id);
     dispatch(removeBagItems(res));
   };
+
+  // const handleChangeMiter = () => {}
   return (
     <div className="page-content">
       <div class="container-fluid">
@@ -101,6 +104,10 @@ function ClientBagItem() {
                                   : ""}
                               </span>
                             </p>
+                            {/* <p class="mb-1">
+                              Miter :{" "}
+                            <input type="number" name="miter" onChange={() => handleChangeMiter(el)}/>
+                            </p> */}
                             {/* <p>
                         Size : <span class="fw-medium">08</span>
                       </p> */}

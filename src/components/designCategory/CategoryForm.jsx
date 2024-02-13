@@ -3,8 +3,9 @@ import { Controller, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useCategoryByIdQuery, useSubmitCategoryMutation } from "../../service";
+import { useCategoryByIdQuery, useSubmitCategoryMutation, useUniqueCategoryCheckMutation } from "../../service";
 import { toast } from "react-hot-toast";
+import { useDebounce } from "../../hook/useDebpunce";
 
 function CategoryForm() {
   const navigate = useNavigate()
@@ -15,14 +16,36 @@ function CategoryForm() {
     skip: !locationState?.categoryID,
   });
   console.log('resCategoryById',resCategoryById);
+  const [reqUniqueCategoryCheck,resUniqueCategoryCheck] = useUniqueCategoryCheckMutation();
+
+
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
-    setError
+    setError,
+    watch
   } = useForm();
+
+  const debounceValue1 = useDebounce(watch('name'),500)
+
+  useEffect(() => {
+    if(debounceValue1 && !locationState?.categoryID ){
+      reqUniqueCategoryCheck({name:debounceValue1}).then(res => {
+        if(res?.error?.status === 400 && res?.error?.data?.message === 'Already uploaded'){
+          setError("name", {
+            type: "manual",
+            message:'Category already exist',
+          })
+        }else{
+          setError('name','')
+        }
+      })
+    }
+  
+  },[debounceValue1,locationState])
 
 
   useEffect(() => {

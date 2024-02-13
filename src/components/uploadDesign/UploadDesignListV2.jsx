@@ -13,6 +13,8 @@ import { Download, Edit, Eye, MoreVertical, Trash } from "react-feather";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { useRef } from "react";
 import Pagination from "../common/Pagination";
+import ReactDatePicker from "react-datepicker";
+
 
 
 function UploadDesignListV2() {
@@ -31,6 +33,7 @@ function UploadDesignListV2() {
   const [viewData, setViewData] = useState(null);
   const [mainFiles, setMainFiles] = useState([])
   console.log('mainFiless',mainFiles);
+  const [startDate, setStartDate] = useState(null);
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
@@ -226,12 +229,18 @@ function UploadDesignListV2() {
                         <th>Design Name</th>
                         <th>Category</th>
                         <th>Uploaded By</th>
+                        {/* <th>Created At</th> */}
                         <th>Action</th>
                       </tr>
                       <tr>
                         <td><input type="text" value={filterName} onChange={(e) => handleNameFilter(e)}/></td>
                         <td><input type="text" value={filterCategory} onChange={(e) => handleCategoryFilter(e)}/></td>
                         <td><input type="text" value={filterUploadedBy} onChange={(e) => handleUploadedByFilter(e)}/></td>
+                        {/* <td><ReactDatePicker 
+                              selected={startDate} 
+                              onChange={(date) => setStartDate(date)}
+                              placeholderText="Select Date"
+                        /></td> */}
                         <td/>
                         </tr>
                     </thead>
@@ -243,6 +252,8 @@ function UploadDesignListV2() {
                           <td><Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link></td>
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
+                          {/* <td>{""}</td> */}
+
                           <td>
                           {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?
         <UncontrolledDropdown>

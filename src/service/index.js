@@ -182,6 +182,14 @@ export const categoryApi = createApi({
       }),
       invalidatesTags: ["category"],
     }),
+    uniqueCategoryCheck: builder.mutation({
+      query: (payload) => ({
+        url: "category/check",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["category"],
+    }),
   }),
 });
 export const {
@@ -189,7 +197,8 @@ export const {
   useCategoryDropdownListQuery,
   useSubmitCategoryMutation,
   useDeleteCategoryMutation,
-  useCategoryByIdQuery
+  useCategoryByIdQuery,
+  useUniqueCategoryCheckMutation
 } = categoryApi;
 
 

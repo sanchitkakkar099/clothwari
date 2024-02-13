@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import Logosm from "../assets/images/logo-sm.svg";
-import Avatar1 from "../assets/images/users/avatar-1.jpg";
+import Logosm from "../assets/images/users/logo.jpg";
+import Avatar1 from "../assets/images/users/logo.jpg";
 import Avatar3 from "../assets/images/users/avatar-3.jpg";
 import Avatar4 from "../assets/images/users/avatar-4.jpg";
 import { Link, useNavigate } from "react-router-dom";
@@ -149,7 +149,7 @@ function HeaderComponent() {
       <div className="navbar-header">
         <div className="d-flex">
           <div className="navbar-brand-box">
-            <a href="index.html" className="logo logo-dark">
+            <a href="#!" className="logo logo-dark">
               <span className="logo-sm">
                 <img src={Logosm} alt="" height="22" />
               </span>
@@ -159,7 +159,7 @@ function HeaderComponent() {
               </span>
             </a>
 
-            <a href="index.html" className="logo logo-light">
+            <a href="#!" className="logo logo-light">
               <span className="logo-sm">
                 <img src={Logosm} alt="" height="22" />
               </span>
