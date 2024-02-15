@@ -14,6 +14,13 @@ import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from
 import { useRef } from "react";
 import Pagination from "../common/Pagination";
 import ReactDatePicker from "react-datepicker";
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc'; // Import UTC plugin
+import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
+
+// Extend Day.js with the plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 
 
@@ -141,7 +148,8 @@ function UploadDesignListV2() {
       limit:pageSize,
       name:e.target.value,
       category:filterCategory,
-      uploadedBy:filterUploadedBy
+      uploadedBy:filterUploadedBy,
+      date_filter:startDate ? dayjs.utc(startDate).format() : ""
     })
   }
 
@@ -152,7 +160,8 @@ function UploadDesignListV2() {
       limit:pageSize,
       name:filterName,
       category:e.target.value,
-      uploadedBy:filterUploadedBy
+      uploadedBy:filterUploadedBy,
+      date_filter:startDate ? dayjs.utc(startDate).format() : ""
     })
   }
 
@@ -163,7 +172,20 @@ function UploadDesignListV2() {
       limit:pageSize,
       name:filterName,
       category:filterCategory,
-      uploadedBy:e.target.value
+      uploadedBy:e.target.value,
+      date_filter:startDate ? dayjs.utc(startDate).format() : ""
+    })
+  }
+
+  const handleDateFilter = (date) => {
+    setStartDate(date)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      name:filterName,
+      category:filterCategory,
+      uploadedBy:filterUploadedBy,
+      date_filter:dayjs.utc(date).format()
     })
   }
 
@@ -195,7 +217,7 @@ function UploadDesignListV2() {
                 <div className="position-relative">
                 {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Create")) &&
                   <div className="modal-button modal-button-s mt-2">
-                  <button
+                  {/* <button
                       type="button"
                       className="btn btn-success waves-effect waves-light mb-4 me-2"
                       onClick={() => handleClickBulkUpload()}
@@ -209,7 +231,7 @@ function UploadDesignListV2() {
                       style={{ display: "none" }} // Make the file input element invisible
                       onChange={(e) => handleChangeBulkUpload(e)}
                       multiple
-                    />
+                    /> */}
                     <button
                       type="button"
                       className="btn btn-success waves-effect waves-light mb-4 me-2"
@@ -229,18 +251,18 @@ function UploadDesignListV2() {
                         <th>Design Name</th>
                         <th>Category</th>
                         <th>Uploaded By</th>
-                        {/* <th>Created At</th> */}
+                        <th>Created At</th>
                         <th>Action</th>
                       </tr>
                       <tr>
                         <td><input type="text" value={filterName} onChange={(e) => handleNameFilter(e)}/></td>
                         <td><input type="text" value={filterCategory} onChange={(e) => handleCategoryFilter(e)}/></td>
                         <td><input type="text" value={filterUploadedBy} onChange={(e) => handleUploadedByFilter(e)}/></td>
-                        {/* <td><ReactDatePicker 
+                        <td><ReactDatePicker 
                               selected={startDate} 
-                              onChange={(date) => setStartDate(date)}
+                              onChange={(date) => handleDateFilter(date)}
                               placeholderText="Select Date"
-                        /></td> */}
+                        /></td>
                         <td/>
                         </tr>
                     </thead>
@@ -252,7 +274,7 @@ function UploadDesignListV2() {
                           <td><Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link></td>
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
-                          {/* <td>{""}</td> */}
+                          <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
 
                           <td>
                           {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?

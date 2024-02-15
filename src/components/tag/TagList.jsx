@@ -33,14 +33,14 @@ function TagList() {
     }
   }, [resTag]);
 
-  const onEditAction = (e, st) => {
-    e.preventDefault();
-    navigate("/tag-form", {
-      state: {
-        tagID: st?.row?.original?._id,
-      },
-    });
-  };
+  // const onEditAction = (e, st) => {
+  //   e.preventDefault();
+  //   navigate("/tag-form", {
+  //     state: {
+  //       tagID: st?.row?.original?._id,
+  //     },
+  //   });
+  // };
 
   const handleDelete = (e, st) => {
     e.preventDefault();
@@ -71,7 +71,7 @@ function TagList() {
     const columns = [
         {
           Header: "Tag Name",
-          accessor: "name",
+          accessor: "label",
           Filter: TextSearchFilter,
           filter: "rankedMatchSorter",
         },
@@ -80,7 +80,7 @@ function TagList() {
           accessor: "action",
           Cell: (row) => (
             <div>
-              <button onClick={(e) => onEditAction(e,row)}>Edit</button>
+              {/* <button onClick={(e) => onEditAction(e,row)}>Edit</button> */}
               <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
             </div>
           ),
@@ -111,7 +111,7 @@ function TagList() {
         <div className="col-12">
           <div className="card">
             <div className="card-body">
-              <div className="position-relative">
+              {/* <div className="position-relative">
                 <div className="modal-button modal-button-s mt-2">
                   <button
                     type="button"
@@ -123,7 +123,7 @@ function TagList() {
                     <i className="mdi mdi-plus me-1"></i> Create Tag
                   </button>
                 </div>
-              </div>
+              </div> */}
               
                 <DataTable data={tagList} columns={columns} />
               

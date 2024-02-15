@@ -163,13 +163,13 @@ function SidebarComponent() {
                 }
 
 
-                {/* {userInfo?.role === 'Super Admin' && */}
-                {/* <li>
+                {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') &&
+                 <li>
                     <Link to="/tag-list">
                         <span className="menu-item" data-key="t-dashboards">Tag</span>
                     </Link>
-                </li> */}
-                {/* } */}
+                </li>
+                }
 
                 {userInfo?.role === 'Client' &&
                 <li>

@@ -1,24 +1,55 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import {  clearBagItems, removeBagItems } from "../../redux/clientSlice";
-import { useAddToBagByClientMutation, useGetBagNotificationQuery } from "../../service";
+import { clearBagItems, removeBagItems } from "../../redux/clientSlice";
+import { useAddToBagByClientMutation } from "../../service";
 import toast from "react-hot-toast";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { FormFeedback, Input } from "reactstrap";
 
 function ClientBagItem() {
   const dispatch = useDispatch();
-  const navigate = useNavigate()
-  const [reqAdd,resAdd] = useAddToBagByClientMutation()
+  const navigate = useNavigate();
+  const [reqAdd, resAdd] = useAddToBagByClientMutation();
 
   const selectedBagItems = useSelector(
     (state) => state?.clientState.selectedBagItems
   );
 
+  console.log("selectedBagItems", selectedBagItems);
 
-  const saveBagItems = () => {
-    if(selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0){
-      reqAdd({designId:selectedBagItems?.map((el) => el?._id)})
-    }
+  const {
+    handleSubmit,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm();
+  const { fields,remove } = useFieldArray({
+    control,
+    name: "design",
+  });
+  console.log("fields", fields, errors);
+
+  useEffect(() => {
+    // Set default values when component mounts
+    const defaultValues = selectedBagItems?.map((el) => ({
+      _id: el?._id,
+      name: el?.name,
+      thumbnail: el?.thumbnail,
+      tag: el?.tag,
+      meter: "",
+    })); // Default values
+    setValue("design", defaultValues);
+  }, []);
+
+  const saveBagItems = (state) => {
+    console.log("state", state);
+    reqAdd({
+      design: state?.design?.map((el) => ({
+        designId: el?._id,
+        meter: Number(el?.meter),
+      })),
+    });
   };
 
   useEffect(() => {
@@ -28,19 +59,21 @@ function ClientBagItem() {
       });
       navigate("/client-view-design");
       setTimeout(() => {
-        dispatch(clearBagItems([]))
+        dispatch(clearBagItems([]));
       }, 2000);
     }
     if (resAdd?.isError) {
-      toast.error('Failed to save', {
+      toast.error("Failed to save", {
         position: "top-center",
       });
     }
-  }, [resAdd?.isSuccess,resAdd?.isError]);
+  }, [resAdd?.isSuccess, resAdd?.isError]);
 
-  const handleRemoveFromBag = (el) => {
+  const handleRemoveFromBag = (e,el,inx) => {
+    e.preventDefault()
     const res = selectedBagItems?.filter((sb) => sb?._id !== el?._id);
     dispatch(removeBagItems(res));
+    remove(inx)
   };
 
   // const handleChangeMiter = () => {}
@@ -57,10 +90,8 @@ function ClientBagItem() {
 
         <div class="row">
           <div class="col-xl-12">
-            {selectedBagItems &&
-            Array.isArray(selectedBagItems) &&
-            selectedBagItems?.length > 0 ? (
-              selectedBagItems?.map((el, i) => {
+            {fields && Array.isArray(fields) && fields?.length > 0 ? (
+              fields?.map((el, i) => {
                 return (
                   <div class="card border shadow-none" key={i}>
                     <div class="card-body">
@@ -104,13 +135,40 @@ function ClientBagItem() {
                                   : ""}
                               </span>
                             </p>
-                            {/* <p class="mb-1">
-                              Miter :{" "}
-                            <input type="number" name="miter" onChange={() => handleChangeMiter(el)}/>
-                            </p> */}
-                            {/* <p>
-                        Size : <span class="fw-medium">08</span>
-                      </p> */}
+                            <p class="mb-1">
+                              Meter
+                              <Controller
+                                id={`design.${i}.meter`}
+                                name={`design.${i}.meter`}
+                                control={control}
+                                rules={{
+                                  required: "Meter is required",
+                                  min: {
+                                    value: 0,
+                                    message:
+                                      "Meter must be greater than or equal to 0",
+                                  },
+                                  max: {
+                                    value: 100,
+                                    message:
+                                      "Meter must be less than or equal to 100",
+                                  },
+                                }}
+                                render={({ field }) => (
+                                  <Input
+                                    placeholder="Entare Meter"
+                                    {...field}
+                                    value={field?.value}
+                                    type="number"
+                                  />
+                                )}
+                              />
+                              {errors?.design && (
+                                <FormFeedback>
+                                  {errors?.design[i]?.meter?.message}
+                                </FormFeedback>
+                              )}
+                            </p>
                           </div>
                         </div>
                         <div class="flex-shrink-0 ms-2">
@@ -119,7 +177,7 @@ function ClientBagItem() {
                               <Link
                                 to=""
                                 class="text-muted px-1"
-                                onClick={() => handleRemoveFromBag(el)}
+                                onClick={(e) => handleRemoveFromBag(e,el,i)}
                               >
                                 <i class="mdi mdi-trash-can-outline"></i>
                               </Link>
@@ -146,13 +204,13 @@ function ClientBagItem() {
                 <div class="row my-4">
                   <div class="col-sm-6">
                     <div class="text-sm-end mt-2 mt-sm-0">
-                      <Link
-                        to=""
+                      <button
+                        type="submit"
                         class="btn btn-success"
-                        onClick={() => saveBagItems()}
+                        onClick={handleSubmit(saveBagItems)}
                       >
-                         Save{" "}
-                      </Link>
+                        Save{" "}
+                      </button>
                     </div>
                   </div>
                 </div>
