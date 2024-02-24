@@ -10,7 +10,7 @@ import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import Cookies from "universal-cookie";
 import { setUserInfo, setUserToken } from "../../redux/authSlice";
 import StaffView from "./StaffView";
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { Edit, Eye, MoreVertical, Trash } from "react-feather";
 const cookies = new Cookies();
 
@@ -105,6 +105,12 @@ function StaffList() {
     }
   },[loginAsAdminRes])
 
+  const handleActiveInactive = (e,st) => {
+    e.preventDefault();
+    console.log('st?.row?.original',st?.row?.original);
+    // setViewData(st?.row?.original)
+  }
+
   const columns = [
     {
       Header: "Name",
@@ -129,6 +135,15 @@ function StaffList() {
       Cell: ({row}) => (row?.original?.permissions && Array.isArray(row?.original?.permissions) && row?.original?.permissions?.length > 0) ? row?.original?.permissions?.map(el => {
       return <li className="list-group-item">{el?.label}</li>
       }) : 'No Permissions',
+    },
+    {
+      Header: "Session",
+      accessor: "session",
+      Cell: (row) => (
+        (userInfo?.role === 'Super Admin') ? 
+        <Button color="primary" className="btn" onClick={(e) => handleActiveInactive(e,row)}>Active</Button>
+        :'No Permission'
+      )
     },
     {
       Header: "Action",

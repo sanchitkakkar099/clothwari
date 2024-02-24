@@ -654,7 +654,7 @@ function AddDesign() {
                               rules={{ required: "Name is required" }}
                               render={({ field }) => (
                                 <Input
-                                  placeholder="Entare Name"
+                                  placeholder="Enter Name"
                                   className="form-control"
                                   {...field}
                                   type="text"
@@ -684,7 +684,7 @@ function AddDesign() {
                               }}
                               render={({ field }) => (
                                 <Input
-                                  placeholder="Entare Design Number"
+                                  placeholder="Enter Design Number"
                                   className="form-control"
                                   {...field}
                                   // type="number"
@@ -764,7 +764,7 @@ function AddDesign() {
 
                       <div className="mb-3">
                         <Label className="form-label" for="image">
-                          Upload MainFile
+                          Upload Main File
                         </Label>
 
                         <div className="border-top">
@@ -977,7 +977,7 @@ function AddDesign() {
                                     rules={{ required: "Name is required" }}
                                     render={({ field }) => (
                                       <Input
-                                        placeholder="Entare Name"
+                                        placeholder="Enter Name"
                                         className="form-control"
                                         {...field}
                                         type="text"
@@ -1012,7 +1012,7 @@ function AddDesign() {
                                     }}
                                     render={({ field }) => (
                                       <Input
-                                        placeholder="Entare Design Number"
+                                        placeholder="Enter Design Number"
                                         className="form-control"
                                         {...field}
                                       />
@@ -1037,7 +1037,7 @@ function AddDesign() {
                                     className="form-label"
                                     for={`variations.${finx}.variation_image`}
                                   >
-                                    Upload MainFile
+                                    Upload Main File
                                   </Label>
 
                                   <Controller

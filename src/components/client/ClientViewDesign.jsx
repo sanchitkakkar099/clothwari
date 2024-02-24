@@ -1,15 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { useDesignUploadListMutation } from "../../service";
+import { useDesignUploadListMutation, useTagListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Pagination from "../common/Pagination";
 import { addedBagItems, removeBagItems } from "../../redux/clientSlice";
+import ReactDatePicker from "react-datepicker";
+import { Typeahead } from "react-bootstrap-typeahead";
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc'; // Import UTC plugin
+import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
+import { getTag } from "../../redux/tagSlice";
+
+// Extend Day.js with the plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function ClientViewDesign() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [reqDesign, resDesign] = useDesignUploadListMutation();
+  const [reqTag,resTag] = useTagListMutation()
+  const tagList = useSelector((state) => state?.tagState.tagList)
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
@@ -25,13 +37,30 @@ function ClientViewDesign() {
   const pageSize = 9;
   const [totalCount, setTotalCount] = useState(0);
 
+  const [startDate, setStartDate] = useState(null);
+  const [search, setSearch] = useState('');
+  const [tagsSearch, setTagSearch] = useState([]);
+
+
   useEffect(() => {
-    reqDesign({
-      page: currentPage,
-      limit: pageSize,
-      search: "",
-    });
-  }, [currentPage]);
+    if(search || startDate || tagsSearch){
+      reqDesign({
+        page: currentPage,
+        limit: pageSize,
+        search: search,
+        date_filter:startDate ?  dayjs.utc(startDate).format() : '',
+        tags:tagsSearch
+      });
+    }else{
+      reqDesign({
+        page: currentPage,
+        limit: pageSize,
+        search: "",
+        date_filter:'',
+        tags:[]
+      });
+    }
+  }, [currentPage,search,startDate,tagsSearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -42,10 +71,13 @@ function ClientViewDesign() {
   }, [resDesign]);
 
   const handleSearch = (search) => {
+    setSearch(search)
     reqDesign({
       page: currentPage,
       limit: pageSize,
       search: search,
+      date_filter:startDate ?  dayjs.utc(startDate).format() : '',
+      tags:tagsSearch
     });
   };
 
@@ -75,6 +107,50 @@ function ClientViewDesign() {
   const handleRemoveFromBag = (el) => {
     const res = selectedBagItems?.filter(sb => sb?._id !== el?._id)
     dispatch(removeBagItems(res))
+  }
+
+  const handleDateFilter = (date) => {
+    setStartDate(date)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      search:search,
+      date_filter:dayjs.utc(date).format()
+    })
+  }
+
+  const navigateToView = (e,el) => {
+    e.preventDefault()
+    navigate('/design-selection',{
+      state:{
+        data:el
+      }
+    })
+  }
+
+  useEffect(() => {
+    reqTag({
+      page: 0,
+      limit: 0,
+      search: "",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (resTag?.isSuccess) {
+      dispatch(getTag(resTag?.data?.data?.docs));
+    }
+  }, [resTag]);
+
+  const handleTagSelection = (selected) => {
+    setTagSearch(selected)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      search:search,
+      date_filter:dayjs.utc(startDate).format(),
+      tags:selected
+    })
   }
 
   
@@ -110,20 +186,55 @@ function ClientViewDesign() {
                         <h5>Designs</h5>
                       </div>
                     </div>
-                    <div className="col-md-6">
-                      <div className="form-inline float-md-end">
+                    
+                  </div>
+                  <div className="row m-4">
+                  <div className="col-md-4">
+                      <div className="form-inline">
                         <div className="search-box ms-2">
                           <div className="position-relative">
                             <input
                               type="text"
                               onChange={(e) => handleSearch(e.target.value)}
-                              className="form-control bg-light border-light rounded"
+                              className="form-control "
                               placeholder="Search..."
                             />
                             <i className="bx bx-search search-icon"></i>
                           </div>
+                          
                         </div>
+                       
+                       
                       </div>
+                    </div>
+                    <div className="col-md-3">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                        <ReactDatePicker 
+                              selected={startDate} 
+                              onChange={(date) => handleDateFilter(date)}
+                              placeholderText="Select Date"
+                              className="form-control "
+
+                        />
+                        </div>
+                        </div>
+                    </div>
+                    <div className="col-md-5">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                          
+                        <Typeahead
+                                  allowNew={false}
+                                  id="custom-selections-example"
+                                  labelKey={'label'}
+                                  multiple
+                                  options={(tagList && Array.isArray(tagList) && tagList?.length > 0) ? tagList?.map(el => el?.label) : []}
+                                  placeholder="Search tags..."
+                                  onChange={handleTagSelection}
+                                />
+                                </div>
+                                </div>
                     </div>
                   </div>
                   <div className="tab-content p-3 text-muted">
@@ -191,8 +302,8 @@ function ClientViewDesign() {
                                                     <div>
                                                       <h5 class="mb-1">
                                                         <Link
-                                                          to={`/product-view/${el?._id}`}
-                                                          href="ecommerce-product-detail.html"
+                                                          to={""}
+                                                          onClick={(e) => navigateToView(e,el)}
                                                           class="text-dark font-size-16"
                                                         >
                                                           {el?.name}
@@ -258,7 +369,7 @@ function ClientViewDesign() {
                                                   </div>
                                                   
                                                 </div>
-                                                {selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0 && selectedBagItems?.some(sb => sb?._id ===el?._id)  ?
+                                                {/* {selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0 && selectedBagItems?.some(sb => sb?._id ===el?._id)  ?
                                                 
                                                   <div className="d-flex justify-content-center mt-auto m-3">
                                                         <button 
@@ -272,7 +383,7 @@ function ClientViewDesign() {
                                                         onClick={() => handleAddToBag(el)}
                                                   >Add To Bag</button>
                                                     </div>
-                                                }
+                                                } */}
                                               </div>
                                             </div>
                                           );

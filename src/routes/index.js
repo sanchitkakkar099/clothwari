@@ -26,6 +26,9 @@ import ProductView from "../components/uploadDesign/ProductView";
 
 import ChangePassword from "../components/auth/changePassword";
 import ClientBagItem from "../components/client/BagItem";
+import ViewOrders from "../components/client/ViewOrders";
+import ViewMyOrders from "../components/client/ViewMyOrders";
+import DesignVariationList from "../components/client/DesignVariationList";
 
 
 export const privateRoutes = [
@@ -54,6 +57,12 @@ export const privateRoutes = [
   { path: "/client-form", Component: ClientForm },
   { path: "/client-view-design", Component: ClientViewDesign },
   { path: "/view-bag", Component: ClientBagItem },
+  { path: "/view-orders", Component: ViewOrders },
+  { path: "/view-my-orders", Component: ViewMyOrders },
+  { path: "/design-selection", Component: DesignVariationList },
+
+
+
 
 
   { path: "/color-variation-list", Component: ColorVariationList },

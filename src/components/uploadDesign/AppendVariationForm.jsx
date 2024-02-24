@@ -134,7 +134,7 @@ function AppendVariationForm() {
                           rules={{ required: "Name is required" }}
                           render={({ field }) => (
                             <Input
-                              placeholder="Entare Name"
+                              placeholder="Enter Name"
                               className="form-control"
                               {...field}
                               type="text"
@@ -162,7 +162,7 @@ function AppendVariationForm() {
                               }}
                               render={({ field }) => (
                                 <Input
-                                  placeholder="Entare Design Number"
+                                  placeholder="Enter Design Number"
                                   className="form-control"
                                   {...field}
                                   // type="number"
@@ -180,7 +180,7 @@ function AppendVariationForm() {
                     
                       {/* <div className="mb-0">
                         <Label className="form-label" for="image">
-                          Upload MainFile
+                          Upload Main File
                         </Label>
                         <div className="border-top">
                           <form action="#" className="dropzone img__upload">

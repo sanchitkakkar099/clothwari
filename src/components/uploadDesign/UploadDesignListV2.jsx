@@ -54,11 +54,22 @@ function UploadDesignListV2() {
   const [filterUploadedBy, setFilterUploadedBy] = useState('');
 
   useEffect(() => {
-    reqDesign({
-      page: currentPage,
-      limit: pageSize
-    });
-  }, [currentPage]);
+    if(filterName || filterCategory || filterUploadedBy || startDate){
+      reqDesign({
+        page:currentPage,
+        limit:pageSize,
+        name:filterName,
+        category:filterCategory,
+        uploadedBy:filterUploadedBy,
+        date_filter:startDate ? dayjs.utc(startDate).format() : ""
+      })
+    }else{
+      reqDesign({
+        page: currentPage,
+        limit: pageSize
+      });
+    }
+  }, [currentPage,filterName,filterCategory,filterUploadedBy,startDate]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -271,7 +282,7 @@ function UploadDesignListV2() {
                       TBLData?.map((ele) => {
                         return(
                           <tr key={ele?._id}>
-                          <td><Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link></td>
+                          <td>{(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
                           <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>

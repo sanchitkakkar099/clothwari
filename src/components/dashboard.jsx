@@ -21,7 +21,11 @@ function DashboardComponent() {
     },[resDashboard])
 
     const navigateToPage = (navTo) => {
-        navigate(navTo)
+        if(userInfo?.role === 'Client'){
+            navigate("/client-view-design")
+        }else{
+            navigate(navTo)
+        }
     }
 
   return (
@@ -73,7 +77,9 @@ function DashboardComponent() {
                         </div>
                     </div>
                     }
-                    {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download")) &&
+                    {/* {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download")) && */}
+                    {((userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Client')) &&
+                    
                     <div className="col-lg-3 col-md-6">
                         <div className="card" style={{cursor: 'pointer'}} onClick={() => navigateToPage('/design-list-v1')}>
                             <div className="card-body">
@@ -138,7 +144,7 @@ function DashboardComponent() {
                     }
                     {(userInfo?.role === 'Client') &&
                     <div className="col-lg-3 col-md-6">
-                        <div className="card" style={{cursor: 'pointer'}}>
+                        <div className="card" style={{cursor: 'pointer'}} onClick={() => navigate("/view-my-orders")}>
                             <div className="card-body">
                                 <div className="avatar">
                                     <span className="avatar-title bg-soft-success rounded">
@@ -154,7 +160,11 @@ function DashboardComponent() {
 
                     {(userInfo?.role === 'Super Admin') &&
                     <div className="col-lg-3 col-md-6">
-                        <div className="card" style={{cursor: 'pointer'}}>
+                        <div className="card" style={{cursor: 'pointer'}} onClick={() => navigate("/view-orders",{
+                            state:{
+                                from:location.pathname
+                            }
+                        })}>
                             <div className="card-body">
                                 <div className="avatar">
                                     <span className="avatar-title bg-soft-success rounded">

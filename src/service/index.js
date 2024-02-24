@@ -706,6 +706,14 @@ export const clientBagApi = createApi({
       }),
       providesTags: ["clientBag"],
     }),
+    myAllOrders: builder.mutation({
+      query: (payload) => ({
+        url: "client/my/design",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["clientBag"],
+    }),
     
   }),
 });
@@ -714,5 +722,6 @@ export const {
  useGetBagNotificationQuery,
  useAddToBagByClientMutation,
  useMyBagListMutation,
- useMyBagCountingQuery
+ useMyBagCountingQuery,
+ useMyAllOrdersMutation
 } = clientBagApi;

@@ -143,7 +143,7 @@ function CategoryForm() {
                           rules={{ required: "Name is required" }}
                           render={({ field }) => (
                             <Input
-                              placeholder="Entare Name"
+                              placeholder="Enter Name"
                               className="form-control"
                               {...field}
                               type="text"

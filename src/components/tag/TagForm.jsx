@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSubmitTagMutation, useTagByIdQuery } from "../../service";
 import toast from "react-hot-toast";
 
@@ -20,6 +20,7 @@ function TagForm() {
     handleSubmit,
     formState: { errors },
     reset,
+    setError
   } = useForm();
 
   useEffect(() => {
@@ -43,7 +44,16 @@ function TagForm() {
       reset()
       navigate("/tag-list");
     }
-  }, [resTag?.isSuccess]);
+    if (resTag?.isError) {
+      setError("label", {
+        type: "manual",
+        message:
+          resTag?.error?.data?.message === "Already Exists"
+            ? "Tag Is Already Exist"
+            : "",
+      });
+    }
+  }, [resTag?.isSuccess,resTag?.isError]);
   
    return (
     <div className="page-content">
@@ -99,35 +109,35 @@ function TagForm() {
                       <div className="row">
                       <div className="col-md-12">
                       <div className="mb-3">
-                        <Label className="form-label" for="name">
+                        <Label className="form-label" for="label">
                             Name
                         </Label>
                         <Controller
-                          id="name"
-                          name="name"
+                          id="label"
+                          name="label"
                           control={control}
                           rules={{ required: "Name is required" }}
                           render={({ field }) => (
                             <Input
-                              placeholder="Entare Name"
+                              placeholder="Enter Name"
                               className="form-control"
                               {...field}
                               type="text"
                             />
                           )}
                         />
-                        {errors.name && (
-                          <FormFeedback>{errors?.name?.message}</FormFeedback>
+                        {errors.label && (
+                          <FormFeedback>{errors?.label?.message}</FormFeedback>
                         )}
                       </div>
                       </div>
                       </div>
                       <div className="row">
                         <div className="col text-end">
-                          <a href="#" className="btn btn-danger m-1">
+                          <Link to="/tag-list" className="btn btn-danger m-1">
                             {" "}
                             <i className="bx bx-x mr-1"></i> Cancel{" "}
-                          </a>
+                          </Link>
                           <button
                             type="submit"
                             className="btn btn-success m-1"

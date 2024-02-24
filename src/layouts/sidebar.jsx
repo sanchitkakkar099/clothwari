@@ -209,6 +209,14 @@ function SidebarComponent() {
                 </li>
                 } */}
 
+                {(userInfo?.role === 'Client') &&
+                 <li>
+                    <Link to="/view-my-orders">
+                        <span className="menu-item" data-key="t-dashboards">View Orders</span>
+                    </Link>
+                </li>
+                }
+
 
             </ul>
         </div>

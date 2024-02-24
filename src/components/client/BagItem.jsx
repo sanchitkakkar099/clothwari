@@ -36,7 +36,9 @@ function ClientBagItem() {
       _id: el?._id,
       name: el?.name,
       thumbnail: el?.thumbnail,
-      tag: el?.tag,
+      designNo:el?.designNo,
+      variation:el?.variation ? el?.variation : false,
+      designId:el?.designId ? el?.designId : '',
       meter: "",
     })); // Default values
     setValue("design", defaultValues);
@@ -126,13 +128,9 @@ function ClientBagItem() {
                               </a>
                             </h5>
                             <p class="mb-1">
-                              Tag :{" "}
+                              Design No :{" "}
                               <span class="fw-medium">
-                                {el?.tag &&
-                                Array.isArray(el?.tag) &&
-                                el?.tag?.length > 0
-                                  ? el?.tag?.map((el) => el?.label)?.join(",")
-                                  : ""}
+                                {el?.designNo ? el?.designNo : ""}
                               </span>
                             </p>
                             <p class="mb-1">

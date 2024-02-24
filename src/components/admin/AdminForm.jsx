@@ -136,7 +136,7 @@ function AdminForm() {
                           rules={{ required: "Name is required" }}
                           render={({ field }) => (
                             <Input
-                              placeholder="Entare Name"
+                              placeholder="Enter Name"
                               className="form-control"
                               {...field}
                               type="text"
@@ -167,7 +167,7 @@ function AdminForm() {
                                 }}
                               render={({ field }) => (
                                 <Input
-                                  placeholder="Entare Email"
+                                  placeholder="Enter Email"
                                   className="form-control"
                                   {...field}
                                   type="text"
@@ -194,7 +194,7 @@ function AdminForm() {
                               rules={{ required: "Password is required" }}
                               render={({ field }) => (
                                 <Input
-                                  placeholder="Entare Password"
+                                  placeholder="Enter Password"
                                   className="form-control"
                                   {...field}
                                   type="text"

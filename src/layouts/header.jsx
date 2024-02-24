@@ -124,6 +124,8 @@ function HeaderComponent() {
 
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const dropdownRef = useRef(null);
+  const settingRef = useRef(null);
+
   const simpleBarRef = useRef();
 
   const toggleDropdown = (event) => {
@@ -135,6 +137,9 @@ function HeaderComponent() {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownVisible(false);
     }
+    if (settingRef.current && !settingRef.current.contains(event.target)) {
+      setOpenMenu(false);
+    }
   };
 
   useEffect(() => {
@@ -143,6 +148,15 @@ function HeaderComponent() {
       document.removeEventListener("click", handleOutsideClick);
     };
   }, []);
+
+  const handleViewOder = (e,dt) => {
+    e.preventDefault()
+    navigate(`/view-orders`,{
+      state:{
+        data:dt?.design
+      }
+    })
+  }
 
   return (
     <header id="page-topbar" className="isvertical-topbar">
@@ -273,7 +287,7 @@ function HeaderComponent() {
                       &&
                       resBagListByAdmin?.data?.data?.docs?.map((el,inx) => {
                         return(
-                          <Link to="" className="text-reset notification-item" key={inx}>
+                          <Link to="" onClick={(e) => handleViewOder(e,el)} className="text-reset notification-item" key={inx}>
                       <div className="d-flex border-bottom align-items-start">
                         {/* <div className="flex-shrink-0">
                           <img
@@ -286,7 +300,7 @@ function HeaderComponent() {
                           <h6 className="mb-1">{el?.userId?.name}</h6>
                           <div className="text-muted">
                             <p className="mb-1 font-size-13">
-                              {`${el?.userId?.name} orders ${el?.designId?.length} designs`}
+                              {`${el?.userId?.name} orders ${el?.design?.length} designs`}
                               {/* <span className="badge badge-soft-success">
                                 Review
                               </span> */}
@@ -413,7 +427,7 @@ function HeaderComponent() {
             </button>
             </div>
           }
-          <div className="dropdown d-inline-block">
+          <div className="dropdown d-inline-block" >
             <button
               type="button"
               className="btn header-item user text-start d-flex align-items-center show"
@@ -422,19 +436,23 @@ function HeaderComponent() {
               aria-haspopup="true"
               aria-expanded="false"
               onClick={() => setOpenMenu(!openMenu)}
+              ref={settingRef}
+
             >
               <img
                 className="rounded-circle header-profile-user"
                 src={Avatar1}
                 alt="Header Avatar"
+
               />
             </button>
             <div
               className={`dropdown-menu dropdown-menu-end pt-0 ${
                 openMenu ? "show" : ""
               } dropdown-user`}
-            >
-              <Link className="dropdown-item" to="">
+            > 
+             
+              <Link className="dropdown-item" to=""  >
                 <i className="bx bx-user-circle text-muted font-size-18 align-middle me-1"></i>{" "}
                 <span className="align-middle text-capitalize">
                   {userInfo?.firstName || userInfo?.lastName

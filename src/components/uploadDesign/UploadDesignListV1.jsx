@@ -5,17 +5,31 @@ import Three from "../../assets/images/product/four.jpg";
 import Four from "../../assets/images/product/three.jpg";
 import Five from "../../assets/images/product/one.jpg";
 import Six from "../../assets/images/product/six.jpg";
-import { useDesignUploadListMutation } from "../../service";
+import { useDesignUploadListMutation, useTagListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { DivideSquare } from "react-feather";
 import Pagination from "../common/Pagination";
+import ReactDatePicker from "react-datepicker";
+import { Typeahead } from "react-bootstrap-typeahead";
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc'; // Import UTC plugin
+import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
+import { getTag } from "../../redux/tagSlice";
+
+// Extend Day.js with the plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 
 function UploadDesignListV1() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [reqDesign, resDesign] = useDesignUploadListMutation();
+  const [reqTag,resTag] = useTagListMutation()
+  const tagList = useSelector((state) => state?.tagState.tagList)
+  console.log('tagList',tagList);
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
@@ -29,13 +43,32 @@ function UploadDesignListV1() {
   const pageSize = 9
   const [totalCount, setTotalCount] = useState(0)
 
+  const [startDate, setStartDate] = useState(null);
+  const [search, setSearch] = useState('');
+  const [tagsSearch, setTagSearch] = useState([]);
+
+
+
+
   useEffect(() => {
-    reqDesign({
-      page: currentPage,
-      limit: pageSize,
-      search: "",
-    });
-  }, [currentPage]);
+    if(search || startDate || tagsSearch){
+      reqDesign({
+        page: currentPage,
+        limit: pageSize,
+        search: search,
+        date_filter:startDate ?  dayjs.utc(startDate).format() : '',
+        tags:tagsSearch
+      });
+    }else{
+      reqDesign({
+        page: currentPage,
+        limit: pageSize,
+        search: "",
+        date_filter:'',
+        tags:[]
+      });
+    }
+  }, [currentPage,search,startDate,tagsSearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -46,10 +79,13 @@ function UploadDesignListV1() {
   }, [resDesign]);
 
   const handleSearch = (search) => {
+    setSearch(search)
     reqDesign({
       page: currentPage,
       limit: pageSize,
       search: search,
+      date_filter:startDate ?  dayjs.utc(startDate).format() : '',
+      tags:tagsSearch
     });
   };
 
@@ -64,6 +100,43 @@ function UploadDesignListV1() {
       
     }
     console.log('variation',variation);
+  }
+
+  const handleDateFilter = (date) => {
+    setStartDate(date)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      search:search,
+      date_filter:dayjs.utc(date).format(),
+      tags:tagsSearch
+    })
+  }
+
+  useEffect(() => {
+    reqTag({
+      page: 0,
+      limit: 0,
+      search: "",
+    });
+  }, []);
+
+  useEffect(() => {
+    if (resTag?.isSuccess) {
+      dispatch(getTag(resTag?.data?.data?.docs));
+    }
+  }, [resTag]);
+
+  const handleTagSelection = (selected) => {
+    console.log('selected',selected);
+    setTagSearch(selected)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      search:search,
+      date_filter:dayjs.utc(startDate).format(),
+      tags:selected
+    })
   }
 
   return (
@@ -97,23 +170,58 @@ function UploadDesignListV1() {
                         <h5>Designs</h5>
                       </div>
                     </div>
-                    <div className="col-md-6">
-                      <div className="form-inline float-md-end">
+                    
+                  </div>
+                  <div className="row m-4">
+                  <div className="col-md-4">
+                      <div className="form-inline">
                         <div className="search-box ms-2">
                           <div className="position-relative">
                             <input
                               type="text"
                               onChange={(e) => handleSearch(e.target.value)}
-                              className="form-control bg-light border-light rounded"
+                              className="form-control "
                               placeholder="Search..."
                             />
                             <i className="bx bx-search search-icon"></i>
                           </div>
+                          
                         </div>
+                       
+                       
                       </div>
                     </div>
+                    <div className="col-md-3">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                        <ReactDatePicker 
+                              selected={startDate} 
+                              onChange={(date) => handleDateFilter(date)}
+                              placeholderText="Select Date"
+                              className="form-control "
+
+                        />
+                        </div>
+                        </div>
+                    </div>
+                    <div className="col-md-5">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                          
+                        <Typeahead
+                                  allowNew={false}
+                                  id="custom-selections-example"
+                                  labelKey={'label'}
+                                  multiple
+                                  options={(tagList && Array.isArray(tagList) && tagList?.length > 0) ? tagList?.map(el => el?.label) : []}
+                                  placeholder="Search tags..."
+                                  onChange={handleTagSelection}
+                                />
+                                </div>
+                                </div>
+                    </div>
                   </div>
-                  <div className="tab-content p-3 text-muted">
+                  <div className="tab-content text-muted">
                     <div
                       className="tab-pane active"
                       id="popularity"

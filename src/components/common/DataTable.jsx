@@ -68,59 +68,59 @@ const DataTable = (props) => {
     },
     useFilters,
     usePagination,
-    useRowSelect,
-    (hooks) => {
-      hooks.visibleColumns.push((columns) => [
-        {
-          id: "anyThing",
-          Header: ({ toggleRowSelected, isAllPageRowsSelected, page }) => {
-            const modifiedOnChange = (event) => {
-              page.forEach((row) => {
-                //check each row if it is not disabled
-                !row.original.disabled &&
-                  toggleRowSelected(row.id, event.currentTarget.checked);
-              });
-            };
+    // useRowSelect,
+    // (hooks) => {
+    //   hooks.visibleColumns.push((columns) => [
+    //     {
+    //       id: "anyThing",
+    //       Header: ({ toggleRowSelected, isAllPageRowsSelected, page }) => {
+    //         const modifiedOnChange = (event) => {
+    //           page.forEach((row) => {
+    //             //check each row if it is not disabled
+    //             !row.original.disabled &&
+    //               toggleRowSelected(row.id, event.currentTarget.checked);
+    //           });
+    //         };
 
-            //Count number of selectable and selected rows in the current page
-            //to determine the state of select all checkbox
-            let selectableRowsInCurrentPage = 0;
-            let selectedRowsInCurrentPage = 0;
-            page.forEach((row) => {
-              row.isSelected && selectedRowsInCurrentPage++;
-              !row.original.disabled && selectableRowsInCurrentPage++;
-            });
+    //         //Count number of selectable and selected rows in the current page
+    //         //to determine the state of select all checkbox
+    //         let selectableRowsInCurrentPage = 0;
+    //         let selectedRowsInCurrentPage = 0;
+    //         page.forEach((row) => {
+    //           row.isSelected && selectedRowsInCurrentPage++;
+    //           !row.original.disabled && selectableRowsInCurrentPage++;
+    //         });
 
-            //If there are no selectable rows in the current page
-            //select all checkbox will be disabled -> see page 2
-            const disabled = selectableRowsInCurrentPage === 0;
-            const checked =
-              (isAllPageRowsSelected ||
-                selectableRowsInCurrentPage === selectedRowsInCurrentPage) &&
-              !disabled;
+    //         //If there are no selectable rows in the current page
+    //         //select all checkbox will be disabled -> see page 2
+    //         const disabled = selectableRowsInCurrentPage === 0;
+    //         const checked =
+    //           (isAllPageRowsSelected ||
+    //             selectableRowsInCurrentPage === selectedRowsInCurrentPage) &&
+    //           !disabled;
 
-            return (
-              <div>
-                <IndeterminateCheckbox
-                  onChange={modifiedOnChange}
-                  checked={checked}
-                  disabled={disabled}
-                />
-              </div>
-            );
-          },
-          Cell: ({ row }) => (
-            <div>
-              <IndeterminateCheckbox
-                {...row.getToggleRowSelectedProps()}
-                disabled={row.original.disabled}
-              />
-            </div>
-          )
-        },
-        ...columns
-      ]);
-    }
+    //         return (
+    //           <div>
+    //             <IndeterminateCheckbox
+    //               onChange={modifiedOnChange}
+    //               checked={checked}
+    //               disabled={disabled}
+    //             />
+    //           </div>
+    //         );
+    //       },
+    //       Cell: ({ row }) => (
+    //         <div>
+    //           <IndeterminateCheckbox
+    //             {...row.getToggleRowSelectedProps()}
+    //             disabled={row.original.disabled}
+    //           />
+    //         </div>
+    //       )
+    //     },
+    //     ...columns
+    //   ]);
+    // }
   );
   console.log('selectedFlatRows',selectedFlatRows?.map(el => el?.original));
 
