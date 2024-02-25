@@ -27,13 +27,22 @@ function TagForm() {
     if (resTagById?.isSuccess && resTagById?.data?.data) {
       reset({
         ...resTagById.data.data,
+        tagId:resTagById.data.data?._id
       });
     }
   }, [resTagById]);
 
   const onNext = (state) => {
     console.log("state", state);
-    reqTag(state);
+    reqTag({
+       label: state?.label,
+       id: state?.id,
+       customOption: state?.customOption,
+       createdAt: state?.createdAt,
+       updatedAt: state?.updatedAt,
+       __v: state?.__v,
+       tagId: state?.tagId
+    });
   };
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { setTimer, setUserInfo, setUserToken } from "../redux/authSlice";
-import { useClientBagListByAdminMutation, useGetBagNotificationQuery, useLoginAsAdminMutation, useLogoutUserMutation } from "../service";
+import { useClientBagListByAdminMutation, useGetBagNotificationQuery, useLoginAsAdminMutation, useLogoutUserMutation, useNotificationReadMutation } from "../service";
 import TimeElapsedApp from "../components/TimeElapsed";
 import SessionTimer from "../components/SessionTimer";
 import { Bell, ShoppingCart } from "react-feather";
@@ -21,6 +21,7 @@ function HeaderComponent() {
   const [loginBackAdminReq, loginBackAdminRes] = useLoginAsAdminMutation();
   const notication = useGetBagNotificationQuery()
   const [reqBagListByAdmin, resBagListByAdmin] = useClientBagListByAdminMutation();
+  const [reqReadNotification,resReadNotification] = useNotificationReadMutation()
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const timer = useSelector((state) => state?.authState.timer);
   const selectedBagItems = useSelector(
@@ -151,12 +152,26 @@ function HeaderComponent() {
 
   const handleViewOder = (e,dt) => {
     e.preventDefault()
+    reqReadNotification({
+      notificationId:dt?._id
+    })
+    reqBagListByAdmin({
+      page: 1,
+      limit: '',
+      search: "",
+    });
     navigate(`/view-orders`,{
       state:{
         data:dt?.design
       }
     })
   }
+
+  useEffect(() => {
+    if(resReadNotification?.isSuccess){
+      notication.refetch()
+    }
+  },[resReadNotification?.isSuccess])
 
   return (
     <header id="page-topbar" className="isvertical-topbar">
@@ -288,7 +303,7 @@ function HeaderComponent() {
                       resBagListByAdmin?.data?.data?.docs?.map((el,inx) => {
                         return(
                           <Link to="" onClick={(e) => handleViewOder(e,el)} className="text-reset notification-item" key={inx}>
-                      <div className="d-flex border-bottom align-items-start">
+                      <div className="d-flex border-bottom align-items-start" style={{backgroundColor: el?.adminView ? '#33a18640' : '#FFF'}} >
                         {/* <div className="flex-shrink-0">
                           <img
                             src={Avatar3}
@@ -480,7 +495,7 @@ function HeaderComponent() {
                   onClick={(e) => handleBackToAdmin(e, userInfo?.adminId)}
                 >
                   <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
-                  <span className="align-middle">Bact To Admin</span>
+                  <span className="align-middle">Bact To Super Admin</span>
                 </Link>
               ) : (
                 <Link className="dropdown-item" to="" onClick={handleLogout}>

@@ -326,13 +326,15 @@ function UploadDesignListV2() {
                                     <span className="align-middle">Download</span>
                                   </DropdownItem>
                                 }
-                                   {/* <DropdownItem
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Delete")) &&
+                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => handleDelete(e,ele)}
                                   >
                                     <Trash className="me-50" size={15} />{" "}
                                     <span className="align-middle">Delete</span>
-                                  </DropdownItem> */}
+                                  </DropdownItem>
+                                }
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                               :'No Permission'}

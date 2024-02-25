@@ -45,11 +45,29 @@ export const authApi = createApi({
       }),
       invalidatesTags: ["auth"],
     }),
+    superAdminLoginAsLogin: builder.mutation({
+      query: (payload) => ({
+        url: "admin/login/byadmin",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["auth"],
+    }),
+    superAdminLoginAsClient: builder.mutation({
+      query: (payload) => ({
+        url: "client/login/byadmin",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["auth"],
+    }),
   }),
 });
 export const {
   useLoginAuthMutation,
   useLoginAsAdminMutation,
+  useSuperAdminLoginAsLoginMutation,
+  useSuperAdminLoginAsClientMutation,
   useLogoutUserMutation,
   useClientLastActiveTimeMutation,
 } = authApi;  
@@ -120,6 +138,7 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ["auth"],
     }),
+    
   }),
 });
 export const {
@@ -129,7 +148,7 @@ export const {
  useDeleteAdminMutation,
  useGetAdminPermissionListQuery,
  useAdminStaffApprovalListMutation,
- useChangePasswordMutation
+ useChangePasswordMutation,
 } = adminApi;
 
 export const categoryApi = createApi({
@@ -503,6 +522,14 @@ export const designerApi = createApi({
       }),
       providesTags: ["designer"],
     }),
+    manageStaffSessionByAdmin: builder.mutation({
+      query: (payload) => ({
+        url: "admin/user/deactivate",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["designer"],
+    }),
   }),
 });
 export const {
@@ -511,7 +538,8 @@ export const {
   useDesignerByIdQuery,
   useDeleteDesignerMutation,
   useGetDesignerPermissionListQuery,
-  useStaffApprovalBySuperAdminMutation
+  useStaffApprovalBySuperAdminMutation,
+  useManageStaffSessionByAdminMutation
 } = designerApi;
 
 
@@ -714,7 +742,14 @@ export const clientBagApi = createApi({
       }),
       providesTags: ["clientBag"],
     }),
-    
+    notificationRead: builder.mutation({
+      query: (payload) => ({
+        url: "admin/read/notification",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["clientBag"],
+    }),
   }),
 });
 export const {
@@ -723,5 +758,6 @@ export const {
  useAddToBagByClientMutation,
  useMyBagListMutation,
  useMyBagCountingQuery,
- useMyAllOrdersMutation
+ useMyAllOrdersMutation,
+ useNotificationReadMutation,
 } = clientBagApi;

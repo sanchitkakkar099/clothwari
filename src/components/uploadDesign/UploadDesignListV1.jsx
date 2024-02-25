@@ -134,7 +134,7 @@ function UploadDesignListV1() {
       page:currentPage,
       limit:pageSize,
       search:search,
-      date_filter:dayjs.utc(startDate).format(),
+      date_filter:startDate ? dayjs.utc(startDate).format() : "",
       tags:selected
     })
   }

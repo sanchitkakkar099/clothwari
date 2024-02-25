@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Filter";
 import DataTable from "../common/DataTable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useClientListMutation, useDeleteClientMutation } from "../../service";
+import { useClientListMutation, useDeleteClientMutation, useSuperAdminLoginAsClientMutation } from "../../service";
 import { getDesigner } from "../../redux/designerSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
@@ -11,6 +11,9 @@ import { getClient } from "../../redux/clientSlice";
 import ClientView from "./ClientView";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { Edit, MoreVertical, Trash,Eye } from "react-feather";
+import Cookies from "universal-cookie";
+import { setUserInfo, setUserToken } from "../../redux/authSlice";
+const cookies = new Cookies();
 
 
 function ClientList() {
@@ -25,6 +28,9 @@ function ClientList() {
   const [modalDetails, setModalDetails] = useState(null);
   const [modal, setModal] = useState(false);
   const [viewData, setViewData] = useState(null);
+
+  const [loginAsAdminReq, loginAsAdminRes] = useSuperAdminLoginAsClientMutation();
+  const [adminId, setAdminId] = useState(null);
 
   useEffect(() => {
     reqClient({
@@ -81,12 +87,41 @@ function ClientList() {
     }
   }, [resDelete]);
 
+  const loginAsClientBySuperAdmin = (e,adminId,aId) => {
+    e.preventDefault();
+    setAdminId(aId);
+    loginAsAdminReq({
+      clientId: adminId
+    })
+  }
+
+  useEffect(() => {
+    if(loginAsAdminRes?.isSuccess && loginAsAdminRes?.data?.data){
+      console.log('loginAs',loginAsAdminRes?.data);
+      cookies.set("clothwari", loginAsAdminRes?.data?.data?.token, { path: "/" });
+      cookies.set("clothwari_user", {...loginAsAdminRes?.data?.data,adminId:adminId,asAdminFlag:true}, { path: "/" });
+      dispatch(setUserToken(loginAsAdminRes?.data?.data?.token))
+      dispatch(setUserInfo({...loginAsAdminRes?.data?.data,adminId:adminId,asAdminFlag:true}))
+      navigate('/dashboard')
+    }
+  },[loginAsAdminRes])
+
   const columns = [
     {
       Header: "Name",
       accessor: "name",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
+      Cell: (row) => (
+        !userInfo?.asAdminFlag ?
+        <div>
+          <Link to="" onClick={(e) => loginAsClientBySuperAdmin(e,row?.row?.original?._id,userInfo?._id)}>{row?.row?.original?.name}</Link>
+        </div>
+         :
+         <div>
+         <span>{row?.row?.original?.name}</span>
+       </div>
+      ),
     },
     {
       Header: "Email",

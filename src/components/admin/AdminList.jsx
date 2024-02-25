@@ -5,9 +5,9 @@ import {
   TextSearchFilter,
 } from "../common/Filter";
 import DataTable from "../common/DataTable";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useAdminListMutation } from "../../service";
+import { useAdminListMutation, useSuperAdminLoginAsLoginMutation } from "../../service";
 import {
   DropdownItem,
   DropdownMenu,
@@ -16,13 +16,22 @@ import {
 } from "reactstrap";
 import { Edit, MoreVertical, Eye } from "react-feather";
 import { getAdmin } from "../../redux/adminSlice";
+import { setUserInfo, setUserToken } from "../../redux/authSlice";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
+
 
 function AdmintList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [reqAdmin, resAdmin] = useAdminListMutation();
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const adminList = useSelector((state) => state?.adminState.adminList);
   console.log("adminList", adminList);
+
+  const [loginAsAdminReq, loginAsAdminRes] = useSuperAdminLoginAsLoginMutation();
+  const [adminId, setAdminId] = useState(null);
+
 
   useEffect(() => {
     reqAdmin({
@@ -57,18 +66,59 @@ function AdmintList() {
     });
   };
 
+  const loginAsAdminBySuperAdmin = (e,adminId,aId) => {
+    e.preventDefault();
+    setAdminId(aId);
+    loginAsAdminReq({
+      adminId: adminId
+    })
+  }
+
+  useEffect(() => {
+    if(loginAsAdminRes?.isSuccess && loginAsAdminRes?.data?.data){
+      console.log('loginAs',loginAsAdminRes?.data);
+      cookies.set("clothwari", loginAsAdminRes?.data?.data?.token, { path: "/" });
+      cookies.set("clothwari_user", {...loginAsAdminRes?.data?.data,adminId:adminId,asAdminFlag:true}, { path: "/" });
+      dispatch(setUserToken(loginAsAdminRes?.data?.data?.token))
+      dispatch(setUserInfo({...loginAsAdminRes?.data?.data,adminId:adminId,asAdminFlag:true}))
+      navigate('/dashboard')
+    }
+  },[loginAsAdminRes])
+
   const columns = [
     {
       Header: "Name",
       accessor: "name",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
+      Cell: (row) => (
+        <div>
+          <Link to="" onClick={(e) => loginAsAdminBySuperAdmin(e,row?.row?.original?._id,userInfo?._id)}>{row?.row?.original?.name}</Link>
+        </div>
+      ),
     },
     {
       Header: "Email",
       accessor: "email",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
+    },
+    {
+      Header: "Permissions",
+      accessor: "permissions",
+      Filter: TextSearchFilter,
+      filter: (rows, columnIds, filterValue) => {
+        return rows.filter(row => {
+          if (row?.original?.permissions && Array.isArray(row?.original?.permissions)) {
+            return row?.original?.permissions?.some(permission => permission?.label?.toLowerCase()?.includes(filterValue?.toLowerCase()));
+          } else {
+            return false;
+          }
+        });
+      },
+      Cell: ({row}) => (row?.original?.permissions && Array.isArray(row?.original?.permissions) && row?.original?.permissions?.length > 0) ? 
+      <li className="list-group-item">{row?.original?.permissions?.map(el => el?.label)?.join(", ")}</li>
+     : 'No Permissions',
     },
     {
       Header: "Action",

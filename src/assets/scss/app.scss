@@ -59,7 +59,7 @@
 .list_table{width: 100%;}
 .list_table thead tr th{color:#082a3e;padding: 0.75rem 0.75rem;font-weight: 600;}
 // .list_table thead tr th:first-child{min-width: 20px;width: 38px;display: flex;}
-.list_table thead tr th:first-child{min-width: 20px;width: 38px;display: grid;padding: 0.75rem 0.75rem;}
+.list_table thead tr th:first-child{min-width: 20px;display: grid;padding: 0.75rem 0.75rem;}
 // .list_table thead tr th:last-child{display: flex;}
 // .list_table thead tr th:last-child{position: relative;}
 .list_table thead input{font-size: 13px;color: #082a3e;background-color:#fff;border-color:#e2e5e8;-webkit-appearance: none;-moz-appearance: none;appearance: none;background-color: #fff;border: 1px solid #d2d6dc;border-radius: 5px;font-size: 14px;line-height: 1.45;outline: none;padding: 5px 13px;}

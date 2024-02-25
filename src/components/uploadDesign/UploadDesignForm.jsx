@@ -45,6 +45,7 @@ function AddDesign() {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: locationState } = location;
+  console.log('locationState',locationState);
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const uploadProgress = useSelector(
     (state) => state?.designUploadState.uploadProgress
@@ -56,6 +57,8 @@ function AddDesign() {
   const [reqDesignUpload, resDesignUpload] = useSubmitDesignUploadMutation();
   const resDesignById = useDesignUploadByIdQuery(locationState?.designID, {
     skip: !locationState?.designID,
+    refetchOnMountOrArgChange:true,
+    refetchOnReconnect:true,
   });
   const resCategoryListDropdown = useCategoryDropdownListQuery();
   const resColorListDropdown = useColorVariationDropdownListQuery();
@@ -74,11 +77,6 @@ function AddDesign() {
   const [reqCreateTag, resCreateTag] = useSubmitTagMutation();
   const [reqSearchTag, resSearchTag] = useSearchTagMutation();
   
-
-
-
-
-
   // const [uploadProgress, setUploadProgress] = useState({});
   // console.log('uploadProgress',uploadProgress);
 
@@ -820,6 +818,7 @@ function AddDesign() {
                                           }
                                         />
                                       )}
+                                      {(userInfo?.role === "Super Admin" || !locationState?.designID) &&
                                       <div className="remove-wrapper">
                                         <X
                                           className="remove-icon"
@@ -828,6 +827,7 @@ function AddDesign() {
                                           }
                                         />
                                       </div>
+                                      }
                                     </Link>
                                   </div>
                                   );
@@ -900,6 +900,7 @@ function AddDesign() {
                                           }
                                         />
                                       )}
+                                      {(userInfo?.role === "Super Admin" || !locationState?.designID) &&
                                       <div className="remove-wrapper">
                                         <X
                                           className="remove-icon"
@@ -908,6 +909,7 @@ function AddDesign() {
                                           }
                                         />
                                       </div>
+                                      }
                                     </Link>
                                   </div>
                                   );
@@ -1121,6 +1123,7 @@ function AddDesign() {
                                                     }
                                                   />
                                                 )}
+                                                {(userInfo?.role === "Super Admin" || !locationState?.designID) &&
                                                 <div className="remove-wrapper">
                                                   <X
                                                     className="remove-icon"
@@ -1134,6 +1137,7 @@ function AddDesign() {
                                                     }
                                                   />
                                                 </div>
+                                                }
                                               </Link>
                                             </div>
                                             )
@@ -1233,6 +1237,7 @@ function AddDesign() {
                                                     }
                                                   />
                                                 )}
+                                                {(userInfo?.role === "Super Admin" || !locationState?.designID) &&
                                                 <div className="remove-wrapper">
                                                   <X
                                                     className="remove-icon"
@@ -1246,6 +1251,7 @@ function AddDesign() {
                                                     }
                                                   />
                                                 </div>
+                                                }
                                               </Link>
                                             </div>
                                             );
