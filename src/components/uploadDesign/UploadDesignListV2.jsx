@@ -19,10 +19,10 @@ import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
 
 // Extend Day.js with the plugins
-dayjs.extend(utc);
+// dayjs.extend(utc);
 dayjs.extend(timezone);
-
-
+// Set the timezone to Indian Standard Time (IST)
+dayjs.tz.setDefault('Asia/Kolkata');
 
 function UploadDesignListV2() {
   const navigate = useNavigate()
@@ -61,7 +61,7 @@ function UploadDesignListV2() {
         name:filterName,
         category:filterCategory,
         uploadedBy:filterUploadedBy,
-        date_filter:startDate ? dayjs.utc(startDate).format() : ""
+        date_filter:startDate ? dayjs(startDate).format() : ""
       })
     }else{
       reqDesign({
@@ -160,7 +160,7 @@ function UploadDesignListV2() {
       name:e.target.value,
       category:filterCategory,
       uploadedBy:filterUploadedBy,
-      date_filter:startDate ? dayjs.utc(startDate).format() : ""
+      date_filter:startDate ? dayjs(startDate).format() : ""
     })
   }
 
@@ -172,7 +172,7 @@ function UploadDesignListV2() {
       name:filterName,
       category:e.target.value,
       uploadedBy:filterUploadedBy,
-      date_filter:startDate ? dayjs.utc(startDate).format() : ""
+      date_filter:startDate ? dayjs(startDate).format() : ""
     })
   }
 
@@ -184,7 +184,7 @@ function UploadDesignListV2() {
       name:filterName,
       category:filterCategory,
       uploadedBy:e.target.value,
-      date_filter:startDate ? dayjs.utc(startDate).format() : ""
+      date_filter:startDate ? dayjs(startDate).format() : ""
     })
   }
 

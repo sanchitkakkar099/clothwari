@@ -19,8 +19,10 @@ import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
 import { getTag } from "../../redux/tagSlice";
 
 // Extend Day.js with the plugins
-dayjs.extend(utc);
+// dayjs.extend(utc);
 dayjs.extend(timezone);
+// Set the timezone to Indian Standard Time (IST)
+dayjs.tz.setDefault('Asia/Kolkata');
 
 
 function UploadDesignListV1() {
@@ -56,7 +58,7 @@ function UploadDesignListV1() {
         page: currentPage,
         limit: pageSize,
         search: search,
-        date_filter:startDate ?  dayjs.utc(startDate).format() : '',
+        date_filter:startDate ?  dayjs(startDate).format() : '',
         tags:tagsSearch
       });
     }else{
@@ -84,7 +86,7 @@ function UploadDesignListV1() {
       page: currentPage,
       limit: pageSize,
       search: search,
-      date_filter:startDate ?  dayjs.utc(startDate).format() : '',
+      date_filter:startDate ?  dayjs(startDate).format() : '',
       tags:tagsSearch
     });
   };
@@ -134,7 +136,7 @@ function UploadDesignListV1() {
       page:currentPage,
       limit:pageSize,
       search:search,
-      date_filter:startDate ? dayjs.utc(startDate).format() : "",
+      date_filter:startDate ? dayjs(startDate).format() : "",
       tags:selected
     })
   }
