@@ -921,6 +921,65 @@ function AddDesign() {
                       </div>
 
                       <div className="row">
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label className="form-label" for="primary_color_name">
+                              Primary Color Name
+                            </Label>
+                            <Controller
+                              id="primary_color_name"
+                              name="primary_color_name"
+                              control={control}
+                              rules={{ required: "Primary Color Name is required" }}
+                              render={({ field }) => (
+                                <Input
+                                  placeholder="Enter Primary Color Name"
+                                  className="form-control"
+                                  {...field}
+                                  type="text"
+                                />
+                              )}
+                            />
+                            {errors.primary_color_name && (
+                              <FormFeedback>
+                                {errors?.primary_color_name?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label className="form-label" for="primary_color_code">
+                            Primary Color Code
+                            </Label>
+                            <Controller
+                              id="primary_color_code"
+                              name="primary_color_code"
+                              control={control}
+                              rules={{
+                                required: "Primary Color Code is required",
+                                // validate:alphaNumericPattern
+                              }}
+                              render={({ field }) => (
+                                <Input
+                                  placeholder="Primary Color Code"
+                                  className="form-control"
+                                  {...field}
+                                  type="color"
+                                  style={{height:38}}
+                                />
+                              )}
+                            />
+                            {errors.primary_color_code && (
+                              <FormFeedback>
+                                {errors?.primary_color_code?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
                         <div className="col-md-12">
                           <div className="mb-3">
                             <Label for="color" className="form-label">
@@ -955,7 +1014,7 @@ function AddDesign() {
                         </div>
                       </div>
 
-                      <hr class="solid"></hr>
+                      <hr className="solid"></hr>
 
                       {fields?.map((fld, finx) => {
                         return (
@@ -1265,7 +1324,7 @@ function AddDesign() {
                               </div>
                             </div>
 
-                            <hr class="solid"></hr>
+                            <hr className="solid"></hr>
                           </div>
                         );
                       })}

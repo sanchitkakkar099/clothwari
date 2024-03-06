@@ -2,7 +2,7 @@ import React from 'react'
 
 function PageContent({children}) {
   return (
-    <div class="main-content">
+    <div className="main-content">
     {children}
     </div>
   )

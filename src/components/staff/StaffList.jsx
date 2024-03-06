@@ -346,7 +346,7 @@ function StaffList() {
                 <div className="page-title-right">
                   <ol className="breadcrumb m-0">
                     <li className="breadcrumb-item">
-                      <a href="javascript: void(0);">Clothwari</a>
+                      <a href="#!">Clothwari</a>
                     </li>
                     <li className="breadcrumb-item active">Staff</li>
                   </ol>

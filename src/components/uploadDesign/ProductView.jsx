@@ -27,6 +27,11 @@ function ProductView() {
     console.log('variation',variation);
   }
 
+  const handleChangePrimary = (e) => {
+    e.preventDefault()
+    setVariationImg(null)
+  }
+
     
   return (
     <div className="page-content">
@@ -70,7 +75,7 @@ function ProductView() {
                 </div>
                 <div className="stats">
                 {productView?.primary_color_code  &&
-                        <Link to="" className="stat-item">
+                        <Link to="" className="stat-item" onClick={(e) => handleChangePrimary(e)}>
                           <i className="mdi mdi-circle" style={{color:productView?.primary_color_code,fontSize:'18px'}}/>
                         </Link>
                 }

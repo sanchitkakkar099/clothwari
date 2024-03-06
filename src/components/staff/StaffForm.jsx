@@ -87,7 +87,7 @@ function StaffForm() {
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Staff</a>
+                    <a href="#!">Staff</a>
                   </li>
                   <li className="breadcrumb-item active">Create Staff</li>
                 </ol>

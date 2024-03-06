@@ -153,7 +153,10 @@ function ClientViewDesign() {
     })
   }
 
-  
+  const handleChangePrimary = (e) => {
+    e.preventDefault()
+    setVariationImg(null)
+  }
 
   return (
     <div className="page-content">
@@ -166,7 +169,7 @@ function ClientViewDesign() {
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Clothwari</a>
+                    <a href="#!">Clothwari</a>
                   </li>
                   <li className="breadcrumb-item active">Designs</li>
                 </ol>
@@ -244,28 +247,28 @@ function ClientViewDesign() {
                       role="tabpanel"
                     >
                       <div className="row">
-                        <div class="col-xl-12 col-lg-8">
-                          <div class="card">
-                            <div class="card-body">
+                        <div className="col-xl-12 col-lg-8">
+                          <div className="card">
+                            <div className="card-body">
                               <div>
-                                <div class="tab-content p-3 text-muted">
+                                <div className="tab-content p-3 text-muted">
                                   <div
-                                    class="tab-pane active"
+                                    className="tab-pane active"
                                     id="popularity"
                                     role="tabpanel"
                                   >
-                                    <div class="row">
+                                    <div className="row">
                                       {designUploadList &&
                                       Array.isArray(designUploadList) &&
                                       designUploadList?.length > 0 ? (
                                         designUploadList?.map((el, i) => {
                                           return (
                                             <div
-                                              class="col-xl-4 col-sm-6 d-flex"
+                                              className="col-xl-4 col-sm-6 d-flex"
                                               key={i}
                                             >
-                                              <div class="product-box flex-fill d-flex flex-column">
-                                                <div class="product-img pt-4 px-4">
+                                              <div className="product-box flex-fill d-flex flex-column">
+                                                <div className="product-img pt-4 px-4">
                                                   {Array.isArray(
                                                     el?.thumbnail
                                                   ) &&
@@ -282,12 +285,12 @@ function ClientViewDesign() {
                                                       alt="image post"
                                                       height={200}
                                                       width={250}
-                                                      class="image"
+                                                      className="image"
                                                     />
                                                   ) : (
                                                     <img
                                                       src="https://www.bootdey.com/image/250x200/FFB6C1/000000"
-                                                      class="image"
+                                                      className="image"
                                                       alt="image post"
                                                       onClick={() =>
                                                         navigate(
@@ -297,19 +300,19 @@ function ClientViewDesign() {
                                                     />
                                                   )}
                                                 </div>
-                                                <div class="product-content p-4 d-flex flex-column flex-fill">
+                                                <div className="product-content p-4 d-flex flex-column flex-fill">
                                                   <div>
                                                     <div>
-                                                      <h5 class="mb-1">
+                                                      <h5 className="mb-1">
                                                         <Link
                                                           to={""}
                                                           onClick={(e) => navigateToView(e,el)}
-                                                          class="text-dark font-size-16"
+                                                          className="text-dark font-size-16"
                                                         >
                                                           {el?.name}
                                                         </Link>
                                                       </h5>
-                                                      <p class="text-muted font-size-13">
+                                                      <p className="text-muted font-size-13">
                                                         {el?.tag &&
                                                         Array.isArray(
                                                           el?.tag
@@ -326,11 +329,11 @@ function ClientViewDesign() {
                                                     </div>
 
                                                     <div>
-                                                      <ul class="list-inline mb-0 text-muted product-color">
+                                                      <ul className="list-inline mb-0 text-muted product-color">
                                                         {el?.primary_color_code && (
-                                                          <li class="list-inline-item">
+                                                          <li className="list-inline-item" onClick={(e) => handleChangePrimary(e)}>
                                                             <i
-                                                              class="mdi mdi-circle"
+                                                              className="mdi mdi-circle"
                                                               style={{
                                                                 color:
                                                                   el?.primary_color_code,
@@ -342,7 +345,7 @@ function ClientViewDesign() {
                                                           (cl, cinx) => {
                                                             return (
                                                               <li
-                                                                class="list-inline-item"
+                                                                className="list-inline-item"
                                                                 key={cinx}
                                                                 onClick={(e) =>
                                                                   handleChangeVariation(
@@ -353,7 +356,7 @@ function ClientViewDesign() {
                                                                 }
                                                               >
                                                                 <i
-                                                                  class="mdi mdi-circle"
+                                                                  className="mdi mdi-circle"
                                                                   style={{
                                                                     color:
                                                                       cl?.value,

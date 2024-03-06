@@ -137,7 +137,7 @@ function ColorVariationForm() {
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Color Variation</a>
+                    <a href="#!">Color Variation</a>
                   </li>
                   <li className="breadcrumb-item active">Create Color Variation</li>
                 </ol>

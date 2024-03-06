@@ -81,24 +81,24 @@ function ClientBagItem() {
   // const handleChangeMiter = () => {}
   return (
     <div className="page-content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-12">
-            <div class="page-title-box d-flex align-items-center justify-content-between">
-              <h4 class="mb-0">BAG</h4>
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-12">
+            <div className="page-title-box d-flex align-items-center justify-content-between">
+              <h4 className="mb-0">BAG</h4>
             </div>
           </div>
         </div>
 
-        <div class="row">
-          <div class="col-xl-12">
+        <div className="row">
+          <div className="col-xl-12">
             {fields && Array.isArray(fields) && fields?.length > 0 ? (
               fields?.map((el, i) => {
                 return (
-                  <div class="card border shadow-none" key={i}>
-                    <div class="card-body">
-                      <div class="d-flex align-items-start border-bottom pb-3">
-                        <div class="me-4">
+                  <div className="card border shadow-none" key={i}>
+                    <div className="card-body">
+                      <div className="d-flex align-items-start border-bottom pb-3">
+                        <div className="me-4">
                           {Array.isArray(el?.thumbnail) &&
                           el?.thumbnail[0]?.pdf_extract_img ? (
                             <img
@@ -117,23 +117,23 @@ function ClientBagItem() {
                             />
                           )}
                         </div>
-                        <div class="flex-grow-1 align-self-center overflow-hidden">
+                        <div className="flex-grow-1 align-self-center overflow-hidden">
                           <div>
-                            <h5 class="text-truncate font-size-16">
+                            <h5 className="text-truncate font-size-16">
                               <a
                                 href="ecommerce-product-detail.html"
-                                class="text-dark"
+                                className="text-dark"
                               >
                                 {el?.name}
                               </a>
                             </h5>
-                            <p class="mb-1">
+                            <p className="mb-1">
                               Design No :{" "}
-                              <span class="fw-medium">
+                              <span className="fw-medium">
                                 {el?.designNo ? el?.designNo : ""}
                               </span>
                             </p>
-                            <p class="mb-1">
+                            <p className="mb-1">
                               Meter
                               <Controller
                                 id={`design.${i}.meter`}
@@ -169,15 +169,15 @@ function ClientBagItem() {
                             </p>
                           </div>
                         </div>
-                        <div class="flex-shrink-0 ms-2">
-                          <ul class="list-inline mb-0 font-size-16">
-                            <li class="list-inline-item">
+                        <div className="flex-shrink-0 ms-2">
+                          <ul className="list-inline mb-0 font-size-16">
+                            <li className="list-inline-item">
                               <Link
                                 to=""
-                                class="text-muted px-1"
+                                className="text-muted px-1"
                                 onClick={(e) => handleRemoveFromBag(e,el,i)}
                               >
-                                <i class="mdi mdi-trash-can-outline"></i>
+                                <i className="mdi mdi-trash-can-outline"></i>
                               </Link>
                             </li>
                           </ul>
@@ -188,9 +188,9 @@ function ClientBagItem() {
                 );
               })
             ) : (
-              <div class="card border shadow-none">
-                <div class="card-body">
-                  <div class="d-flex justify-content-center pb-2">
+              <div className="card border shadow-none">
+                <div className="card-body">
+                  <div className="d-flex justify-content-center pb-2">
                     No Bag Item To Display
                   </div>
                 </div>
@@ -199,12 +199,12 @@ function ClientBagItem() {
             {selectedBagItems &&
               Array.isArray(selectedBagItems) &&
               selectedBagItems?.length > 0 && (
-                <div class="row my-4">
-                  <div class="col-sm-6">
-                    <div class="text-sm-end mt-2 mt-sm-0">
+                <div className="row my-4">
+                  <div className="col-sm-6">
+                    <div className="text-sm-end mt-2 mt-sm-0">
                       <button
                         type="submit"
-                        class="btn btn-success"
+                        className="btn btn-success"
                         onClick={handleSubmit(saveBagItems)}
                       >
                         Save{" "}

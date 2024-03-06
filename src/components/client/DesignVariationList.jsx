@@ -35,11 +35,11 @@ function DesignVariationList() {
     <>
       {userInfo?.role === "Client" ? (
         <div className="page-content">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-12">
-                <div class="page-title-box d-flex align-items-center justify-content-between">
-                  <h4 class="mb-0">Select Designs</h4>
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col-12">
+                <div className="page-title-box d-flex align-items-center justify-content-between">
+                  <h4 className="mb-0">Select Designs</h4>
                 </div>
               </div>
             </div>

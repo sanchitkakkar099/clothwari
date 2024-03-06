@@ -14,15 +14,15 @@ import Pagination from "../common/Pagination";
 import ReactDatePicker from "react-datepicker";
 import { Typeahead } from "react-bootstrap-typeahead";
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc'; // Import UTC plugin
-import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
+// import utc from 'dayjs/plugin/utc'; // Import UTC plugin
+// import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
 import { getTag } from "../../redux/tagSlice";
 
 // Extend Day.js with the plugins
 // dayjs.extend(utc);
-dayjs.extend(timezone);
+// dayjs.extend(timezone);
 // Set the timezone to Indian Standard Time (IST)
-dayjs.tz.setDefault('Asia/Kolkata');
+// dayjs.tz.setDefault('Asia/Kolkata');
 
 
 function UploadDesignListV1() {
@@ -104,13 +104,19 @@ function UploadDesignListV1() {
     console.log('variation',variation);
   }
 
+  
+  const handleChangePrimary = (e) => {
+    e.preventDefault()
+    setVariationImg(null)
+  }
+
   const handleDateFilter = (date) => {
     setStartDate(date)
     reqDesign({
       page:currentPage,
       limit:pageSize,
       search:search,
-      date_filter:dayjs.utc(date).format(),
+      date_filter:dayjs(date).format(),
       tags:tagsSearch
     })
   }
@@ -152,7 +158,7 @@ function UploadDesignListV1() {
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Clothwari</a>
+                    <a href="#!">Clothwari</a>
                   </li>
                   <li className="breadcrumb-item active">Designs</li>
                 </ol>
@@ -262,28 +268,28 @@ function UploadDesignListV1() {
                         )}
                       </div> */}
                       <div className="row">
-                        <div class="col-xl-12 col-lg-8">
-                          <div class="card">
-                            <div class="card-body">
+                        <div className="col-xl-12 col-lg-8">
+                          <div className="card">
+                            <div className="card-body">
                               <div>
-                                <div class="tab-content p-3 text-muted">
+                                <div className="tab-content p-3 text-muted">
                                   <div
-                                    class="tab-pane active"
+                                    className="tab-pane active"
                                     id="popularity"
                                     role="tabpanel"
                                   >
-                                    <div class="row">
+                                    <div className="row">
                                       {designUploadList &&
                                       Array.isArray(designUploadList) &&
                                       designUploadList?.length > 0 ? (
                                         designUploadList?.map((el, i) => {
                                           return (
                                             <div
-                                              class="col-xl-4 col-sm-6"
+                                              className="col-xl-4 col-sm-6"
                                               key={i}
                                             >
-                                              <div class="product-box">
-                                                <div class="product-img pt-4 px-4">
+                                              <div className="product-box">
+                                                <div className="product-img pt-4 px-4">
                                                 {Array.isArray(el?.thumbnail) && el?.thumbnail[0]?.pdf_extract_img ?
                                                   
                                                   <img
@@ -293,12 +299,12 @@ function UploadDesignListV1() {
                                                     alt="image post"
                                                     height={200}
                                                     width={250}
-                                                    class="image"
+                                                    className="image"
                                                   />
                                                 :
                                                 <img 
                                                     src="https://www.bootdey.com/image/250x200/FFB6C1/000000" 
-                                                    class="image" 
+                                                    className="image" 
                                                     alt="image post"
                                                     
                                                     onClick={() => navigate(`/product-view/${el?._id}`)}
@@ -307,7 +313,7 @@ function UploadDesignListV1() {
 
                                                 {/* <img 
                                                     src={el?.thumbnail[0]?.pdf_extract_img} 
-                                                    class="image" 
+                                                    className="image" 
                                                     alt="image post"
                                                     height={200}
                                                     width={250}
@@ -317,34 +323,34 @@ function UploadDesignListV1() {
                                                   
                                                 </div>
 
-                                                <div class="product-content p-4">
+                                                <div className="product-content p-4">
                                                   <div>
                                                     <div>
-                                                      <h5 class="mb-1">
+                                                      <h5 className="mb-1">
                                                         <Link to={`/product-view/${el?._id}`}
                                                           href="ecommerce-product-detail.html"
-                                                          class="text-dark font-size-16"
+                                                          className="text-dark font-size-16"
                                                         >
                                                           {el?.name}
                                                         </Link>
                                                       </h5>
-                                                      <p class="text-muted font-size-13">
+                                                      <p className="text-muted font-size-13">
                                                         {el?.tag && Array.isArray(el?.tag) && el?.tag?.length > 0 ? el?.tag?.map(el => el?.label)?.join(',') : ''}
                                                       </p>
                                                     </div>
 
                                                     <div>
-                                                      <ul class="list-inline mb-0 text-muted product-color">
+                                                      <ul className="list-inline mb-0 text-muted product-color">
                                                       {el?.primary_color_code  &&
-                                                      <li class="list-inline-item">
-                                                                <i class="mdi mdi-circle" style={{color:el?.primary_color_code}}></i>
+                                                      <li className="list-inline-item" onClick={(e) => handleChangePrimary(e)}>
+                                                                <i className="mdi mdi-circle" style={{color:el?.primary_color_code}}></i>
                                                         </li>
                                                       }
                                                         {el?.color?.map(
                                                           (cl, cinx) => {
                                                             return (
-                                                              <li class="list-inline-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl,el)}>
-                                                                <i class="mdi mdi-circle" style={{color:cl?.value}}></i>
+                                                              <li className="list-inline-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl,el)}>
+                                                                <i className="mdi mdi-circle" style={{color:cl?.value}}></i>
                                                               </li>
                                                             );
                                                           }
@@ -366,48 +372,48 @@ function UploadDesignListV1() {
                                   </div>
                                 </div>
 
-                                {/* <div class="row mt-4">
-                                  <div class="col-sm-6">
+                                {/* <div className="row mt-4">
+                                  <div className="col-sm-6">
                                     <div>
-                                      <p class="mb-sm-0">Page 2 of 84</p>
+                                      <p className="mb-sm-0">Page 2 of 84</p>
                                     </div>
                                   </div>
-                                  <div class="col-sm-6">
-                                    <div class="float-sm-end">
-                                      <ul class="pagination pagination-rounded mb-sm-0">
-                                        <li class="page-item disabled">
-                                          <a href="#" class="page-link">
-                                            <i class="mdi mdi-chevron-left"></i>
+                                  <div className="col-sm-6">
+                                    <div className="float-sm-end">
+                                      <ul className="pagination pagination-rounded mb-sm-0">
+                                        <li className="page-item disabled">
+                                          <a href="#" className="page-link">
+                                            <i className="mdi mdi-chevron-left"></i>
                                           </a>
                                         </li>
-                                        <li class="page-item active">
-                                          <a href="#" class="page-link">
+                                        <li className="page-item active">
+                                          <a href="#" className="page-link">
                                             1
                                           </a>
                                         </li>
-                                        <li class="page-item">
-                                          <a href="#" class="page-link">
+                                        <li className="page-item">
+                                          <a href="#" className="page-link">
                                             2
                                           </a>
                                         </li>
-                                        <li class="page-item">
-                                          <a href="#" class="page-link">
+                                        <li className="page-item">
+                                          <a href="#" className="page-link">
                                             3
                                           </a>
                                         </li>
-                                        <li class="page-item">
-                                          <a href="#" class="page-link">
+                                        <li className="page-item">
+                                          <a href="#" className="page-link">
                                             4
                                           </a>
                                         </li>
-                                        <li class="page-item">
-                                          <a href="#" class="page-link">
+                                        <li className="page-item">
+                                          <a href="#" className="page-link">
                                             5
                                           </a>
                                         </li>
-                                        <li class="page-item">
-                                          <a href="#" class="page-link">
-                                            <i class="mdi mdi-chevron-right"></i>
+                                        <li className="page-item">
+                                          <a href="#" className="page-link">
+                                            <i className="mdi mdi-chevron-right"></i>
                                           </a>
                                         </li>
                                       </ul>

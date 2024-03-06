@@ -18,11 +18,7 @@ import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
 
-// Extend Day.js with the plugins
-// dayjs.extend(utc);
-dayjs.extend(timezone);
-// Set the timezone to Indian Standard Time (IST)
-dayjs.tz.setDefault('Asia/Kolkata');
+// dayjs.tz.setDefault('Asia/Kolkata');
 
 function UploadDesignListV2() {
   const navigate = useNavigate()
@@ -196,7 +192,7 @@ function UploadDesignListV2() {
       name:filterName,
       category:filterCategory,
       uploadedBy:filterUploadedBy,
-      date_filter:dayjs.utc(date).format()
+      date_filter:dayjs(date).format()
     })
   }
 
@@ -212,7 +208,7 @@ function UploadDesignListV2() {
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Clothwari</a>
+                    <a href="#!">Clothwari</a>
                   </li>
                   <li className="breadcrumb-item active">Designs</li>
                 </ol>
@@ -285,7 +281,7 @@ function UploadDesignListV2() {
                           <td>{(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
-                          <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
+                          <td>{ele?.createdAt ? dayjs(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
 
                           <td>
                           {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?

@@ -69,7 +69,7 @@ function ClientForm() {
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="javascript: void(0);">Client</a>
+                    <a href="#!">Client</a>
                   </li>
                   <li className="breadcrumb-item active">Create Client</li>
                 </ol>
