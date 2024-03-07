@@ -8,7 +8,7 @@ import Six from "../../assets/images/product/six.jpg";
 import { useDesignUploadListMutation, useDesignerDropDownListQuery, useTagListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { DivideSquare } from "react-feather";
 import Pagination from "../common/Pagination";
 import ReactDatePicker from "react-datepicker";
@@ -28,6 +28,7 @@ import { getTag } from "../../redux/tagSlice";
 function UploadDesignListV1() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
+  const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag,resTag] = useTagListMutation()
   const staffDropDownRes = useDesignerDropDownListQuery()
@@ -178,6 +179,8 @@ function UploadDesignListV1() {
   }
 
   return (
+    <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') ?
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -532,6 +535,10 @@ function UploadDesignListV1() {
         </div>
       </div>
     </div>
+    :
+    <Navigate to={"/dashboard"}/>
+                }
+                </>
   );
 }
 

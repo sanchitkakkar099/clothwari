@@ -2,7 +2,7 @@ import React,{useState,useEffect} from 'react'
 import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useDeleteTagMutation, useTagListMutation } from '../../service';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
 import { getTag } from '../../redux/tagSlice';
@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 function TagList() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqTag,resTag] = useTagListMutation()
   const [reqDelete, resDelete] = useDeleteTagMutation();
   const tagList = useSelector((state) => state?.tagState.tagList)
@@ -88,6 +89,9 @@ function TagList() {
       ];
   return (
     <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') ?
+
+    <>
     <div className="page-content">
     <div className="container-fluid">
       <div className="row">
@@ -139,6 +143,10 @@ function TagList() {
         modalDetails={modalDetails}
         confirmAction={reqDelete}
       />
+  </>
+  :
+  <Navigate to={"/dashboard"} />    
+  }
   </>
   )
 }

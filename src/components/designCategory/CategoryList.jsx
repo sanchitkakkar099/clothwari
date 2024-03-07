@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useCategoryListMutation, useDeleteCategoryMutation } from '../../service';
 import { getCategory } from '../../redux/categorySlice';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
@@ -14,6 +14,7 @@ import { Edit, Eye, MoreVertical,Trash } from 'react-feather';
 function CategoryList() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqCategory,resCategory] = useCategoryListMutation()
   const [reqDelete, resDelete] = useDeleteCategoryMutation();
   const categoryList = useSelector((state) => state?.categoryState.categoryList)
@@ -125,6 +126,9 @@ function CategoryList() {
     // </div>
   return (
     <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') ?
+    
+    <>
     <div className="page-content">
     <div className="container-fluid">
       <div className="row">
@@ -176,6 +180,10 @@ function CategoryList() {
         modalDetails={modalDetails}
         confirmAction={reqDelete}
       />
+  </>
+  :
+  <Navigate to={"/dashboard"}/>
+    }
   </>
   )
 }

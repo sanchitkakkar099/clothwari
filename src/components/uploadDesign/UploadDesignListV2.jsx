@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Filter";
 import DataTable from "../common/DataTable";
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate,Link, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useDeleteDesignUploadMutation, useDesignUploadList2Mutation, useDesignUploadListMutation, useMultipleFileUploadMutation } from "../../service";
 import { getDesignUpload } from "../../redux/designUploadSlice";
@@ -198,6 +198,8 @@ function UploadDesignListV2() {
 
   return (
     <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') ?
+    <>
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -369,8 +371,11 @@ function UploadDesignListV2() {
         modalDetails={modalDetails}
         confirmAction={reqDelete}
       />
-
       </>
+      :
+      <Navigate to={"/dashboard"} />
+    }
+    </>
   );
 }
 

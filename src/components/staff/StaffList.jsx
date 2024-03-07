@@ -5,7 +5,7 @@ import {
   TextSearchFilter,
 } from "../common/Filter";
 import DataTable from "../common/DataTable";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useDeleteDesignerMutation,
@@ -336,6 +336,8 @@ function StaffList() {
   //       </div>
   return (
     <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin') ?
+    <>
       <div className="page-content">
         <div className="container-fluid">
           <div className="row">
@@ -392,6 +394,10 @@ function StaffList() {
         modalDetails={modalDetails}
         confirmAction={reqDelete}
       />
+    </>
+    :
+    <Navigate to={"/dashboard"}/>
+    }
     </>
   );
 }

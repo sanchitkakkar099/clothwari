@@ -5,7 +5,7 @@ import {
   TextSearchFilter,
 } from "../common/Filter";
 import DataTable from "../common/DataTable";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useAdminListMutation, useSuperAdminLoginAsLoginMutation } from "../../service";
 import {
@@ -149,6 +149,8 @@ function AdmintList() {
   ];
   return (
     <>
+    {(userInfo?.role === 'Super Admin') ?
+    <>
       <div className="page-content">
         <div className="container-fluid">
           <div className="row">
@@ -192,6 +194,10 @@ function AdmintList() {
           </div>
         </div>
       </div>
+    </>
+    :
+    <Navigate to={"/dashboard"}/>
+    }
     </>
   );
 }

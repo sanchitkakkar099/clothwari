@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAdminStaffApprovalListMutation, useColorVariationListMutation,useDeleteColorVariationMutation, useGetDesignerPermissionListQuery, useStaffApprovalBySuperAdminMutation } from '../../service';
 import { getCategory } from '../../redux/categorySlice';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
@@ -17,6 +17,7 @@ import Select from "react-select";
 function StaffApprovalList() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqStaffApprovalList,resStaffApproval] = useAdminStaffApprovalListMutation()
   const [reqStaffApproved,resStaffApproved] = useStaffApprovalBySuperAdminMutation()
   const permissionList = useGetDesignerPermissionListQuery()
@@ -93,6 +94,8 @@ function StaffApprovalList() {
     
   return (
     <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin') ?
+
     <div className="page-content">
     <div className="container-fluid">
       <div className="row">
@@ -165,6 +168,9 @@ function StaffApprovalList() {
       </div>
     </div>
   </div>
+  :
+  <Navigate to={"/dashboard"}/>
+    }
   
   </>
   )
