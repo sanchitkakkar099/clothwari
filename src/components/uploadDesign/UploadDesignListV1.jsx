@@ -88,8 +88,8 @@ function UploadDesignListV1() {
 
 
   useEffect(() => {
-    if(staffDropDownRes?.isSuccess && Array.isArray(staffDropDownRes?.data) && staffDropDownRes?.data){
-      const filterRes =  staffDropDownRes?.data?.map((el) => ({label:el?.name,value:el?._id}) )
+    if(staffDropDownRes?.isSuccess && Array.isArray(staffDropDownRes?.data?.data) && staffDropDownRes?.data?.data){
+      const filterRes =  staffDropDownRes?.data?.data?.map((el) => ({label:el?.name,value:el?._id}) )
       setStaffDropdown(filterRes)
     }
   },[staffDropDownRes?.isSuccess])
