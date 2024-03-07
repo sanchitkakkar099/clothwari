@@ -331,14 +331,20 @@ function ClientViewDesign() {
                                                     <div>
                                                       <ul className="list-inline mb-0 text-muted product-color">
                                                         {el?.primary_color_code && (
-                                                          <li className="list-inline-item" onClick={(e) => handleChangePrimary(e)}>
-                                                            <i
-                                                              className="mdi mdi-circle"
-                                                              style={{
-                                                                color:
+                                                          <li className="list-inline-item" 
+                                                           style={{
+                                                                backgroundColor:
                                                                   el?.primary_color_code,
+                                                                  width: '14px',
+                                                                  height: '14px',
+                                                                  borderRadius: '50%',
+                                                                  border: '1px solid #c7c7c7'
                                                               }}
-                                                            ></i>
+                                                          onClick={(e) => handleChangePrimary(e)}>
+                                                            <span
+                                                              className=""
+                                                             
+                                                            ></span>
                                                           </li>
                                                         )}
                                                         {el?.color?.map(
@@ -346,6 +352,14 @@ function ClientViewDesign() {
                                                             return (
                                                               <li
                                                                 className="list-inline-item"
+                                                                style={{
+                                                                    backgroundColor:
+                                                                      cl?.value,
+                                                                      width: '14px',
+                                                                      height: '14px',
+                                                                      borderRadius: '50%',
+                                                                      border: '1px solid #c7c7c7'
+                                                                  }}
                                                                 key={cinx}
                                                                 onClick={(e) =>
                                                                   handleChangeVariation(
@@ -355,13 +369,10 @@ function ClientViewDesign() {
                                                                   )
                                                                 }
                                                               >
-                                                                <i
-                                                                  className="mdi mdi-circle"
-                                                                  style={{
-                                                                    color:
-                                                                      cl?.value,
-                                                                  }}
-                                                                ></i>
+                                                                <span
+                                                                  className=""
+                                                                  
+                                                                ></span>
                                                               </li>
                                                             );
                                                           }

@@ -485,6 +485,13 @@ export const designerApi = createApi({
       }),
       providesTags: ["designer"],
     }),
+    designerDropDownList: builder.query({
+      query: (id) => ({
+        url: `designer/list/drop/down`,
+        method: "GET",
+      }),
+      providesTags: ["designer"],
+    }),
     submitDesigner: builder.mutation({
       query: (payload) => ({
         url: "designer/create",
@@ -539,7 +546,8 @@ export const {
   useDeleteDesignerMutation,
   useGetDesignerPermissionListQuery,
   useStaffApprovalBySuperAdminMutation,
-  useManageStaffSessionByAdminMutation
+  useManageStaffSessionByAdminMutation,
+  useDesignerDropDownListQuery
 } = designerApi;
 
 

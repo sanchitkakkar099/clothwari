@@ -75,15 +75,29 @@ function ProductView() {
                 </div>
                 <div className="stats">
                 {productView?.primary_color_code  &&
-                        <Link to="" className="stat-item" onClick={(e) => handleChangePrimary(e)}>
-                          <i className="mdi mdi-circle" style={{color:productView?.primary_color_code,fontSize:'18px'}}/>
+                        <Link to="" className="stat-item" 
+                        style={{backgroundColor:productView?.primary_color_code,fontSize:'18px',
+                        width: '17px',
+                        height: '17px',
+                        borderRadius: '50%',
+                        border: '1px solid #c7c7c7'
+                        }}
+                        onClick={(e) => handleChangePrimary(e)}>
+                          <span className="" />
                         </Link>
                 }
                 {productView?.color && Array.isArray(productView?.color) && productView?.color?.length > 0 && 
                   productView?.color?.map((cl, cinx) => {
                     return(
-                      <Link to="" className="stat-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl)}>
-                        <i className="mdi mdi-circle" style={{color:cl?.value,fontSize:'18px'}}/>
+                      <Link to="" className="stat-item"
+                      style={{backgroundColor:cl?.value,fontSize:'18px',
+                        width: '17px',
+                        height: '17px',
+                        borderRadius: '50%',
+                        border: '1px solid #c7c7c7'
+                        }}
+                       key={cinx} onClick={(e) => handleChangeVariation(e,cl)}>
+                        <span className="" />
                         </Link>
                     )
                   })}

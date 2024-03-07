@@ -5,7 +5,7 @@ import Three from "../../assets/images/product/four.jpg";
 import Four from "../../assets/images/product/three.jpg";
 import Five from "../../assets/images/product/one.jpg";
 import Six from "../../assets/images/product/six.jpg";
-import { useDesignUploadListMutation, useTagListMutation } from "../../service";
+import { useDesignUploadListMutation, useDesignerDropDownListQuery, useTagListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,12 +30,16 @@ function UploadDesignListV1() {
   const navigate = useNavigate()
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag,resTag] = useTagListMutation()
+  const staffDropDownRes = useDesignerDropDownListQuery()
+  console.log('staffDropDownRes',staffDropDownRes);
   const tagList = useSelector((state) => state?.tagState.tagList)
   console.log('tagList',tagList);
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
   console.log("designUploadList", designUploadList);
+  const [staffDropdown,setStaffDropdown] = useState([])
+
   const [designID,setDesignId] = useState(null)
   const [variationImg,setVariationImg] = useState(null)
 
@@ -48,18 +52,19 @@ function UploadDesignListV1() {
   const [startDate, setStartDate] = useState(null);
   const [search, setSearch] = useState('');
   const [tagsSearch, setTagSearch] = useState([]);
-
-
-
+  const [selectedStaff, setSelectedStaff] = useState(null);
+  console.log('selectedStaff',selectedStaff);
+  
 
   useEffect(() => {
-    if(search || startDate || tagsSearch){
+    if(search || startDate || tagsSearch || selectedStaff){
       reqDesign({
         page: currentPage,
         limit: pageSize,
         search: search,
         date_filter:startDate ?  dayjs(startDate).format() : '',
-        tags:tagsSearch
+        tags:tagsSearch,
+        uploadedBy:selectedStaff ? selectedStaff : ''
       });
     }else{
       reqDesign({
@@ -67,10 +72,11 @@ function UploadDesignListV1() {
         limit: pageSize,
         search: "",
         date_filter:'',
-        tags:[]
+        tags:[],
+        uploadedBy: ''
       });
     }
-  }, [currentPage,search,startDate,tagsSearch]);
+  }, [currentPage,search,startDate,tagsSearch,selectedStaff]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -80,6 +86,14 @@ function UploadDesignListV1() {
     }
   }, [resDesign]);
 
+
+  useEffect(() => {
+    if(staffDropDownRes?.isSuccess && Array.isArray(staffDropDownRes?.data) && staffDropDownRes?.data){
+      const filterRes =  staffDropDownRes?.data?.map((el) => ({label:el?.name,value:el?._id}) )
+      setStaffDropdown(filterRes)
+    }
+  },[staffDropDownRes?.isSuccess])
+
   const handleSearch = (search) => {
     setSearch(search)
     reqDesign({
@@ -87,7 +101,8 @@ function UploadDesignListV1() {
       limit: pageSize,
       search: search,
       date_filter:startDate ?  dayjs(startDate).format() : '',
-      tags:tagsSearch
+      tags:tagsSearch,
+      uploadedBy:selectedStaff ? selectedStaff : ''
     });
   };
 
@@ -117,7 +132,8 @@ function UploadDesignListV1() {
       limit:pageSize,
       search:search,
       date_filter:dayjs(date).format(),
-      tags:tagsSearch
+      tags:tagsSearch,
+      uploadedBy:selectedStaff ? selectedStaff : ''
     })
   }
 
@@ -143,7 +159,21 @@ function UploadDesignListV1() {
       limit:pageSize,
       search:search,
       date_filter:startDate ? dayjs(startDate).format() : "",
-      tags:selected
+      tags:selected,
+      uploadedBy:selectedStaff ? selectedStaff : ''
+    })
+  }
+
+  const handleStaffSelection = (selected) => {
+    console.log('selected',selected);
+    setSelectedStaff(selected[0]?.value)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      search:search,
+      date_filter:startDate ? dayjs(startDate).format() : "",
+      tags:tagsSearch,
+      uploadedBy:selected[0]?.value
     })
   }
 
@@ -224,6 +254,23 @@ function UploadDesignListV1() {
                                   options={(tagList && Array.isArray(tagList) && tagList?.length > 0) ? tagList?.map(el => el?.label) : []}
                                   placeholder="Search tags..."
                                   onChange={handleTagSelection}
+                                />
+                                </div>
+                                </div>
+                    </div>
+                  </div>
+                  <div className="row m-4">
+                  <div className="col-md-4">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                          
+                        <Typeahead
+                                  allowNew={false}
+                                  id="custom-selections-example"
+                                  labelKey={'label'}
+                                  options={(staffDropdown && Array.isArray(staffDropdown) && staffDropdown?.length > 0) ? staffDropdown : []}
+                                  placeholder="Search staff..."
+                                  onChange={handleStaffSelection}
                                 />
                                 </div>
                                 </div>
@@ -342,15 +389,28 @@ function UploadDesignListV1() {
                                                     <div>
                                                       <ul className="list-inline mb-0 text-muted product-color">
                                                       {el?.primary_color_code  &&
-                                                      <li className="list-inline-item" onClick={(e) => handleChangePrimary(e)}>
-                                                                <i className="mdi mdi-circle" style={{color:el?.primary_color_code}}></i>
+                                                      <li className="list-inline-item" style={{
+                                                        backgroundColor:el?.primary_color_code,
+                                                        width: '14px',
+                                                        height: '14px',
+                                                        borderRadius: '50%',
+                                                        border: '1px solid #c7c7c7'
+                                                        }} onClick={(e) => handleChangePrimary(e)}>
+                                                                <span className="" ></span>
                                                         </li>
                                                       }
                                                         {el?.color?.map(
                                                           (cl, cinx) => {
                                                             return (
-                                                              <li className="list-inline-item" key={cinx} onClick={(e) => handleChangeVariation(e,cl,el)}>
-                                                                <i className="mdi mdi-circle" style={{color:cl?.value}}></i>
+                                                              <li className="list-inline-item" 
+                                                              style={{
+                                                                backgroundColor:cl?.value,
+                                                                width: '14px',
+                                                                height: '14px',
+                                                                borderRadius: '50%',
+                                                                border: '1px solid #c7c7c7'}} 
+                                                                key={cinx} onClick={(e) => handleChangeVariation(e,cl,el)}>
+                                                                <span className="" ></span>
                                                               </li>
                                                             );
                                                           }
