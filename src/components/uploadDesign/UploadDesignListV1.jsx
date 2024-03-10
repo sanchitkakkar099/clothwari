@@ -5,7 +5,7 @@ import Three from "../../assets/images/product/four.jpg";
 import Four from "../../assets/images/product/three.jpg";
 import Five from "../../assets/images/product/one.jpg";
 import Six from "../../assets/images/product/six.jpg";
-import { useDesignUploadListMutation, useDesignerDropDownListQuery, useTagListMutation } from "../../service";
+import { useCategoryDropdownListQuery, useDesignUploadListMutation, useDesignerDropDownListQuery, useTagListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -32,6 +32,8 @@ function UploadDesignListV1() {
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag,resTag] = useTagListMutation()
   const staffDropDownRes = useDesignerDropDownListQuery()
+  const categoryDropdownRes = useCategoryDropdownListQuery();
+
   console.log('staffDropDownRes',staffDropDownRes);
   const tagList = useSelector((state) => state?.tagState.tagList)
   console.log('tagList',tagList);
@@ -40,6 +42,8 @@ function UploadDesignListV1() {
   );
   console.log("designUploadList", designUploadList);
   const [staffDropdown,setStaffDropdown] = useState([])
+  const [categoryDropdown,setCategoryDropdown] = useState([])
+    console.log('categoryDropdown',categoryDropdown);
 
   const [designID,setDesignId] = useState(null)
   const [variationImg,setVariationImg] = useState(null)
@@ -53,19 +57,22 @@ function UploadDesignListV1() {
   const [startDate, setStartDate] = useState(null);
   const [search, setSearch] = useState('');
   const [tagsSearch, setTagSearch] = useState([]);
+  const [categorySearch, setCategorySearch] = useState([]);
+
   const [selectedStaff, setSelectedStaff] = useState(null);
   console.log('selectedStaff',selectedStaff);
   
 
   useEffect(() => {
-    if(search || startDate || tagsSearch || selectedStaff){
+    if(search || startDate || tagsSearch || selectedStaff || categorySearch){
       reqDesign({
         page: currentPage,
         limit: pageSize,
         search: search,
         date_filter:startDate ?  dayjs(startDate).format() : '',
         tags:tagsSearch,
-        uploadedBy:selectedStaff ? selectedStaff : ''
+        uploadedBy:selectedStaff ? selectedStaff : '',
+        category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
       });
     }else{
       reqDesign({
@@ -74,10 +81,11 @@ function UploadDesignListV1() {
         search: "",
         date_filter:'',
         tags:[],
-        uploadedBy: ''
+        uploadedBy: '',
+        category:[]
       });
     }
-  }, [currentPage,search,startDate,tagsSearch,selectedStaff]);
+  }, [currentPage,search,startDate,tagsSearch,selectedStaff,categorySearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -95,16 +103,22 @@ function UploadDesignListV1() {
     }
   },[staffDropDownRes?.isSuccess])
 
+  useEffect(() => {
+    if(categoryDropdownRes?.isSuccess && Array.isArray(categoryDropdownRes?.data?.data) && categoryDropdownRes?.data?.data){
+      setCategoryDropdown(categoryDropdownRes?.data?.data)
+    }
+  },[categoryDropdownRes?.isSuccess])
+
   const handleSearch = (search) => {
     setSearch(search)
-    reqDesign({
-      page: currentPage,
-      limit: pageSize,
-      search: search,
-      date_filter:startDate ?  dayjs(startDate).format() : '',
-      tags:tagsSearch,
-      uploadedBy:selectedStaff ? selectedStaff : ''
-    });
+    // reqDesign({
+    //   page: currentPage,
+    //   limit: pageSize,
+    //   search: search,
+    //   date_filter:startDate ?  dayjs(startDate).format() : '',
+    //   tags:tagsSearch,
+    //   uploadedBy:selectedStaff ? selectedStaff : ''
+    // });
   };
 
   const handleChangeVariation = (e,variation,designObj) => {
@@ -128,14 +142,14 @@ function UploadDesignListV1() {
 
   const handleDateFilter = (date) => {
     setStartDate(date)
-    reqDesign({
-      page:currentPage,
-      limit:pageSize,
-      search:search,
-      date_filter:dayjs(date).format(),
-      tags:tagsSearch,
-      uploadedBy:selectedStaff ? selectedStaff : ''
-    })
+    // reqDesign({
+    //   page:currentPage,
+    //   limit:pageSize,
+    //   search:search,
+    //   date_filter:dayjs(date).format(),
+    //   tags:tagsSearch,
+    //   uploadedBy:selectedStaff ? selectedStaff : ''
+    // })
   }
 
   useEffect(() => {
@@ -155,27 +169,41 @@ function UploadDesignListV1() {
   const handleTagSelection = (selected) => {
     console.log('selected',selected);
     setTagSearch(selected)
-    reqDesign({
-      page:currentPage,
-      limit:pageSize,
-      search:search,
-      date_filter:startDate ? dayjs(startDate).format() : "",
-      tags:selected,
-      uploadedBy:selectedStaff ? selectedStaff : ''
-    })
+    // reqDesign({
+    //   page:currentPage,
+    //   limit:pageSize,
+    //   search:search,
+    //   date_filter:startDate ? dayjs(startDate).format() : "",
+    //   tags:selected,
+    //   uploadedBy:selectedStaff ? selectedStaff : ''
+    // })
+  }
+
+  const handleCategorySelection = (selected) => {
+    console.log('selected',selected);
+    setCategorySearch(selected)
+    // reqDesign({
+    //   page:currentPage,
+    //   limit:pageSize,
+    //   search:search,
+    //   date_filter:startDate ? dayjs(startDate).format() : "",
+    //   tags:tagsSearch,
+    //   uploadedBy:selectedStaff ? selectedStaff : '',
+    //   category:Array.isArray(selected) ? selected?.map(el => el?.value) : []
+    // })
   }
 
   const handleStaffSelection = (selected) => {
     console.log('selected',selected);
     setSelectedStaff(selected[0]?.value)
-    reqDesign({
-      page:currentPage,
-      limit:pageSize,
-      search:search,
-      date_filter:startDate ? dayjs(startDate).format() : "",
-      tags:tagsSearch,
-      uploadedBy:selected[0]?.value
-    })
+    // reqDesign({
+    //   page:currentPage,
+    //   limit:pageSize,
+    //   search:search,
+    //   date_filter:startDate ? dayjs(startDate).format() : "",
+    //   tags:tagsSearch,
+    //   uploadedBy:selected[0]?.value
+    // })
   }
 
   return (
@@ -278,6 +306,22 @@ function UploadDesignListV1() {
                                 </div>
                                 </div>
                     </div>
+                    <div className="col-md-4">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                          
+                        <Typeahead
+                                  allowNew={false}
+                                  id="custom-selections-example"
+                                  labelKey={'label'}
+                                  multiple
+                                  options={(categoryDropdown && Array.isArray(categoryDropdown) && categoryDropdown?.length > 0) ? categoryDropdown : []}
+                                  placeholder="Search category..."
+                                  onChange={handleCategorySelection}
+                                />
+                                </div>
+                                </div>
+                    </div>
                   </div>
                   <div className="tab-content text-muted">
                     <div
@@ -318,7 +362,9 @@ function UploadDesignListV1() {
                         )}
                       </div> */}
                       <div className="row">
+                      
                         <div className="col-xl-12 col-lg-8">
+                        
                           <div className="card">
                             <div className="card-body">
                               <div>
@@ -328,6 +374,9 @@ function UploadDesignListV1() {
                                     id="popularity"
                                     role="tabpanel"
                                   >
+                                   
+                                   <h6 style={{display:'flex',justifyContent:'end'}}>Total Designs: {totalCount}</h6>
+
                                     <div className="row">
                                       {designUploadList &&
                                       Array.isArray(designUploadList) &&

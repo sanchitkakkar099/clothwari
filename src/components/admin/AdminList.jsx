@@ -9,15 +9,24 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useAdminListMutation, useSuperAdminLoginAsLoginMutation } from "../../service";
 import {
+  Button,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  FormFeedback,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   UncontrolledDropdown,
 } from "reactstrap";
-import { Edit, MoreVertical, Eye } from "react-feather";
+import { Edit, MoreVertical, Eye, Key } from "react-feather";
 import { getAdmin } from "../../redux/adminSlice";
 import { setUserInfo, setUserToken } from "../../redux/authSlice";
 import Cookies from "universal-cookie";
+import ChangePassowardModal from "../common/ChangePassowardModal";
 const cookies = new Cookies();
 
 
@@ -31,6 +40,8 @@ function AdmintList() {
 
   const [loginAsAdminReq, loginAsAdminRes] = useSuperAdminLoginAsLoginMutation();
   const [adminId, setAdminId] = useState(null);
+  const [pwdUser, setPwdUser] = useState(null);
+  const [pwdText,setPwdText] = useState(null)
 
 
   useEffect(() => {
@@ -84,6 +95,17 @@ function AdmintList() {
       navigate('/dashboard')
     }
   },[loginAsAdminRes])
+
+  const onChangePWDAction = (e, st) => {
+    e.preventDefault();
+    setPwdUser(st?.row?.original)
+  }
+
+  const onChangePWDCloseAction = (e) => {
+    e.preventDefault();
+    setPwdUser(null)
+    setPwdText(null)
+  }
 
   const columns = [
     {
@@ -142,6 +164,10 @@ function AdmintList() {
               <Edit className="me-50" size={15} />{" "}
               <span className="align-middle">Edit</span>
             </DropdownItem>
+            <DropdownItem href="#!" onClick={(e) => onChangePWDAction(e, row)}>
+              <Key className="me-50" size={15} />{" "}
+              <span className="align-middle">Change Password</span>
+            </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
       ),
@@ -198,6 +224,13 @@ function AdmintList() {
     :
     <Navigate to={"/dashboard"}/>
     }
+    <ChangePassowardModal
+      pwdUser={pwdUser}
+      onChangePWDCloseAction={onChangePWDCloseAction}
+      setPwdUser={setPwdUser}
+      pwdText={pwdText}
+      setPwdText={setPwdText}
+    />
     </>
   );
 }

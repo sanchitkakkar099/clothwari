@@ -93,7 +93,7 @@ function SidebarComponent() {
                 <li>
                     <Link to="/design-list-v1">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
-                        <span className="menu-item" data-key="t-dashboards">View Design</span>
+                        <span className="menu-item" data-key="t-dashboards">View/Search Design</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>

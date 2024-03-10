@@ -10,9 +10,10 @@ import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { getClient } from "../../redux/clientSlice";
 import ClientView from "./ClientView";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
-import { Edit, MoreVertical, Trash,Eye } from "react-feather";
+import { Edit, MoreVertical, Trash,Eye, Key } from "react-feather";
 import Cookies from "universal-cookie";
 import { setUserInfo, setUserToken } from "../../redux/authSlice";
+import ChangePassowardModal from "../common/ChangePassowardModal";
 const cookies = new Cookies();
 
 
@@ -31,6 +32,9 @@ function ClientList() {
 
   const [loginAsAdminReq, loginAsAdminRes] = useSuperAdminLoginAsClientMutation();
   const [adminId, setAdminId] = useState(null);
+
+  const [pwdUser, setPwdUser] = useState(null);
+  const [pwdText,setPwdText] = useState(null)
 
   useEffect(() => {
     reqClient({
@@ -106,6 +110,17 @@ function ClientList() {
     }
   },[loginAsAdminRes])
 
+  const onChangePWDAction = (e, st) => {
+    e.preventDefault();
+    setPwdUser(st?.row?.original)
+  }
+
+  const onChangePWDCloseAction = (e) => {
+    e.preventDefault();
+    setPwdUser(null)
+    setPwdText(null)
+  }
+
   const columns = [
     {
       Header: "Name",
@@ -173,6 +188,12 @@ function ClientList() {
                                     <span className="align-middle">Delete</span>
                                   </DropdownItem>
                                 }
+                                {(userInfo?.role === "Super Admin" &&
+                                    <DropdownItem href="#!" onClick={(e) => onChangePWDAction(e, row)}>
+                                    <Key className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Change Password</span>
+                                    </DropdownItem>
+                                    )}
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                               :"No Permissions"
@@ -246,6 +267,13 @@ function ClientList() {
         modalDetails={modalDetails}
         confirmAction={reqDelete}
       />
+      <ChangePassowardModal
+      pwdUser={pwdUser}
+      onChangePWDCloseAction={onChangePWDCloseAction}
+      setPwdUser={setPwdUser}
+      pwdText={pwdText}
+      setPwdText={setPwdText}
+    />
       </>
   );
 }

@@ -8,7 +8,8 @@ import { getCategory } from '../../redux/categorySlice';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
 import toast from 'react-hot-toast';
 import { DropdownItem,DropdownMenu,UncontrolledDropdown,DropdownToggle } from 'reactstrap';
-import { Edit, Eye, MoreVertical,Trash } from 'react-feather';
+import { Edit, Eye, GitMerge, MoreVertical,Trash } from 'react-feather';
+import CategoryMergeModal from '../common/CategoryMergeModal';
 
 
 function CategoryList() {
@@ -21,6 +22,9 @@ function CategoryList() {
   console.log('categoryList',categoryList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
+
+  const [mergeFrom, setMergeFrom] = useState(null);
+  const [mergeTo, setMergeTo] = useState(null);
 
   useEffect(() => {
     reqCategory({
@@ -55,6 +59,18 @@ function CategoryList() {
     });
     setShowModal(true);
   };
+
+  const handleMerge = (e, st) => {
+    e.preventDefault();
+    console.log("Merge", st?.row?.original);
+    setMergeTo(st?.row?.original)
+  }
+
+  const onMergeCloseClick = (e) => {
+    e.preventDefault();
+    setMergeTo(null)
+    setMergeFrom(null)
+  }
 
   useEffect(() => {
     if (resDelete?.isSuccess) {
@@ -113,6 +129,14 @@ function CategoryList() {
                                   >
                                     <Trash className="me-50" size={15} />{" "}
                                     <span className="align-middle">Delete</span>
+                                  </DropdownItem>
+
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleMerge(e,row)}
+                                  >
+                                    <GitMerge className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Merge Category</span>
                                   </DropdownItem>
                                 </DropdownMenu>
                               </UncontrolledDropdown>
@@ -184,6 +208,13 @@ function CategoryList() {
   :
   <Navigate to={"/dashboard"}/>
     }
+    <CategoryMergeModal
+      mergeFrom={mergeFrom}
+      setMergeFrom={setMergeFrom}
+      mergeTo={mergeTo}
+      setMergeTo={setMergeTo}
+      onMergeCloseClick={onMergeCloseClick}
+    />
   </>
   )
 }

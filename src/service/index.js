@@ -138,6 +138,14 @@ export const adminApi = createApi({
       }),
       invalidatesTags: ["auth"],
     }),
+    changePasswordBySuperAdmin: builder.mutation({
+      query: (payload) => ({
+        url: "admin/user/password/changes",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["auth"],
+    }),
     
   }),
 });
@@ -149,6 +157,7 @@ export const {
  useGetAdminPermissionListQuery,
  useAdminStaffApprovalListMutation,
  useChangePasswordMutation,
+ useChangePasswordBySuperAdminMutation
 } = adminApi;
 
 export const categoryApi = createApi({
@@ -209,6 +218,14 @@ export const categoryApi = createApi({
       }),
       invalidatesTags: ["category"],
     }),
+    mergeCategory: builder.mutation({
+      query: (payload) => ({
+        url: "category/merge",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["category"],
+    }),
   }),
 });
 export const {
@@ -217,7 +234,8 @@ export const {
   useSubmitCategoryMutation,
   useDeleteCategoryMutation,
   useCategoryByIdQuery,
-  useUniqueCategoryCheckMutation
+  useUniqueCategoryCheckMutation,
+  useMergeCategoryMutation
 } = categoryApi;
 
 

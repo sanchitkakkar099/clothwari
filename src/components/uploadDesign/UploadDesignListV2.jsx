@@ -150,50 +150,50 @@ function UploadDesignListV2() {
 
   const handleNameFilter = (e) => {
     setFilterName(e.target.value)
-    reqDesign({
-      page:currentPage,
-      limit:pageSize,
-      name:e.target.value,
-      category:filterCategory,
-      uploadedBy:filterUploadedBy,
-      date_filter:startDate ? dayjs(startDate).format() : ""
-    })
+    // reqDesign({
+    //   page:currentPage,
+    //   limit:pageSize,
+    //   name:e.target.value,
+    //   category:filterCategory,
+    //   uploadedBy:filterUploadedBy,
+    //   date_filter:startDate ? dayjs(startDate).format() : ""
+    // })
   }
 
   const handleCategoryFilter = (e) => {
     setFilterCategory(e.target.value)
-    reqDesign({
-      page:currentPage,
-      limit:pageSize,
-      name:filterName,
-      category:e.target.value,
-      uploadedBy:filterUploadedBy,
-      date_filter:startDate ? dayjs(startDate).format() : ""
-    })
+    // reqDesign({
+    //   page:currentPage,
+    //   limit:pageSize,
+    //   name:filterName,
+    //   category:e.target.value,
+    //   uploadedBy:filterUploadedBy,
+    //   date_filter:startDate ? dayjs(startDate).format() : ""
+    // })
   }
 
   const handleUploadedByFilter = (e) => {
     setFilterUploadedBy(e.target.value)
-    reqDesign({
-      page:currentPage,
-      limit:pageSize,
-      name:filterName,
-      category:filterCategory,
-      uploadedBy:e.target.value,
-      date_filter:startDate ? dayjs(startDate).format() : ""
-    })
+    // reqDesign({
+    //   page:currentPage,
+    //   limit:pageSize,
+    //   name:filterName,
+    //   category:filterCategory,
+    //   uploadedBy:e.target.value,
+    //   date_filter:startDate ? dayjs(startDate).format() : ""
+    // })
   }
 
   const handleDateFilter = (date) => {
     setStartDate(date)
-    reqDesign({
-      page:currentPage,
-      limit:pageSize,
-      name:filterName,
-      category:filterCategory,
-      uploadedBy:filterUploadedBy,
-      date_filter:dayjs(date).format()
-    })
+    // reqDesign({
+    //   page:currentPage,
+    //   limit:pageSize,
+    //   name:filterName,
+    //   category:filterCategory,
+    //   uploadedBy:filterUploadedBy,
+    //   date_filter:dayjs(date).format()
+    // })
   }
 
   return (
@@ -283,7 +283,7 @@ function UploadDesignListV2() {
                           <td>{(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
-                          <td>{ele?.createdAt ? dayjs(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
+                          <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
 
                           <td>
                           {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?

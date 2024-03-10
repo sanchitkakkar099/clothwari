@@ -26,7 +26,8 @@ import {
   DropdownToggle,
   UncontrolledDropdown,
 } from "reactstrap";
-import { Edit, Eye, MoreVertical, Trash } from "react-feather";
+import { Edit, Eye, Key, MoreVertical, Trash } from "react-feather";
+import ChangePassowardModal from "../common/ChangePassowardModal";
 const cookies = new Cookies();
 
 function StaffList() {
@@ -51,6 +52,9 @@ function StaffList() {
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [sessionsArr, setSessionsArr] = useState([]);
   console.log("sessionsArr", sessionsArr);
+
+  const [pwdUser, setPwdUser] = useState(null);
+  const [pwdText,setPwdText] = useState(null)
 
   useEffect(() => {
     reqDesigner({
@@ -201,6 +205,18 @@ function StaffList() {
     }
   }, [resManageSession]);
 
+
+  const onChangePWDAction = (e, st) => {
+    e.preventDefault();
+    setPwdUser(st?.row?.original)
+  }
+
+  const onChangePWDCloseAction = (e) => {
+    e.preventDefault();
+    setPwdUser(null)
+    setPwdText(null)
+  }
+
   const columns = [
     {
       Header: "Name",
@@ -322,6 +338,12 @@ function StaffList() {
                   <span className="align-middle">Delete</span>
                 </DropdownItem>
               )}
+              {(userInfo?.role === "Super Admin" &&
+              <DropdownItem href="#!" onClick={(e) => onChangePWDAction(e, row)}>
+              <Key className="me-50" size={15} />{" "}
+              <span className="align-middle">Change Password</span>
+              </DropdownItem>
+              )}
             </DropdownMenu>
           </UncontrolledDropdown>
         ) : (
@@ -398,6 +420,13 @@ function StaffList() {
     :
     <Navigate to={"/dashboard"}/>
     }
+    <ChangePassowardModal
+      pwdUser={pwdUser}
+      onChangePWDCloseAction={onChangePWDCloseAction}
+      setPwdUser={setPwdUser}
+      pwdText={pwdText}
+      setPwdText={setPwdText}
+    />
     </>
   );
 }
