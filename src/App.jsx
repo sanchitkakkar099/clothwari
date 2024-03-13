@@ -29,6 +29,7 @@ function App({children}) {
     console.log("time is",now.getSeconds());
   },[])
 
+  console.log("Hi Im APP")
   return (
     <Fragment>
     <div id='layout-wrapper'>
