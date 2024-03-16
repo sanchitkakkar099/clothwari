@@ -130,7 +130,7 @@ function HeaderComponent() {
   const simpleBarRef = useRef();
 
   const toggleDropdown = (event) => {
-    event.stopPropagation();
+    event.preventDefault();
     setDropdownVisible(!isDropdownVisible);
   };
 
@@ -267,7 +267,7 @@ function HeaderComponent() {
                 isDropdownVisible ? "show" : ""
               }`}
               id="page-header-notifications-dropdown"
-              onClick={toggleDropdown}
+              onClick={(e) => toggleDropdown(e)}
             >
               <Bell />
               {(notication?.isSuccess && notication?.data?.data) ?
@@ -467,7 +467,7 @@ function HeaderComponent() {
               } dropdown-user`}
             > 
              
-              <Link className="dropdown-item" to=""  >
+              <Link className="dropdown-item" to="" onClick={(e) => e.preventDefault()} >
                 <i className="bx bx-user-circle text-muted font-size-18 align-middle me-1"></i>{" "}
                 <span className="align-middle text-capitalize">
                   {userInfo?.firstName || userInfo?.lastName

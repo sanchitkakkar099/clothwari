@@ -600,7 +600,7 @@ function AddDesign() {
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="#!">Design</a>
+                    <Link to="" onClick={(e) => e.preventDefault()}>Design</Link>
                   </li>
                   <li className="breadcrumb-item active">Upload Design</li>
                 </ol>
@@ -613,12 +613,12 @@ function AddDesign() {
           <div className="col-lg-12">
             <div id="addproduct-accordion" className="custom-accordion">
               <div className="card">
-                <a
-                  href="#addproduct-productinfo-collapse"
+                <Link
+                  to="" 
+                  onClick={(e) => e.preventDefault()}
                   className="text-dark"
                   data-bs-toggle="collapse"
                   aria-expanded="true"
-                  aria-controls="addproduct-productinfo-collapse"
                 >
                   <div className="p-4">
                     <div className="d-flex align-items-center">
@@ -630,12 +630,10 @@ function AddDesign() {
                       </div>
                     </div>
                   </div>
-                </a>
+                </Link>
 
                 <div
-                  id="addproduct-productinfo-collapse"
                   className="collapse show"
-                  data-bs-parent="#addproduct-accordion"
                 >
                   <div className="p-4 border-top">
                     <Form onSubmit={handleSubmit(onNext)}>
@@ -1341,8 +1339,6 @@ function AddDesign() {
                           <button
                             type="submit"
                             className="btn btn-success m-1"
-                            data-bs-toggle="modal"
-                            data-bs-target="#success-btn"
                           >
                             <i className=" bx bx-file me-1"></i> Save{" "}
                           </button>
