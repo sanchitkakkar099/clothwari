@@ -5,7 +5,7 @@ import Three from "../../assets/images/product/four.jpg";
 import Four from "../../assets/images/product/three.jpg";
 import Five from "../../assets/images/product/one.jpg";
 import Six from "../../assets/images/product/six.jpg";
-import { useCategoryDropdownListQuery, useDesignUploadListMutation, useDesignerDropDownListQuery, useTagListMutation } from "../../service";
+import { useCategoryDropdownListQuery, useColorVariationDropdownListQuery, useDesignUploadListMutation, useDesignerDropDownListQuery, useTagListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -33,6 +33,7 @@ function UploadDesignListV1() {
   const [reqTag,resTag] = useTagListMutation()
   const staffDropDownRes = useDesignerDropDownListQuery()
   const categoryDropdownRes = useCategoryDropdownListQuery();
+  const colorListDropdown = useColorVariationDropdownListQuery();
 
   console.log('staffDropDownRes',staffDropDownRes);
   const tagList = useSelector((state) => state?.tagState.tagList)
@@ -44,6 +45,9 @@ function UploadDesignListV1() {
   const [staffDropdown,setStaffDropdown] = useState([])
   const [categoryDropdown,setCategoryDropdown] = useState([])
     console.log('categoryDropdown',categoryDropdown);
+  const [colorDropdown, setColorDropdown] = useState([]);
+  console.log('colorDropdown',colorDropdown);
+
 
   const [designID,setDesignId] = useState(null)
   const [variationImg,setVariationImg] = useState(null)
@@ -58,13 +62,15 @@ function UploadDesignListV1() {
   const [search, setSearch] = useState('');
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
+  const [colorSearch, setColorSearch] = useState([]);
+
 
   const [selectedStaff, setSelectedStaff] = useState(null);
   console.log('selectedStaff',selectedStaff);
   
 
   useEffect(() => {
-    if(search || startDate || tagsSearch || selectedStaff || categorySearch){
+    if(search || startDate || tagsSearch || selectedStaff || categorySearch || colorSearch){
       reqDesign({
         page: currentPage,
         limit: pageSize,
@@ -72,7 +78,8 @@ function UploadDesignListV1() {
         date_filter:startDate ?  dayjs(startDate).format() : '',
         tags:tagsSearch,
         uploadedBy:selectedStaff ? selectedStaff : '',
-        category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
+        category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : [],
+        color:Array.isArray(colorSearch) ? colorSearch?.map(el => el?._id) : []
       });
     }else{
       reqDesign({
@@ -82,10 +89,11 @@ function UploadDesignListV1() {
         date_filter:'',
         tags:[],
         uploadedBy: '',
-        category:[]
+        category:[],
+        color:[]
       });
     }
-  }, [currentPage,search,startDate,tagsSearch,selectedStaff,categorySearch]);
+  }, [currentPage,search,startDate,tagsSearch,selectedStaff,categorySearch,colorSearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -108,6 +116,12 @@ function UploadDesignListV1() {
       setCategoryDropdown(categoryDropdownRes?.data?.data)
     }
   },[categoryDropdownRes?.isSuccess])
+
+  useEffect(() => {
+    if (colorListDropdown?.isSuccess && colorListDropdown?.data?.data) {
+      setColorDropdown(colorListDropdown?.data?.data);
+    }
+  }, [colorListDropdown]);
 
   const handleSearch = (search) => {
     setSearch(search)
@@ -182,15 +196,11 @@ function UploadDesignListV1() {
   const handleCategorySelection = (selected) => {
     console.log('selected',selected);
     setCategorySearch(selected)
-    // reqDesign({
-    //   page:currentPage,
-    //   limit:pageSize,
-    //   search:search,
-    //   date_filter:startDate ? dayjs(startDate).format() : "",
-    //   tags:tagsSearch,
-    //   uploadedBy:selectedStaff ? selectedStaff : '',
-    //   category:Array.isArray(selected) ? selected?.map(el => el?.value) : []
-    // })
+  }
+
+  const handleColorSelection = (selected) => {
+    console.log('selected',selected);
+    setColorSearch(selected)
   }
 
   const handleStaffSelection = (selected) => {
@@ -322,6 +332,23 @@ function UploadDesignListV1() {
                                 </div>
                                 </div>
                     </div>
+
+                    <div className="col-md-4">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                          
+                        <Typeahead
+                                  allowNew={false}
+                                  id="custom-selections-example"
+                                  labelKey={'label'}
+                                  multiple
+                                  options={(colorDropdown && Array.isArray(colorDropdown) && colorDropdown?.length > 0) ? colorDropdown : []}
+                                  placeholder="Search color..."
+                                  onChange={handleColorSelection}
+                                />
+                                </div>
+                                </div>
+                    </div>
                   </div>
                   <div className="tab-content text-muted">
                     <div
@@ -390,7 +417,8 @@ function UploadDesignListV1() {
                                               <div className="product-box">
                                                 <div className="product-img pt-4 px-4">
                                                 {Array.isArray(el?.thumbnail) && el?.thumbnail[0]?.pdf_extract_img ?
-                                                  
+                                                  <Link to={`/product-view/${el?._id}`}
+                                                          target="_blank">
                                                   <img
                                                     src={
                                                       (variationImg && el?._id === designID) ? variationImg :  el?.thumbnail[0]?.pdf_extract_img
@@ -400,14 +428,18 @@ function UploadDesignListV1() {
                                                     width={250}
                                                     className="image"
                                                   />
+                                                  </Link>
                                                 :
+                                                <Link to={`/product-view/${el?._id}`}
+                                                          target="_blank">
                                                 <img 
                                                     src="https://www.bootdey.com/image/250x200/FFB6C1/000000" 
                                                     className="image" 
                                                     alt="image post"
                                                     
-                                                    onClick={() => navigate(`/product-view/${el?._id}`)}
+                                                    // onClick={() => navigate(`/product-view/${el?._id}`)}
                                                     />
+                                                    </Link>
                                                 }
 
                                                 {/* <img 
@@ -427,7 +459,7 @@ function UploadDesignListV1() {
                                                     <div>
                                                       <h5 className="mb-1">
                                                         <Link to={`/product-view/${el?._id}`}
-                                                          href="ecommerce-product-detail.html"
+                                                          target="_blank"
                                                           className="text-dark font-size-16"
                                                         >
                                                           {el?.name}

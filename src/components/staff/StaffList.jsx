@@ -167,14 +167,6 @@ function StaffList() {
   const handleActiveInactive = (e, st) => {
     e.preventDefault();
     console.log("st?.row?.original", st?.row?.original);
-    reqManageSession({
-      userId: st?.row?.original?._id,
-      isDel: st?.row?.original?.isDel ? false : true,
-    });
-    setSelectedStaff({
-      userId: st?.row?.original?._id,
-      isDel: st?.row?.original?.isDel ? false : true,
-    });
     if (sessionsArr?.some((el) => el?.userId === st?.row?.original?._id)) {
       const sessionsFilter = sessionsArr?.map((el) =>
         el?.userId === st?.row?.original?._id
@@ -182,8 +174,20 @@ function StaffList() {
           : { ...el }
       );
       setSessionsArr(sessionsFilter);
+      setSelectedStaff({
+        userId: st?.row?.original?._id,
+        isDel: sessionsFilter?.some((ws) => ws?.userId === st?.row?.original?._id && ws?.isDel)
+      });
+      reqManageSession({
+        userId: st?.row?.original?._id,
+        isDel: sessionsFilter?.some((ws) => ws?.userId === st?.row?.original?._id && ws?.isDel)
+      });
+    }else{
+      reqManageSession({
+        userId: st?.row?.original?._id,
+        isDel: st?.row?.original?.isDel ? false : true,
+      });
     }
-    // setViewData(st?.row?.original)
   };
 
   useEffect(() => {
@@ -224,7 +228,7 @@ function StaffList() {
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
       Cell: (row) =>
-        !userInfo?.asAdminFlag ? (
+        ((userInfo?.role === 'Super Admin')) ? (
           <div>
             <Link
               to=""
@@ -401,7 +405,7 @@ function StaffList() {
                   )}
                   {/* <div id="table-ecommerce-orders"></div> */}
                   {/* {Array.isArray(designList) && designList?.length > 0 && ( */}
-                  <DataTable data={designerList} columns={columns} />
+                  <DataTable data={designerList} columns={(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === 'Staff Active/Deactive')) ? columns : columns?.filter(el => el?.accessor  !== "session")} />
                   {/* )} */}
                 </div>
               </div>

@@ -3,13 +3,13 @@ import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Fi
 import DataTable from "../common/DataTable";
 import { useNavigate,Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useClientListMutation, useDeleteClientMutation, useSuperAdminLoginAsClientMutation } from "../../service";
+import { useClientListMutation, useDeleteClientMutation, useManageStaffSessionByAdminMutation, useSuperAdminLoginAsClientMutation } from "../../service";
 import { getDesigner } from "../../redux/designerSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { getClient } from "../../redux/clientSlice";
 import ClientView from "./ClientView";
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { Edit, MoreVertical, Trash,Eye, Key } from "react-feather";
 import Cookies from "universal-cookie";
 import { setUserInfo, setUserToken } from "../../redux/authSlice";
@@ -31,6 +31,9 @@ function ClientList() {
   const [viewData, setViewData] = useState(null);
 
   const [loginAsAdminReq, loginAsAdminRes] = useSuperAdminLoginAsClientMutation();
+  const [reqManageSession, resManageSession] = useManageStaffSessionByAdminMutation();
+  const [sessionsArr, setSessionsArr] = useState([]);
+  const [selectedStaff, setSelectedStaff] = useState(null);
   const [adminId, setAdminId] = useState(null);
 
   const [pwdUser, setPwdUser] = useState(null);
@@ -47,6 +50,17 @@ function ClientList() {
   useEffect(() => {
     if (resClient?.isSuccess) {
       dispatch(getClient(resClient?.data?.data?.docs));
+      const recommended = resClient?.data?.data?.docs?.map((el) => ({
+        userId: el?._id,
+        isDel: el?.isDel,
+      }));
+      if (
+        recommended?.flat()?.filter((el) => el !== undefined) &&
+        Array.isArray(recommended?.flat()?.filter((el) => el !== undefined)) &&
+        recommended?.flat()?.filter((el) => el !== undefined)?.length > 0
+      ) {
+        setSessionsArr(recommended?.flat()?.filter((el) => el !== undefined));
+      }
     }
   }, [resClient]);
 
@@ -121,6 +135,46 @@ function ClientList() {
     setPwdText(null)
   }
 
+  const handleActiveInactive = (e, st) => {
+    e.preventDefault();
+    console.log("st?.row?.original", st?.row?.original);
+    if (sessionsArr?.some((el) => el?.userId === st?.row?.original?._id)) {
+      const sessionsFilter = sessionsArr?.map((el) =>
+        el?.userId === st?.row?.original?._id
+          ? { ...el, isDel: el?.isDel ? false : true }
+          : { ...el }
+      );
+      setSessionsArr(sessionsFilter);
+      setSelectedStaff({
+        userId: st?.row?.original?._id,
+        isDel: sessionsFilter?.some((ws) => ws?.userId === st?.row?.original?._id && ws?.isDel)
+      });
+      reqManageSession({
+        userId: st?.row?.original?._id,
+        isDel: sessionsFilter?.some((ws) => ws?.userId === st?.row?.original?._id && ws?.isDel)
+      });
+    }else{
+      reqManageSession({
+        userId: st?.row?.original?._id,
+        isDel: st?.row?.original?.isDel ? false : true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (resManageSession?.isSuccess) {
+      toast.success(
+        `Successfully ${
+          selectedStaff?.isDel ? "Deactivate" : "Activate"
+        } Client`,
+        {
+          position: "top-center",
+        }
+      );
+      setSelectedStaff(null);
+    }
+  }, [resManageSession]);
+
   const columns = [
     {
       Header: "Name",
@@ -143,6 +197,34 @@ function ClientList() {
       accessor: "email",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
+    },
+    {
+      Header: "Session",
+      accessor: "session",
+      Cell: (row) =>
+        userInfo?.role === "Super Admin" || userInfo?.role === "Admin" ? (
+          <Button
+            color="primary"
+            style={{
+              background: sessionsArr?.some(
+                (ws) => ws?.userId === row?.row?.original?._id && ws?.isDel
+              )
+                ? "#FF6666"
+                : "#0080FF",
+              color: "#fff",
+            }}
+            className="btn"
+            onClick={(e) => handleActiveInactive(e, row)}
+          >
+            {sessionsArr?.some(
+              (ws) => ws?.userId === row?.row?.original?._id && ws?.isDel
+            )
+              ? "In-Active"
+              : "Active"}
+          </Button>
+        ) : (
+          "No Permission"
+        ),
     },
     {
       Header: "Action",
@@ -249,7 +331,7 @@ function ClientList() {
                   </div>
                 </div>
               }
-                  <DataTable data={designerList} columns={columns} />
+                  <DataTable data={designerList} columns={(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === 'Staff Active/Deactive')) ? columns : columns?.filter(el => el?.accessor  !== "session")} />
               </div>
             </div>
           </div>
@@ -268,12 +350,12 @@ function ClientList() {
         confirmAction={reqDelete}
       />
       <ChangePassowardModal
-      pwdUser={pwdUser}
-      onChangePWDCloseAction={onChangePWDCloseAction}
-      setPwdUser={setPwdUser}
-      pwdText={pwdText}
-      setPwdText={setPwdText}
-    />
+        pwdUser={pwdUser}
+        onChangePWDCloseAction={onChangePWDCloseAction}
+        setPwdUser={setPwdUser}
+        pwdText={pwdText}
+        setPwdText={setPwdText}
+      />
       </>
   );
 }

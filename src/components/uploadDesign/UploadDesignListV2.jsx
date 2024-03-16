@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { downloadFile } from "../common/FileDownload";
 import UploadDesignView from "./UploadDesignView";
-import { Download, Edit, Eye, MoreVertical, Trash } from "react-feather";
+import { ChevronDown, ChevronUp, Download, Edit, Eye, MoreVertical, Trash } from "react-feather";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { useRef } from "react";
 import Pagination from "../common/Pagination";
@@ -48,6 +48,11 @@ function UploadDesignListV2() {
   const [filterName, setFilterName] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterUploadedBy, setFilterUploadedBy] = useState('');
+  const [sortOrder, setSortOrder] = useState('');
+  const [sortColumn, setSortColumn] = useState(null);
+  console.log('sortColumn',sortColumn,'sortOrder',sortOrder);
+
+
 
   useEffect(() => {
     if(filterName || filterCategory || filterUploadedBy || startDate){
@@ -67,11 +72,42 @@ function UploadDesignListV2() {
     }
   }, [currentPage,filterName,filterCategory,filterUploadedBy,startDate]);
 
+  
+  const sortData = (column) => {
+    const sorted = [...TBLData].sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a[column] > b[column] ? 1 : -1;
+      } else {
+        return a[column] < b[column] ? 1 : -1;
+      }
+    });
+    setTBLData(sorted);
+  };
+
+  
+  useEffect(() => {
+    if (sortColumn) {
+      sortData(sortColumn);
+    }
+  }, [sortColumn, sortOrder]);
+
+  const handleSort = (column) => {
+    if (column === sortColumn) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortOrder('asc');
+    }
+  };
+
   useEffect(() => {
     if (resDesign?.isSuccess) {
       dispatch(getDesignUpload(resDesign?.data?.data?.docs));
       setTBLData(resDesign?.data?.data?.docs)
       setTotalCount(resDesign?.data?.data?.totalDocs)
+      // if (sortColumn) {
+      //   sortData(sortColumn);
+      // }
     }
   }, [resDesign]);
 
@@ -196,6 +232,8 @@ function UploadDesignListV2() {
     // })
   }
 
+  
+
   return (
     <>
     {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') ?
@@ -257,7 +295,11 @@ function UploadDesignListV2() {
                   <table className="filter-table">
                     <thead>
                       <tr>
-                        <th>Design Name</th>
+                        <th onClick={() => handleSort('name')}>Design Name
+                        {sortColumn === 'name' && (
+                          sortOrder === 'asc' ? <ChevronDown /> : <ChevronUp />
+                        )}
+                        </th>
                         <th>Category</th>
                         <th>Uploaded By</th>
                         <th>Created At</th>

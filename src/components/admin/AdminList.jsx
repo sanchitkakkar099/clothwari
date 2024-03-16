@@ -7,7 +7,7 @@ import {
 import DataTable from "../common/DataTable";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useAdminListMutation, useSuperAdminLoginAsLoginMutation } from "../../service";
+import { useAdminListMutation, useManageStaffSessionByAdminMutation, useSuperAdminLoginAsLoginMutation } from "../../service";
 import {
   Button,
   DropdownItem,
@@ -27,6 +27,7 @@ import { getAdmin } from "../../redux/adminSlice";
 import { setUserInfo, setUserToken } from "../../redux/authSlice";
 import Cookies from "universal-cookie";
 import ChangePassowardModal from "../common/ChangePassowardModal";
+import toast from "react-hot-toast";
 const cookies = new Cookies();
 
 
@@ -37,11 +38,15 @@ function AdmintList() {
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const adminList = useSelector((state) => state?.adminState.adminList);
   console.log("adminList", adminList);
+  const [reqManageSession, resManageSession] = useManageStaffSessionByAdminMutation();
 
   const [loginAsAdminReq, loginAsAdminRes] = useSuperAdminLoginAsLoginMutation();
   const [adminId, setAdminId] = useState(null);
   const [pwdUser, setPwdUser] = useState(null);
   const [pwdText,setPwdText] = useState(null)
+  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [sessionsArr, setSessionsArr] = useState([]);
+
 
 
   useEffect(() => {
@@ -55,6 +60,17 @@ function AdmintList() {
   useEffect(() => {
     if (resAdmin?.isSuccess) {
       dispatch(getAdmin(resAdmin?.data?.data?.docs));
+      const recommended = resAdmin?.data?.data?.docs?.map((el) => ({
+        userId: el?._id,
+        isDel: el?.isDel,
+      }));
+      if (
+        recommended?.flat()?.filter((el) => el !== undefined) &&
+        Array.isArray(recommended?.flat()?.filter((el) => el !== undefined)) &&
+        recommended?.flat()?.filter((el) => el !== undefined)?.length > 0
+      ) {
+        setSessionsArr(recommended?.flat()?.filter((el) => el !== undefined));
+      }
     }
   }, [resAdmin]);
 
@@ -107,6 +123,47 @@ function AdmintList() {
     setPwdText(null)
   }
 
+  const handleActiveInactive = (e, st) => {
+    e.preventDefault();
+    console.log("st?.row?.original", st?.row?.original);
+    if (sessionsArr?.some((el) => el?.userId === st?.row?.original?._id)) {
+      const sessionsFilter = sessionsArr?.map((el) =>
+        el?.userId === st?.row?.original?._id
+          ? { ...el, isDel: el?.isDel ? false : true }
+          : { ...el }
+      );
+      setSessionsArr(sessionsFilter);
+      setSelectedStaff({
+        userId: st?.row?.original?._id,
+        isDel: sessionsFilter?.some((ws) => ws?.userId === st?.row?.original?._id && ws?.isDel)
+      });
+      reqManageSession({
+        userId: st?.row?.original?._id,
+        isDel: sessionsFilter?.some((ws) => ws?.userId === st?.row?.original?._id && ws?.isDel)
+      });
+    }else{
+      reqManageSession({
+        userId: st?.row?.original?._id,
+        isDel: st?.row?.original?.isDel ? false : true,
+      });
+    }
+  };
+
+
+  useEffect(() => {
+    if (resManageSession?.isSuccess) {
+      toast.success(
+        `Successfully ${
+          selectedStaff?.isDel ? "Deactivate" : "Activate"
+        } Admin`,
+        {
+          position: "top-center",
+        }
+      );
+      setSelectedStaff(null);
+    }
+  }, [resManageSession]);
+
   const columns = [
     {
       Header: "Name",
@@ -141,6 +198,34 @@ function AdmintList() {
       Cell: ({row}) => (row?.original?.permissions && Array.isArray(row?.original?.permissions) && row?.original?.permissions?.length > 0) ? 
       <li className="list-group-item">{row?.original?.permissions?.map(el => el?.label)?.join(", ")}</li>
      : 'No Permissions',
+    },
+    {
+      Header: "Session",
+      accessor: "session",
+      Cell: (row) =>
+        userInfo?.role === "Super Admin" ? (
+          <Button
+            color="primary"
+            style={{
+              background: sessionsArr?.some(
+                (ws) => ws?.userId === row?.row?.original?._id && ws?.isDel
+              )
+                ? "#FF6666"
+                : "#0080FF",
+              color: "#fff",
+            }}
+            className="btn"
+            onClick={(e) => handleActiveInactive(e, row)}
+          >
+            {sessionsArr?.some(
+              (ws) => ws?.userId === row?.row?.original?._id && ws?.isDel
+            )
+              ? "In-Active"
+              : "Active"}
+          </Button>
+        ) : (
+          "No Permission"
+        ),
     },
     {
       Header: "Action",
