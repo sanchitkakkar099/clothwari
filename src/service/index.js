@@ -297,6 +297,14 @@ export const designTagApi = createApi({
       }),
       invalidatesTags: ["designTag"],
     }),
+    mergeTag: builder.mutation({
+      query: (payload) => ({
+        url: "tag/merge",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["designTag"],
+    }),
   }),
 });
 export const {
@@ -305,7 +313,8 @@ export const {
   useSearchTagMutation,
   useDeleteTagMutation,
   useTagByIdQuery,
-  useTagDropdownListQuery
+  useTagDropdownListQuery,
+  useMergeTagMutation
 } = designTagApi;
 
 
