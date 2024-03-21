@@ -48,10 +48,12 @@ function UploadDesignListV2() {
   const [filterName, setFilterName] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterUploadedBy, setFilterUploadedBy] = useState('');
-  const [sortOrder, setSortOrder] = useState('');
-  const [sortColumn, setSortColumn] = useState(null);
-  console.log('sortColumn',sortColumn,'sortOrder',sortOrder);
+  // const [sortOrder, setSortOrder] = useState('');
+  // const [sortColumn, setSortColumn] = useState(null);
+  // console.log('sortColumn',sortColumn,'sortOrder',sortOrder);
 
+  const [sortConfig, setSortConfig] = useState(null);
+  console.log('sortConfig',sortConfig);
 
 
   useEffect(() => {
@@ -73,43 +75,75 @@ function UploadDesignListV2() {
   }, [currentPage,filterName,filterCategory,filterUploadedBy,startDate]);
 
   
-  const sortData = (column) => {
-    const sorted = [...TBLData].sort((a, b) => {
-      if (sortOrder === 'asc') {
-        return a[column] > b[column] ? 1 : -1;
-      } else {
-        return a[column] < b[column] ? 1 : -1;
-      }
-    });
-    setTBLData(sorted);
-  };
+  // const sortData = (column) => {
+  //   const sorted = [...TBLData].sort((a, b) => {
+  //     if (sortOrder === 'asc') {
+  //       return a[column] > b[column] ? 1 : -1;
+  //     } else {
+  //       return a[column] < b[column] ? 1 : -1;
+  //     }
+  //   });
+  //   setTBLData(sorted);
+  // };
 
   
-  useEffect(() => {
-    if (sortColumn) {
-      sortData(sortColumn);
-    }
-  }, [sortColumn, sortOrder]);
+  // useEffect(() => {
+  //   if (sortColumn) {
+  //     sortData(sortColumn);
+  //   }
+  // }, [sortColumn, sortOrder]);
 
-  const handleSort = (column) => {
-    if (column === sortColumn) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(column);
-      setSortOrder('asc');
-    }
-  };
+  // const handleSort = (column) => {
+  //   if (column === sortColumn) {
+  //     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  //   } else {
+  //     setSortColumn(column);
+  //     setSortOrder('asc');
+  //   }
+  // };
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
       dispatch(getDesignUpload(resDesign?.data?.data?.docs));
       setTBLData(resDesign?.data?.data?.docs)
       setTotalCount(resDesign?.data?.data?.totalDocs)
-      // if (sortColumn) {
-      //   sortData(sortColumn);
-      // }
+      if(sortConfig?.key && sortConfig?.direction){
+        setSortConfig({ key:sortConfig?.key, direction:sortConfig?.direction });
+      }
     }
   }, [resDesign]);
+
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = () => {
+    if (!sortConfig) {
+      return TBLData;
+    }
+
+    return [...TBLData].sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+  useEffect(() => {
+    const sortedTableData = sortedData();
+    console.log('sortedTableData',sortedTableData);
+    setTBLData(sortedTableData)
+
+  },[sortConfig])
+
 
   const handleDownload = (e, st) => {
     e.preventDefault();
@@ -296,8 +330,8 @@ function UploadDesignListV2() {
                     <thead>
                       <tr>
                         <th onClick={() => handleSort('name')}>Design Name
-                        {sortColumn === 'name' && (
-                          sortOrder === 'asc' ? <ChevronDown /> : <ChevronUp />
+                        {sortConfig?.key === 'name' && (
+                          sortConfig?.direction === 'asc' ? <ChevronDown /> : <ChevronUp />
                         )}
                         </th>
                         <th>Category</th>
