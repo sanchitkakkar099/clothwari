@@ -26,6 +26,9 @@
 
 // search-box
 .search-box{
+  @media (max-width: 576px) {
+    margin-bottom: 8px;
+  }
   .form-control{
       border-radius: 30px;
       padding-left: 40px;

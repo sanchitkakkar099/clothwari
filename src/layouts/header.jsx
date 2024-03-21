@@ -173,49 +173,32 @@ function HeaderComponent() {
     }
   },[resReadNotification?.isSuccess])
 
+  const [isVisible, setIsVisible] = useState(false);
+
+  const toggleVisibility = () => {
+    const targetElement = document.getElementById('v-menu');
+    if(!isVisible){
+      targetElement.style.display = "block"
+      setIsVisible(true);
+    }else{
+      targetElement.style.display = "none"
+
+
+      setIsVisible(false);
+    }
+  };
+
   return (
     <header id="page-topbar" className="isvertical-topbar">
       <div className="navbar-header">
         <div className="d-flex">
-          <div className="navbar-brand-box">
-            <a href="#!" className="logo logo-dark">
-              <span className="logo-sm">
-                <img src={Logosm} alt="" height="22" />
-              </span>
-              <span className="logo-lg">
-                <img src={Logosm} alt="" height="22" />{" "}
-                <span className="logo-txt">Clothwari</span>
-              </span>
-            </a>
-
-            <a href="#!" className="logo logo-light">
-              <span className="logo-sm">
-                <img src={Logosm} alt="" height="22" />
-              </span>
-              <span className="logo-lg">
-                <img src={Logosm} alt="" height="22" />{" "}
-                <span className="logo-txt">Clothwari</span>
-              </span>
-            </a>
-          </div>
-
           <button
             type="button"
             className="btn btn-sm px-3 font-size-16 header-item vertical-menu-btn"
+            onClick={() => toggleVisibility()}
           >
             <i className="fa fa-fw fa-bars"></i>
-          </button>
-
-          {/* <form className="app-search d-none d-lg-block">
-            <div className="position-relative">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search..."
-              />
-              <span className="bx bx-search"></span>
-            </div>
-          </form> */}
+          </button>  
         </div>
 
         <div className="d-flex">

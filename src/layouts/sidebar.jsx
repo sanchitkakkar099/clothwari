@@ -33,7 +33,7 @@ function SidebarComponent() {
     }
   }
   return (
-    <div className="vertical-menu">
+    <div className="vertical-menu" id='v-menu'>
 
     <div className="navbar-brand-box">
         <Link className="logo logo-dark" to={"/dashboard"}>
