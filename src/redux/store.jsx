@@ -6,11 +6,12 @@ import colorVariationSlice from "./colorVariationSlice";
 import tagSlice from "./tagSlice";
 import clientSlice from "./clientSlice";
 import dashboardSlice from "./dashboardSlice";
-
-
-import { adminApi, authApi, categoryApi, clientApi, clientBagApi, colorVariationApi, dashboardApi, designTagApi, designUploadApi, designerApi, fileApi } from "../service";
+import salesPersonSlice from "./salesPersonSlice";
 import authSlice from "./authSlice";
 import adminSlice from "./adminSlice";
+import { adminApi, authApi, categoryApi, clientApi, clientBagApi, colorVariationApi, dashboardApi, designTagApi, designUploadApi, designerApi, driveApi, fileApi, salesPersonApi } from "../service";
+import driveSlice from "./driveSlice";
+
 
 const appReducer = combineReducers({
   authState: authSlice,
@@ -22,6 +23,8 @@ const appReducer = combineReducers({
   tagState: tagSlice,
   clientState: clientSlice,
   dashboardState: dashboardSlice,
+  salesPersonState: salesPersonSlice,
+  driveState: driveSlice,
   [authApi.reducerPath]: authApi.reducer,
   [adminApi.reducerPath]: adminApi.reducer,
   [categoryApi.reducerPath]: categoryApi.reducer,
@@ -33,7 +36,8 @@ const appReducer = combineReducers({
   [colorVariationApi.reducerPath]: colorVariationApi.reducer,
   [dashboardApi.reducerPath]: dashboardApi.reducer,
   [clientBagApi.reducerPath]: clientBagApi.reducer,
-
+  [salesPersonApi.reducerPath]: salesPersonApi.reducer,
+  [driveApi.reducerPath]: driveApi.reducer,
 });
 
 export const store = configureStore({
@@ -51,5 +55,7 @@ export const store = configureStore({
       colorVariationApi.middleware,
       dashboardApi.middleware,
       clientBagApi.middleware,
+      salesPersonApi.middleware,
+      driveApi.middleware,
     ]),
 });

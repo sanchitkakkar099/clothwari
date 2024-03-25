@@ -29,6 +29,11 @@ import ClientBagItem from "../components/client/BagItem";
 import ViewOrders from "../components/client/ViewOrders";
 import ViewMyOrders from "../components/client/ViewMyOrders";
 import DesignVariationList from "../components/client/DesignVariationList";
+import PDFDesign from "../components/common/PDFDesign";
+import SalesPersonList from "../components/sales-person/SalesPersonList";
+import SalesPersonForm from "../components/sales-person/SalesPersonForm";
+import DriveList from "../components/drive/DriveList";
+import SalesPersonViewDesign from "../components/sales-person/SalePersonViewDesing";
 
 
 export const privateRoutes = [
@@ -49,6 +54,11 @@ export const privateRoutes = [
   { path: "/staff-list", Component: StaffList },
   { path: "/staff-approval", Component: StaffApprovalList },
 
+  { path: "/sales-person-form", Component: SalesPersonForm },
+  { path: "/sales-person-list", Component: SalesPersonList },
+  { path: "/sales-view-design", Component: SalesPersonViewDesign },
+
+
   { path: "/category-list", Component: CategoryList },
   { path: "/category-form", Component: CategoryForm },
   { path: "/tag-list", Component: TagList },
@@ -61,12 +71,13 @@ export const privateRoutes = [
   { path: "/view-my-orders", Component: ViewMyOrders },
   { path: "/design-selection", Component: DesignVariationList },
 
-
-
-
-
   { path: "/color-variation-list", Component: ColorVariationList },
   { path: "/color-variation-form", Component: ColorVariationForm },
+
+  { path: "/pdf-view", Component: PDFDesign },
+
+  { path: "/drive-list", Component: DriveList },
+
 ];
 
 export const publicRoutes = [

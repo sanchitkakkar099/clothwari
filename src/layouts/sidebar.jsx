@@ -83,6 +83,7 @@ function SidebarComponent() {
                         <li><Link to="/admin-list" data-key="t-inbox">Admin</Link></li>
                         <li><Link to="/staff-list" data-key="t-inbox">Staff</Link></li>
                         <li><Link to="/client-list" data-key="t-read-email">Client</Link></li>
+                        <li><Link to="/sales-person-list" data-key="t-read-email">Sales Person</Link></li>
                     </ul>
                 </li>
                 }
@@ -114,6 +115,17 @@ function SidebarComponent() {
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
                     </Link>
                 </li>
+                }
+
+                {
+                   (userInfo?.role === 'Super Admin' ||
+                    (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Drive")) || userInfo?.role === 'SalesPerson')
+                    &&
+                    <li>
+                        <Link to="/drive-list">
+                            <span className="menu-item" data-key="t-dashboards">Drive</span>
+                        </Link>
+                    </li>
                 }
 
                 
@@ -177,6 +189,15 @@ function SidebarComponent() {
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
                         <span className="menu-item" data-key="t-dashboards">View Design</span>
                         {/* <span className="badge rounded-pill bg-success">5+</span> */}
+                    </Link>
+                </li>
+                }
+
+
+                {userInfo?.role === 'SalesPerson' &&
+                <li>
+                    <Link to="/sales-view-design">
+                        <span className="menu-item" data-key="t-dashboards">View Design</span>
                     </Link>
                 </li>
                 }

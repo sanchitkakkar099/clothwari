@@ -796,3 +796,85 @@ export const {
  useMyAllOrdersMutation,
  useNotificationReadMutation,
 } = clientBagApi;
+
+
+
+export const salesPersonApi = createApi({
+  tagTypes: ["salesPerson"],
+  reducerPath: "salesPersonApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}/`,
+    prepareHeaders: (headers, { getState }) => {
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
+      return headers
+    },
+  }),
+  endpoints: (builder) => ({
+    salesPersonList: builder.mutation({
+      query: (payload) => ({
+        url: "market/salesperson/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["salesPerson"],
+    }),
+    submitSalesPerson: builder.mutation({
+      query: (payload) => ({
+        url: "market/salesperson/create",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["salesPerson"],
+    }),
+    salesPersonById: builder.query({
+      query: (id) => ({
+        url: `market/salesperson/byId/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["salesPerson"],
+    }),
+    deleteSalesPerson: builder.mutation({
+      query: (id) => ({
+        url: `market/salesperson/byId/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["salesPerson"],
+    }),
+  }),
+});
+export const {
+  useSalesPersonListMutation,
+  useSalesPersonByIdQuery,
+  useSubmitSalesPersonMutation,
+  useDeleteSalesPersonMutation
+} = salesPersonApi;
+
+
+export const driveApi = createApi({
+  tagTypes: ["drive"],
+  reducerPath: "driveApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}/`,
+    prepareHeaders: (headers, { getState }) => {
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
+      return headers
+    },
+  }),
+  endpoints: (builder) => ({
+    driveList: builder.mutation({
+      query: (payload) => ({
+        url: "drive/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["drive"],
+    }),
+  }),
+});
+export const {
+  useDriveListMutation,
+} = driveApi;

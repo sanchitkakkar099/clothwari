@@ -52,7 +52,7 @@ function TagList() {
     e.preventDefault();
     console.log("sssss", st?.row?.original);
     setModalDetails({
-      title: st?.row?.original?.name,
+      title: st?.row?.original?.label,
       id: st?.row?.original?._id,
     });
     setShowModal(true);

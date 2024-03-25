@@ -166,6 +166,7 @@ const DataTable = (props) => {
           }) || <tr><td className="text-center" colSpan={10}>No Data To Display</td></tr>}
       </tbody>
     </table>
+    {(data && Array.isArray(data) && data?.length > 0) &&
     <Pagination
         pageCount={pageCount}
         previousPage={previousPage}
@@ -178,6 +179,7 @@ const DataTable = (props) => {
         canPreviousPage={canPreviousPage}
         canNextPage={canNextPage}
     />
+    }
     </>
   );
 };

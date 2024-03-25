@@ -402,7 +402,7 @@ function UploadDesignListV1() {
                                     role="tabpanel"
                                   >
                                    
-                                   <h6 style={{display:'flex',justifyContent:'end'}}>Total Designs: {totalCount}</h6>
+                                   <h6 style={{display:'flex',justifyContent:'end',textTransform:'uppercase'}}>Total Designs: {totalCount}</h6>
 
                                     <div className="row">
                                       {designUploadList &&

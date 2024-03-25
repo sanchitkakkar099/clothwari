@@ -177,6 +177,23 @@ function DashboardComponent() {
                         </div>
                     </div>
                     }
+
+                    {((userInfo?.role === 'Super Admin') || (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el => el === "Drive")) || (userInfo?.role === 'SalesPerson')) &&
+                    <div className="col-lg-3 col-md-6">
+                        <div className="card" style={{cursor: 'pointer'}} onClick={() => navigate("/drive-list")}>
+                            <div className="card-body">
+                                <div className="avatar">
+                                    <span className="avatar-title bg-soft-success rounded">
+                                        <i className="mdi mdi-eye-outline text-success font-size-24"></i>
+                                    </span>
+                                </div>
+                                <p className="text-muted mt-4 mb-0">Drive</p>
+                                <h4 className="mt-1 mb-0">{0}</h4> 
+                            </div>
+                        </div>
+                    </div>
+                    }
+
                 </div>
             </div>
         </div>
