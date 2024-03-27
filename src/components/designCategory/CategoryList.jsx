@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +7,7 @@ import { useCategoryListMutation, useDeleteCategoryMutation } from '../../servic
 import { getCategory } from '../../redux/categorySlice';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
 import toast from 'react-hot-toast';
-import { DropdownItem,DropdownMenu,UncontrolledDropdown,DropdownToggle } from 'reactstrap';
+import { DropdownItem,DropdownMenu,UncontrolledDropdown,DropdownToggle, Button } from 'reactstrap';
 import { Edit, Eye, GitMerge, MoreVertical,Trash } from 'react-feather';
 import CategoryMergeModal from '../common/CategoryMergeModal';
 
@@ -26,6 +26,10 @@ function CategoryList() {
   const [mergeFrom, setMergeFrom] = useState(null);
   const [mergeTo, setMergeTo] = useState(null);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const [sortingBy,setSortingBy] = useState('')
+
   useEffect(() => {
     reqCategory({
       page: 0,
@@ -39,6 +43,19 @@ function CategoryList() {
       dispatch(getCategory(resCategory?.data?.data?.docs));
     }
   }, [resCategory]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
 
   const onEditAction = (e, st) => {
@@ -86,6 +103,26 @@ function CategoryList() {
       setModalDetails(null);
     }
   }, [resDelete]);
+
+  const handleSorting = (e) => {
+    setSortingBy(e.target.value)
+    if(e.target.value === 'asc'){
+      reqCategory({
+        page: 0,
+        limit: 0,
+        search: "",
+        sortBy:e.target.value
+      });
+
+    }else if(e.target.value === 'desc'){
+      reqCategory({
+        page: 0,
+        limit: 0,
+        search: "",
+        sortBy:e.target.value
+      });
+    }
+  }
 
 
     const columns = [
@@ -187,6 +224,25 @@ function CategoryList() {
                   >
                     <i className="mdi mdi-plus me-1"></i> Create Category
                   </button>
+                </div>
+              </div>
+              <div className="position-relative">
+                  <div className="filter-dropdown" ref={dropdownRef}>
+                  <Button onClick={() => setIsOpen(!isOpen)}> <i className="mdi mdi-filter me-1"></i> Filter</Button>
+                  {isOpen && (
+                  <div className="filter-dropdown-content" id="dropdownContent">
+                    <div className="filter-section">
+                    
+                      <h4>Order</h4>
+                      <label className="option">
+                        <input type="radio" name="sorting" value={'asc'} checked={sortingBy === 'asc'}  onChange={(e) => handleSorting(e)}/> A TO Z
+                      </label>
+                      <label className="option">
+                        <input type="radio" name="sorting" value={'desc'} checked={sortingBy === 'desc'} onChange={(e) => handleSorting(e)}/> Z TO A
+                      </label>
+                    </div>
+                  </div>
+                  )}
                 </div>
               </div>
               

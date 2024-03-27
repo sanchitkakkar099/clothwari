@@ -83,7 +83,7 @@ function SidebarComponent() {
                         <li><Link to="/admin-list" data-key="t-inbox">Admin</Link></li>
                         <li><Link to="/staff-list" data-key="t-inbox">Staff</Link></li>
                         <li><Link to="/client-list" data-key="t-read-email">Client</Link></li>
-                        <li><Link to="/sales-person-list" data-key="t-read-email">Sales Person</Link></li>
+                        {/* <li><Link to="/sales-person-list" data-key="t-read-email">Sales Person</Link></li> */}
                     </ul>
                 </li>
                 }
@@ -117,7 +117,7 @@ function SidebarComponent() {
                 </li>
                 }
 
-                {
+                {/* {
                    (userInfo?.role === 'Super Admin' ||
                     (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Drive")) || userInfo?.role === 'SalesPerson')
                     &&
@@ -126,7 +126,7 @@ function SidebarComponent() {
                             <span className="menu-item" data-key="t-dashboards">Drive</span>
                         </Link>
                     </li>
-                }
+                } */}
 
                 
 

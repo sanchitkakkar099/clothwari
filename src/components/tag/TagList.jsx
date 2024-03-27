@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useEffect, useRef} from 'react'
 import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,7 +7,7 @@ import { useDeleteTagMutation, useTagListMutation } from '../../service';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
 import { getTag } from '../../redux/tagSlice';
 import toast from 'react-hot-toast';
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
+import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { Edit, GitMerge, MoreVertical, Trash } from 'react-feather';
 import TagMergeModal from '../common/TagMergeModal';
 
@@ -24,6 +24,11 @@ function TagList() {
   const [modalDetails, setModalDetails] = useState(null);
   const [mergeFrom, setMergeFrom] = useState(null);
   const [mergeTo, setMergeTo] = useState(null);
+  
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const [sortingBy,setSortingBy] = useState('')
+  console.log('sortingBy',sortingBy);
 
   useEffect(() => {
     reqTag({
@@ -38,6 +43,19 @@ function TagList() {
       dispatch(getTag(resTag?.data?.data?.docs));
     }
   }, [resTag]);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const onEditAction = (e, st) => {
     e.preventDefault();
@@ -84,6 +102,27 @@ function TagList() {
     e.preventDefault();
     setMergeTo(null)
     setMergeFrom(null)
+  }
+  
+
+  const handleSorting = (e) => {
+    setSortingBy(e.target.value)
+    if(e.target.value === 'asc'){
+      reqTag({
+        page: 0,
+        limit: 0,
+        search: "",
+        sortBy:e.target.value
+      });
+
+    }else if(e.target.value === 'desc'){
+      reqTag({
+        page: 0,
+        limit: 0,
+        search: "",
+        sortBy:e.target.value
+      });
+    }
   }
 
 
@@ -182,6 +221,25 @@ function TagList() {
                   >
                     <i className="mdi mdi-plus me-1"></i> Create Tag
                   </button>
+                </div>
+              </div>
+              <div className="position-relative">
+                  <div className="filter-dropdown" ref={dropdownRef}>
+                  <Button onClick={() => setIsOpen(!isOpen)}> <i className="mdi mdi-filter me-1"></i> Filter</Button>
+                  {isOpen && (
+                  <div className="filter-dropdown-content" id="dropdownContent">
+                    <div className="filter-section">
+                    
+                      <h4>Order</h4>
+                      <label className="option">
+                        <input type="radio" name="sorting" value={'asc'} checked={sortingBy === 'asc'}  onChange={(e) => handleSorting(e)}/> A TO Z
+                      </label>
+                      <label className="option">
+                        <input type="radio" name="sorting" value={'desc'} checked={sortingBy === 'desc'} onChange={(e) => handleSorting(e)}/> Z TO A
+                      </label>
+                    </div>
+                  </div>
+                  )}
                 </div>
               </div>
               

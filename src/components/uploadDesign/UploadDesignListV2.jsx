@@ -10,13 +10,14 @@ import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { downloadFile } from "../common/FileDownload";
 import UploadDesignView from "./UploadDesignView";
 import { ChevronDown, ChevronUp, Download, Edit, Eye, MoreVertical, Trash } from "react-feather";
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { useRef } from "react";
 import Pagination from "../common/Pagination";
 import ReactDatePicker from "react-datepicker";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
+import './dropdown-filter.css';
 
 // dayjs.tz.setDefault('Asia/Kolkata');
 
@@ -54,7 +55,12 @@ function UploadDesignListV2() {
 
   const [sortConfig, setSortConfig] = useState(null);
   console.log('sortConfig',sortConfig);
+  
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  console.log('isOpen',isOpen);
 
+  
 
   useEffect(() => {
     if(filterName || filterCategory || filterUploadedBy || startDate){
@@ -74,6 +80,19 @@ function UploadDesignListV2() {
     }
   }, [currentPage,filterName,filterCategory,filterUploadedBy,startDate]);
 
+  
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   
   // const sortData = (column) => {
   //   const sorted = [...TBLData].sort((a, b) => {
@@ -266,6 +285,7 @@ function UploadDesignListV2() {
     // })
   }
 
+
   
 
   return (
@@ -324,7 +344,42 @@ function UploadDesignListV2() {
                     </button>
                   </div>
                   }
-                </div>                
+                  </div>
+                  {/* <div className="position-relative">
+                    <div className="filter-dropdown" ref={dropdownRef}>
+                        <Button onClick={() => setIsOpen(!isOpen)}> <i className="mdi mdi-filter me-1"></i> Filter</Button>
+                        {isOpen && (
+                        <div className="filter-dropdown-content" id="dropdownContent">
+                          <div className="filter-section">
+                          
+                            <h4>Order</h4>
+                            <label className="option">
+                              <input type="radio" name="section1" value="option1"/> A TO Z
+                            </label>
+                            <label className="option">
+                              <input type="radio" name="section2" value="option2"/> Z TO A
+                            </label>
+                          </div>
+                          
+                          <div className="filter-section">
+                            <h3>Columns</h3>
+                            <label className="option">
+                              <input type="radio" name="section4" value="option4"/> Name
+                            </label>
+                            <label className="option">
+                              <input type="radio" name="section5" value="option5"/> Category
+                            </label>
+                            <label className="option">
+                              <input type="radio" name="section6" value="option6"/> Uploaded By
+                            </label>
+                            <label className="option">
+                              <input type="radio" name="section6" value="option6"/> Created At
+                            </label>
+                          </div>
+                        </div>
+                        )}
+                    </div>
+                  </div> */}
                   {/* <DataTable data={designUploadList} columns={columns} /> */}
                   <table className="filter-table">
                     <thead>
