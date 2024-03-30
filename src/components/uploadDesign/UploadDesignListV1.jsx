@@ -427,6 +427,7 @@ function UploadDesignListV1() {
                                                     height={200}
                                                     width={250}
                                                     className="image"
+                                                    style={{objectFit:'cover'}}
                                                   />
                                                   </Link>
                                                 :

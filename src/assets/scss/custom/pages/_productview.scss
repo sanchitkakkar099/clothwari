@@ -40,6 +40,7 @@ color: #999;
 .post .post-image .image {
 width: 100%;
 height: 450px;
+object-fit: cover;
 }
 .post .post-description {
 padding: 10px;
@@ -50,6 +51,7 @@ margin-bottom: 2px;
 }
 .product_details .stats {
 margin: 10px;
+display: flex;
 }
 .product_details .stats .stat-item {
 display: inline-block;
