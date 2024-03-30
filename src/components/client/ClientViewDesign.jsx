@@ -92,8 +92,8 @@ function ClientViewDesign() {
       const variationObj = designObj?.variations?.find(
         (el) => el?.color === variation?.label
       );
-      if (variationObj?.variation_thumbnail[0]?.pdf_extract_img) {
-        setVariationImg(variationObj?.variation_thumbnail[0]?.pdf_extract_img);
+      if (variationObj?.variation_image[0]?.tif_extract_img) {
+        setVariationImg(variationObj?.variation_image[0]?.tif_extract_img);
         setDesignId(designObj?._id);
       }
     }
@@ -272,15 +272,15 @@ function ClientViewDesign() {
                                                   {Array.isArray(
                                                     el?.thumbnail
                                                   ) &&
-                                                  el?.thumbnail[0]
-                                                    ?.pdf_extract_img ? (
+                                                  el?.image[0]
+                                                    ?.tif_extract_img ? (
                                                     <img
                                                       src={
                                                         variationImg &&
                                                         el?._id === designID
                                                           ? variationImg
-                                                          : el?.thumbnail[0]
-                                                              ?.pdf_extract_img
+                                                          : el?.image[0]
+                                                              ?.tif_extract_img
                                                       }
                                                       alt="image post"
                                                       height={200}

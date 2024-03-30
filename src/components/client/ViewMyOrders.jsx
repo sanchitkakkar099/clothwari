@@ -60,10 +60,10 @@ function ViewMyOrders() {
                     <div className="card-body">
                       <div className="d-flex align-items-start border-bottom pb-3">
                         <div className="me-4">
-                          {Array.isArray(el?.designId?.thumbnail) &&
-                          el?.designId?.thumbnail[0]?.pdf_extract_img ? (
+                          {Array.isArray(el?.designId?.image) &&
+                          el?.designId?.image[0]?.tif_extract_img ? (
                             <img
-                              src={el?.designId?.thumbnail[0]?.pdf_extract_img}
+                              src={el?.designId?.image[0]?.tif_extract_img}
                               alt="image post"
                               height={80}
                               width={80}
