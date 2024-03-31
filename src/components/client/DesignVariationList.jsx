@@ -1,15 +1,18 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { addedBagItems, removeBagItems } from "../../redux/clientSlice";
+import { addedBagItems, addedPDFItems, removeBagItems, removePDFItems } from "../../redux/clientSlice";
 
 function DesignVariationList() {
   const dispatch = useDispatch()
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const selectedBagItems = useSelector((state) => state?.clientState.selectedBagItems)
+  const selectedPDFItems = useSelector((state) => state?.clientState.selectedPDFItems)
+
   console.log("location?.state?.data", location?.state?.data);
   const { data } = location?.state;
+  console.log('selectedPDFItems',selectedPDFItems);
 
   const handleAddToBag = (el) => {
     dispatch(addedBagItems(el))
@@ -31,9 +34,34 @@ function DesignVariationList() {
     }))
   }
 
+
+
+  const handleAddToPDF = (el) => {
+    dispatch(addedPDFItems({
+      id:el?._id,
+      designNo:el?.designNo,
+      image:el?.image,
+      variation:false
+    }))
+  }
+
+  const handleRemoveFromPDF = (el) => {
+    const res = selectedPDFItems?.filter(sb => sb?.id !== el?._id)
+    dispatch(removePDFItems(res))
+  }
+
+  const handleAddToPDFVariation = (el) => {
+    dispatch(addedPDFItems({
+      id:el?._id,
+      designNo:el?.variation_designNo,
+      image:el?.variation_image,
+      variation:true
+    }))
+  }
+
   return (
     <>
-      {userInfo?.role === "Client" ? (
+      {userInfo?.role === "Client" || userInfo?.role === "SalesPerson" ? (
         <div className="page-content">
           <div className="container-fluid">
             <div className="row">
@@ -56,6 +84,7 @@ function DesignVariationList() {
                         alt="image post"
                         height={250}
                         width={"100%"}
+                        style={{objectFit:'cover'}}
                       />
                     ) : (
                       <img
@@ -71,7 +100,37 @@ function DesignVariationList() {
                       <h4>{data?.name}</h4>
                       <p>Design No : {data?.designNo}</p>
                     </div>
-                    {selectedBagItems &&
+                    
+                  </div>
+                  <div className="product_action_button">
+
+                  {selectedPDFItems &&
+                      Array.isArray(selectedPDFItems) &&
+                      selectedPDFItems?.length > 0 &&
+                      selectedPDFItems?.some(
+                        (sb) => sb?.id === data?._id
+                      ) ? (
+                        <div className="d-flex justify-content-center  m-3">
+                          <button
+                            className="btn btn-danger"
+                            onClick={() => handleRemoveFromPDF(data)}
+                          >
+                            Remove From PDF
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="d-flex justify-content-center  m-3">
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => handleAddToPDF(data)}
+                          >
+                            Add To PDF
+                          </button>
+                        </div>
+                      )}
+
+
+                  {selectedBagItems &&
                       Array.isArray(selectedBagItems) &&
                       selectedBagItems?.length > 0 &&
                       selectedBagItems?.some(
@@ -95,8 +154,7 @@ function DesignVariationList() {
                           </button>
                         </div>
                       )}
-                  
-                  </div>
+                      </div>
                 </div>
               </div>
               {data?.variations && Array.isArray(data?.variations) && data?.variations?.length > 0 &&
@@ -112,6 +170,7 @@ function DesignVariationList() {
                         alt="image post"
                         height={250}
                         width={"100%"}
+                        style={{objectFit:'cover'}}
                       />
                     ) : (
                       <img
@@ -128,7 +187,37 @@ function DesignVariationList() {
                       <p>Design No : {ver?.variation_designNo}</p>
                      
                     </div>
-                    {selectedBagItems &&
+                    
+                    
+                  </div>
+                  <div className="product_action_button">
+
+                  {selectedPDFItems &&
+                      Array.isArray(selectedPDFItems) &&
+                      selectedPDFItems?.length > 0 &&
+                      selectedPDFItems?.some(
+                        (sb) => sb?.id === ver?._id
+                      ) ? (
+                        <div className="d-flex justify-content-center  m-3">
+                          <button
+                            className="btn btn-danger"
+                            onClick={() => handleRemoveFromPDF(ver)}
+                          >
+                            Remove From PDF
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="d-flex justify-content-center  m-3">
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => handleAddToPDFVariation(ver)}
+                          >
+                            Add To PDF
+                          </button>
+                        </div>
+                      )}
+
+                  {selectedBagItems &&
                       Array.isArray(selectedBagItems) &&
                       selectedBagItems?.length > 0 &&
                       selectedBagItems?.some(
@@ -152,8 +241,8 @@ function DesignVariationList() {
                           </button>
                         </div>
                       )}
-                    
-                  </div>
+                      </div>
+
                 </div>
               </div>
                 )

@@ -76,7 +76,7 @@ export const privateRoutes = [
   { path: "/color-variation-list", Component: ColorVariationList },
   { path: "/color-variation-form", Component: ColorVariationForm },
 
-  { path: "/pdf-view", Component: PDFDesign },
+  { path: "/pdf-item", Component: PDFDesign },
 
   { path: "/drive-list", Component: DriveList },
 

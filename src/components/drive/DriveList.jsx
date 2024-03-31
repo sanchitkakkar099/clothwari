@@ -66,8 +66,8 @@ function DriveList() {
 
   const columns = [
     {
-      Header: "Name",
-      accessor: "name",
+      Header: "Uploaded By",
+      accessor: "uploadedBy",
       Filter: TextSearchFilter,
       filter: "rankedMatchSorter",
     },
@@ -114,7 +114,7 @@ function DriveList() {
 
   return (
     <>
-    {(userInfo?.role === 'Super Admin' || (userInfo?.role === 'Admin' && userInfo?.permissions?.includes("Drive"))) ?
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'SalesPerson' || (userInfo?.role === 'Admin' && userInfo?.permissions?.includes("Drive"))) ?
     <>
       <div className="page-content">
         <div className="container-fluid">

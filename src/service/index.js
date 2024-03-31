@@ -867,7 +867,15 @@ export const driveApi = createApi({
   endpoints: (builder) => ({
     driveList: builder.mutation({
       query: (payload) => ({
-        url: "drive/list",
+        url: "market/drive/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["drive"],
+    }),
+    createDrive: builder.mutation({
+      query: (payload) => ({
+        url: "market/drive/create",
         method: "POST",
         body: payload,
       }),
@@ -877,4 +885,5 @@ export const driveApi = createApi({
 });
 export const {
   useDriveListMutation,
+  useCreateDriveMutation
 } = driveApi;

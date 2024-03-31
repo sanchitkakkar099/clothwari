@@ -1,27 +1,29 @@
 .pdf-title {
     text-align: center;
-}
-.pdf-images-container {
+  }
+  .pdf-images-container {
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap; /* Allow images to wrap to the next row */
+    justify-content: space-between; /* Distribute space evenly between items */
     align-items: flex-start;
     padding-top: 10px; /* Add padding to space out the border */
-    
-}
-.pdf-title + .pdf-images-container {
     border-top: 25px solid rgb(206, 86, 42); /* Add a border style */
-    padding-top: 10px; /* Add padding to space out the border */
-}
-.pdf-image-wrapper {
+    padding-left: 50px; /* Add left padding */
+    padding-right: 50px; /* Add right padding */
+  }
+  .pdf-image-wrapper {
     margin: 10px;
     position: relative;
     border: 1.5px black solid;
-}
-.pdf-image-wrapper img {
-    width: 300px;
-    height: auto;
-}
-.pdf-image-caption {
+    width: calc(50% - 20px); /* Limit the maximum width */
+    height: 350px; /* Decreased height */
+  }
+  .pdf-image-wrapper img {
+    width: 100%; /* Make the image fill its container */
+    height: 100%; /* Make the image fill its container */
+    object-fit: cover; /* Cover the container while maintaining aspect ratio */
+  }
+  .pdf-image-caption {
     position: absolute;
     bottom: 5px;
     right: 5px;
@@ -29,4 +31,5 @@
     background-color: white;
     padding: 2px;
     border-radius: 5px;
-}
+  }
+  

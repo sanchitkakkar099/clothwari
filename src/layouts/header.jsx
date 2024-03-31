@@ -10,7 +10,7 @@ import { setTimer, setUserInfo, setUserToken } from "../redux/authSlice";
 import { useClientBagListByAdminMutation, useGetBagNotificationQuery, useLoginAsAdminMutation, useLogoutUserMutation, useNotificationReadMutation } from "../service";
 import TimeElapsedApp from "../components/TimeElapsed";
 import SessionTimer from "../components/SessionTimer";
-import { Bell, ShoppingCart } from "react-feather";
+import { Bell, FilePlus, ShoppingCart } from "react-feather";
 import SimpleBar from "simplebar-react";
 const cookies = new Cookies();
 
@@ -26,6 +26,10 @@ function HeaderComponent() {
   const timer = useSelector((state) => state?.authState.timer);
   const selectedBagItems = useSelector(
     (state) => state?.clientState.selectedBagItems
+  );
+
+  const selectedPDFItems = useSelector(
+    (state) => state?.clientState.selectedPDFItems
   );
   const [openMenu, setOpenMenu] = useState(false);
   useEffect(() => {
@@ -404,7 +408,7 @@ function HeaderComponent() {
             )}
           </div>
           }
-          {userInfo?.role === 'Client' &&
+          {userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson' &&
           <div className="dropdown d-inline-block">
             <button
               type="button"
@@ -416,9 +420,28 @@ function HeaderComponent() {
               <ShoppingCart />
               {selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0 ?
               <span className="noti-dot bg-danger rounded-pill">
-          
-          
+
               {selectedBagItems?.length}
+              </span>
+             : ''
+              }
+            </button>
+            </div>
+          }
+          {userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson' &&
+          <div className="dropdown d-inline-block">
+            <button
+              type="button"
+              className="btn header-item noti-icon"
+              id="page-header-notifications-dropdown"
+              onClick={() => navigate('/pdf-item')}
+              // onClick={toggleDropdown}
+            >
+              <FilePlus/>
+              {selectedPDFItems && Array.isArray(selectedPDFItems) && selectedPDFItems?.length > 0 ?
+              <span className="noti-dot bg-danger rounded-pill">
+
+              {selectedPDFItems?.length}
               </span>
              : ''
               }
