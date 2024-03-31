@@ -64,53 +64,7 @@ function DriveList() {
   }, [resDrive]);
 
 
-  const columns = [
-    {
-      Header: "Uploaded By",
-      accessor: "uploadedBy",
-      Filter: TextSearchFilter,
-      filter: "rankedMatchSorter",
-    },
-    {
-      Header: "Action",
-      accessor: "action",
-      Cell: (row) =>
-        (userInfo?.role === "Super Admin" ||
-        (userInfo?.role === "Admin" && userInfo?.permissions?.some(
-          (el) =>
-            el === "Drive"))
-        ) ? (
-          <UncontrolledDropdown>
-            <DropdownToggle
-              className="icon-btn hide-arrow moreOption"
-              color="transparent"
-              size="sm"
-              caret
-            >
-              <MoreVertical size={15} />
-            </DropdownToggle>
-            <DropdownMenu>
-              {(userInfo?.role === "Super Admin" ||
-                userInfo?.permissions?.includes("Drive")) && (
-                <DropdownItem href="#!">
-                  <Eye className="me-50" size={15} />{" "}
-                  <span className="align-middle">Download</span>
-                </DropdownItem>
-              )}
-              {(userInfo?.role === "Super Admin" ||
-                userInfo?.permissions?.includes("Drive")) && (
-                <DropdownItem href="#!">
-                  <Trash className="me-50" size={15} />{" "}
-                  <span className="align-middle">Delete</span>
-                </DropdownItem>
-              )}
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        ) : (
-          "No Action Permission"
-        ),
-    },
-  ];
+  const columns = [];
 
   return (
     <>
