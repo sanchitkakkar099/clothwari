@@ -1,6 +1,5 @@
 import html2pdf from 'html2pdf.js'
 
-
 export const pdfGenerator = (id,fileName) => {
     console.log('fileName',fileName);
     const domElement = document.getElementById(id)
@@ -13,3 +12,4 @@ export const pdfGenerator = (id,fileName) => {
     }
     html2pdf().from(domElement).set(option).save()
 }
+

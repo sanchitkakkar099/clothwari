@@ -16,10 +16,10 @@ import Pagination from "../common/Pagination";
 import ReactDatePicker from "react-datepicker";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'; // Import UTC plugin
-import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
 import './dropdown-filter.css';
 
-// dayjs.tz.setDefault('Asia/Kolkata');
+// Extend dayjs with the utc plugin
+dayjs.extend(utc);
 
 function UploadDesignListV2() {
   const navigate = useNavigate()
@@ -239,38 +239,14 @@ function UploadDesignListV2() {
 
   const handleNameFilter = (e) => {
     setFilterName(e.target.value)
-    // reqDesign({
-    //   page:currentPage,
-    //   limit:pageSize,
-    //   name:e.target.value,
-    //   category:filterCategory,
-    //   uploadedBy:filterUploadedBy,
-    //   date_filter:startDate ? dayjs(startDate).format() : ""
-    // })
   }
 
   const handleCategoryFilter = (e) => {
     setFilterCategory(e.target.value)
-    // reqDesign({
-    //   page:currentPage,
-    //   limit:pageSize,
-    //   name:filterName,
-    //   category:e.target.value,
-    //   uploadedBy:filterUploadedBy,
-    //   date_filter:startDate ? dayjs(startDate).format() : ""
-    // })
   }
 
   const handleUploadedByFilter = (e) => {
     setFilterUploadedBy(e.target.value)
-    // reqDesign({
-    //   page:currentPage,
-    //   limit:pageSize,
-    //   name:filterName,
-    //   category:filterCategory,
-    //   uploadedBy:e.target.value,
-    //   date_filter:startDate ? dayjs(startDate).format() : ""
-    // })
   }
 
   const handleDateFilter = (date) => {

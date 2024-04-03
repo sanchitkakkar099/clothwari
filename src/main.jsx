@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{Suspense} from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './assets/scss/bootstrap.scss'
@@ -19,7 +19,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               path={path}
               element={
                 <App>
+                <Suspense fallback={<div>Loading...</div>}>
                   <Component />
+                </Suspense>
                 </App>
               }
             ></Route>
@@ -30,7 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               key={path}
               path={path}
               element={
-                  <Component />
+                <Suspense fallback={<div>Loading...</div>}><Component /></Suspense>
               }
             ></Route>
             <Route path="/" element={<Navigate to="/login" />} />

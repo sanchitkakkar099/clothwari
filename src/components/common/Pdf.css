@@ -1,5 +1,6 @@
 .pdf-title {
     text-align: center;
+    margin-top: 10px;
   }
   .pdf-images-container {
     display: flex;
@@ -7,7 +8,7 @@
     justify-content: space-between; /* Distribute space evenly between items */
     align-items: flex-start;
     padding-top: 10px; /* Add padding to space out the border */
-    border-top: 25px solid rgb(206, 86, 42); /* Add a border style */
+    /* border-top: 25px solid rgb(206, 86, 42); */
     padding-left: 50px; /* Add left padding */
     padding-right: 50px; /* Add right padding */
   }
@@ -32,4 +33,32 @@
     padding: 2px;
     border-radius: 5px;
   }
-  
+
+  .pdf-remove-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    background-color: rgba(7, 6, 6, 0.7);
+    color: white;
+    border-radius: 50%;
+    transition: background-color 0.3s ease; /* Add transition for smooth effect */
+    cursor: pointer;
+}
+
+.pdf_name_section{
+  display: flex;
+  flex-wrap: wrap; /* Allow images to wrap to the next row */
+  justify-content: space-between; /* Distribute space evenly between items */
+  align-items: flex-start;
+  padding-top: 10px; /* Add padding to space out the border */
+  /* border-top: 25px solid rgb(206, 86, 42); */
+  padding-left: 50px; /* Add left padding */
+  padding-right: 50px; /* Add right padding */
+}
+.error-message{
+  display: block;
+  color: red;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

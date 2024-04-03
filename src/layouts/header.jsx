@@ -408,13 +408,13 @@ function HeaderComponent() {
             )}
           </div>
           }
-          {userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson' &&
+          {(userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson') &&
           <div className="dropdown d-inline-block">
             <button
               type="button"
               className="btn header-item noti-icon"
               id="page-header-notifications-dropdown"
-              onClick={() => navigate('/view-bag')}
+              onClick={() => navigate('/cart-item')}
               // onClick={toggleDropdown}
             >
               <ShoppingCart />
@@ -428,7 +428,7 @@ function HeaderComponent() {
             </button>
             </div>
           }
-          {userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson' &&
+          {(userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson') &&
           <div className="dropdown d-inline-block">
             <button
               type="button"

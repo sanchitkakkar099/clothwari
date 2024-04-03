@@ -119,7 +119,7 @@ function SidebarComponent() {
 
                 {
                    (userInfo?.role === 'Super Admin' ||
-                    (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Drive")) || userInfo?.role === 'SalesPerson')
+                    (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Drive")) || userInfo?.role === 'SalesPerson' || userInfo?.role === 'Client')
                     &&
                     <li>
                         <Link to="/drive-list">

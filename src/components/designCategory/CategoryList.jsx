@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { DropdownItem,DropdownMenu,UncontrolledDropdown,DropdownToggle, Button } from 'reactstrap';
 import { Edit, Eye, GitMerge, MoreVertical,Trash } from 'react-feather';
 import CategoryMergeModal from '../common/CategoryMergeModal';
+import '../../components/uploadDesign/dropdown-filter.css'
 
 
 function CategoryList() {

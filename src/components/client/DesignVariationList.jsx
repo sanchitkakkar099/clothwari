@@ -15,7 +15,14 @@ function DesignVariationList() {
   console.log('selectedPDFItems',selectedPDFItems);
 
   const handleAddToBag = (el) => {
-    dispatch(addedBagItems(el))
+    dispatch(addedBagItems({
+      _id:el?._id,
+      name:el?.name,
+      designNo:el?.designNo,
+      thumbnail:el?.thumbnail,
+      designId:el?.designId,
+      variation:false
+    }))
   }
 
   const handleRemoveFromBag = (el) => {
@@ -28,7 +35,7 @@ function DesignVariationList() {
       _id:el?._id,
       name:el?.variation_name,
       designNo:el?.variation_designNo,
-      thumbnail:el?.variation_image,
+      thumbnail:el?.variation_thumbnail,
       designId:el?.designId,
       variation:true
     }))
@@ -40,7 +47,7 @@ function DesignVariationList() {
     dispatch(addedPDFItems({
       id:el?._id,
       designNo:el?.designNo,
-      image:el?.image,
+      thumbnail:el?.thumbnail,
       variation:false
     }))
   }
@@ -54,7 +61,7 @@ function DesignVariationList() {
     dispatch(addedPDFItems({
       id:el?._id,
       designNo:el?.variation_designNo,
-      image:el?.variation_image,
+      thumbnail:el?.variation_thumbnail,
       variation:true
     }))
   }
@@ -76,10 +83,10 @@ function DesignVariationList() {
               <div className="col-lg-4 p-3">
                 <div className="panel panel-white post panel-shadow">
                   <div className="post-image">
-                    {Array.isArray(data?.image) &&
-                    data?.image[0]?.tif_extract_img ? (
+                    {Array.isArray(data?.thumbnail) &&
+                    data?.thumbnail[0]?.pdf_extract_img ? (
                       <img
-                        src={data?.image[0]?.tif_extract_img}
+                        src={data?.thumbnail[0]?.pdf_extract_img}
                         // className="image"
                         alt="image post"
                         height={250}
@@ -163,10 +170,10 @@ function DesignVariationList() {
                   <div className="col-lg-4 p-3" key={verInx}>
                 <div className="panel panel-white post panel-shadow">
                   <div className="post-image">
-                    {Array.isArray(ver?.variation_image) &&
-                    ver?.variation_image[0]?.tif_extract_img ? (
+                    {Array.isArray(ver?.variation_thumbnail) &&
+                    ver?.variation_thumbnail[0]?.pdf_extract_img ? (
                       <img
-                        src={ver?.variation_image[0]?.tif_extract_img}
+                        src={ver?.variation_thumbnail[0]?.pdf_extract_img}
                         alt="image post"
                         height={250}
                         width={"100%"}

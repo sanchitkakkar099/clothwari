@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { Edit, GitMerge, MoreVertical, Trash } from 'react-feather';
 import TagMergeModal from '../common/TagMergeModal';
+import '../../components/uploadDesign/dropdown-filter.css'
 
 
 function TagList() {

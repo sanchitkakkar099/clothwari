@@ -99,10 +99,10 @@ function ClientBagItem() {
                     <div className="card-body">
                       <div className="d-flex align-items-start border-bottom pb-3">
                         <div className="me-4">
-                          {Array.isArray(el?.image) &&
-                          el?.image[0]?.tif_extract_img ? (
+                          {Array.isArray(el?.thumbnail) &&
+                          el?.thumbnail[0]?.pdf_extract_img ? (
                             <img
-                              src={el?.image[0]?.tif_extract_img}
+                              src={el?.thumbnail[0]?.pdf_extract_img}
                               alt="image post"
                               height={80}
                               width={80}

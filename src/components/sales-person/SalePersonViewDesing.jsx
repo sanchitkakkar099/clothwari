@@ -92,8 +92,8 @@ function SalesPersonViewDesign() {
       const variationObj = designObj?.variations?.find(
         (el) => el?.color === variation?.label
       );
-      if (variationObj?.variation_image[0]?.tif_extract_img) {
-        setVariationImg(variationObj?.variation_image[0]?.tif_extract_img);
+      if (variationObj?.variation_thumbnail[0]?.pdf_extract_img) {
+        setVariationImg(variationObj?.variation_thumbnail[0]?.pdf_extract_img);
         setDesignId(designObj?._id);
       }
     }
@@ -270,17 +270,17 @@ function SalesPersonViewDesign() {
                                               <div className="product-box flex-fill d-flex flex-column">
                                                 <div className="product-img pt-4 px-4">
                                                   {Array.isArray(
-                                                    el?.image
+                                                    el?.thumbnail
                                                   ) &&
-                                                  el?.image[0]
-                                                    ?.tif_extract_img ? (
+                                                  el?.thumbnail[0]
+                                                    ?.pdf_extract_img ? (
                                                     <img
                                                       src={
                                                         variationImg &&
                                                         el?._id === designID
                                                           ? variationImg
-                                                          : el?.image[0]
-                                                              ?.tif_extract_img
+                                                          : el?.thumbnail[0]
+                                                              ?.pdf_extract_img
                                                       }
                                                       alt="image post"
                                                       height={200}

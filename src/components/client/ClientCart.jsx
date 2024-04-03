@@ -6,137 +6,541 @@ import { useAddToBagByClientMutation } from "../../service";
 import toast from "react-hot-toast";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FormFeedback, Input } from "reactstrap";
+import ReactDatePicker from "react-datepicker";
+import { XCircle } from "react-feather";
 
 function ClientCart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const [fields, setFields] = useState({
-    customerName: { value: '', type: 'text', isValid: true },
-    customerCode: { value: '', type: 'text', isValid: true },
-    marketingPerson: { value: '', type: 'text', isValid: true },
-    salesOrderNumber: { value: '', type: 'text', isValid: true },
-    designNo: { value: '', type: 'readonly', isValid: true }, // This field will be readonly
-    quantityPerCombo: { value: '', type: 'number', isValid: true },
-    yardage: { value: '', type: 'number', isValid: true },
-    baseFabrics: { value: '', type: 'text', isValid: true },
-    strikeRequired: { value: '', type: 'radio', options: ['Yes', 'No'], isValid: true }, // Radio options for strikeRequired
-    sampleDeliveryDate: { value: '', type: 'date', isValid: true },
-    pricePerMeter: { value: '', type: 'number', isValid: true },
-    bulkOrderDeliveryDate: { value: '', type: 'date', isValid: true },
-    shipmentSampleDate: { value: '', type: 'date', isValid: true }
-  });
-
-  const handleChange = (event, id) => {
-    const { value } = event.target;
-    setFields({
-      ...fields,
-      [id]: { ...fields[id], value }
-    });
-  };
-
-  const submitCart = (event) => {
-    event.preventDefault();
-
-    // Validate all fields before submission
-    let isFormValid = true;
-    const updatedFields = {};
-    for (const id in fields) {
-      const isValid = validateField(id, fields[id].value.trim());
-      updatedFields[id] = { ...fields[id], isValid };
-      if (!isValid) {
-        isFormValid = false;
-      }
-    }
-
-    setFields(updatedFields);
-
-    if (isFormValid) {
-      // Submit the form
-      console.log('Form submitted:', fields);
-    } else {
-      alert('Please fill in all required fields correctly.');
-    }
-  };
-
-  const validateField = (id, value) => {
-    let isValid = true;
-
-    // Validation rules
-    if (id === 'customerName' && value === '') {
-      isValid = false;
-    } else if (id === 'customerCode' && value === '') {
-      isValid = false;
-    } else if (id === 'marketingPerson' && value === '') {
-      isValid = false;
-    } else if (id === 'salesOrderNumber' && value === '') {
-      isValid = false;
-    } else if (id === 'quantityPerCombo' && value === '') {
-      isValid = false;
-    } else if (id === 'yardage' && (value === '' || parseInt(value) < 1 || parseInt(value) > 100)) {
-      isValid = false;
-    } else if (id === 'baseFabrics' && value === '') {
-      isValid = false;
-    } else if (id === 'strikeRequired' && value === '') {
-      isValid = false;
-    } else if (id === 'sampleDeliveryDate' && value === '') {
-      isValid = false;
-    } else if (id === 'pricePerMeter' && value === '') {
-      isValid = false;
-    } else if (id === 'bulkOrderDeliveryDate' && value === '') {
-      isValid = false;
-    } else if (id === 'shipmentSampleDate' && value === '') {
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
+  const selectedBagItems = useSelector(
+    (state) => state?.clientState.selectedBagItems
+  );
+  console.log("selectedBagItems", selectedBagItems);
   const {
     handleSubmit,
-    control,
-    setValue,
     formState: { errors },
-  } = useForm();
+    control,
+    watch,
+  } = useForm({
+    defaultValues:{
+      cartItem:selectedBagItems
+    }
+  });
+  const { fields } = useFieldArray({
+    control,
+    name: "cartItem"
+  });
+  console.log('fields',fields);
+  const quantityPerCombo = watch("quantityPerCombo", 0);
+
+  const handleRemoveFromCart = (e, el) => {
+    e.preventDefault();
+    console.log("el", el);
+    const res = selectedBagItems?.filter((sb) => sb?._id !== el?._id);
+    dispatch(removeBagItems(res));
+  };
+
+  const onSubmit = (data) => {
+    console.log("data",data);
+  };
+
   return (
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
           <div className="col-12">
             <div className="page-title-box d-flex align-items-center justify-content-between">
-              <h4 className="mb-0">BAG</h4>
+              <h4 className="mb-0">Cart</h4>
             </div>
           </div>
         </div>
 
         <div className="row">
-          <div className="col-xl-12">
-          <form onSubmit={handleSubmit(submitCart)}>
-        {Object.entries(fields).map(([id, field]) => (
-          <div key={id} className="form-group">
-            <label htmlFor={id}>{id.replace(/([A-Z])/g, ' $1').toLowerCase()}</label>
-            <input
-              type="text"
-              className={`form-control ${!field.isValid ? 'is-invalid' : ''}`}
-              id={id}
-              value={field.value}
-              onChange={(e) => handleChange(e, id)}
-              placeholder={`Enter ${id.replace(/([A-Z])/g, ' $1').toLowerCase()}`}
-            />
-            {!field.isValid && id === 'yardage' && (parseInt(field.value) < 1 || parseInt(field.value) > 100) && (
-              <div className="invalid-feedback">Yardage must be between 1 and 100.</div>
+          <div className="col-lg-12">
+            <div id="addproduct-accordion" className="custom-accordion">
+              <div className="card">
+                <a
+                  href="#addproduct-productinfo-collapse"
+                  className="text-dark"
+                  data-bs-toggle="collapse"
+                  aria-expanded="true"
+                  aria-controls="addproduct-productinfo-collapse"
+                >
+                  <div className="p-4">
+                    <div className="d-flex align-items-center">
+                      <div className="flex-grow-1 overflow-hidden">
+                        <h5 className="font-size-16 mb-1">Cart Info</h5>
+                        <p className="text-muted text-truncate mb-0">
+                          Fill all information below
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+
+                <div
+                  id="addproduct-productinfo-collapse"
+                  className="collapse show"
+                  data-bs-parent="#addproduct-accordion"
+                >
+                  <div className="p-4 border-top">
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="name">
+                              Customer Name
+                            </label>
+                            <Controller
+                              name="customerName"
+                              control={control}
+                              rules={{ required: "Customer Name is required" }}
+                              render={({ field }) => (
+                                <input
+                                  {...field}
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Enter Customer Name"
+                                />
+                              )}
+                            />
+                            {errors.customerName && (
+                              <span className="text-danger">
+                                {errors.customerName.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="customerCode"
+                            >
+                              Customer Code
+                            </label>
+                            <Controller
+                              name="customerCode"
+                              control={control}
+                              rules={{ required: "Customer Code is required" }}
+                              render={({ field }) => (
+                                <input
+                                  {...field}
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Enter Customer Code"
+                                />
+                              )}
+                            />
+                            {errors.customerCode && (
+                              <span className="text-danger">
+                                {errors.customerCode.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="marketingPersonName"
+                            >
+                              Marketing Person Name
+                            </label>
+                            <Controller
+                              name="marketingPersonName"
+                              control={control}
+                              rules={{
+                                required: "Marketing Person Name is required",
+                              }}
+                              render={({ field }) => (
+                                <input
+                                  {...field}
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Enter Marketing Person Name"
+                                />
+                              )}
+                            />
+                            {errors.marketingPersonName && (
+                              <span className="text-danger">
+                                {errors.marketingPersonName.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="salesOrderNumber"
+                            >
+                              Sales Order Number
+                            </label>
+                            <Controller
+                              name="salesOrderNumber"
+                              control={control}
+                              rules={{
+                                required: "Sales Order Number is required",
+                                pattern: {
+                                  value: /^[a-zA-Z0-9_-]*$/, // Regular expression to allow alphanumeric characters
+                                  message:
+                                    "Please enter a valid Sales Order Number",
+                                },
+                              }}
+                              render={({ field }) => (
+                                <input
+                                  {...field}
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Enter Sales Order Number"
+                                />
+                              )}
+                            />
+                            {errors.salesOrderNumber && (
+                              <span className="text-danger">
+                                {errors.salesOrderNumber.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <hr/>
+                      {fields.map((design, index) => (
+<div key={index}>
+<h5>Design No: {design?.designNo}</h5>
+                      <div className="row mt-3">
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor={`cartItem.${index}.quantityPerCombo`}
+                            >
+                              Quantity per Combo
+                            </label>
+                            <Controller
+                            id={`cartItem.${index}.quantityPerCombo`}
+                              name={`cartItem.${index}.quantityPerCombo`}
+                              control={control}
+                              rules={{
+                                required: "Quantity per Combo is required",
+                              }}
+                              render={({ field }) => (
+                                <input
+                                  {...field}
+                                  type="number"
+                                  className="form-control"
+                                  placeholder="Enter Quantity per Combo"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                />
+                              )}
+                            />
+                            {errors.quantityPerCombo && (
+                              <span className="text-danger">
+                                {errors.quantityPerCombo.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label className="form-label" htmlFor="yardage">
+                              Yardage
+                            </label>
+                            <Controller
+                              name="yardage"
+                              control={control}
+                              rules={{
+                                required: "Yardage is required",
+                                min: {
+                                  value: 1,
+                                  message: "Yardage must be at least 1",
+                                },
+                                max: {
+                                  value: 100,
+                                  message: "Yardage must be at most 100",
+                                },
+                              }}
+                              render={({ field }) => (
+                                <input
+                                  {...field}
+                                  type="number"
+                                  className="form-control"
+                                  placeholder="Enter Yardage"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                />
+                              )}
+                            />
+                            {errors.yardage && (
+                              <span className="text-danger">
+                                {errors.yardage.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="row">
+    <div className="col-md-6">
+        <div className="mb-3">
+            <label className="form-label" htmlFor="totalQuantity" style={{display:'flex'}}>
+                Image Design
+            </label>
+            {design?.thumbnail[0] && (
+                <div style={{ position: "relative", display: "inline-block" }}>
+                    <img
+                        src={design?.thumbnail[0]?.pdf_extract_img}
+                        alt={`Design ${design?.designNo}`}
+                        width="100"
+                        height="100"
+                        style={{ display: "block" }} // Ensure the image is displayed as a block element
+                    />
+                    <div style={{ position: "absolute", top: "-10px", right: "-10px" }}>
+                        <XCircle
+                            size={21}
+                            style={{ color: "#000", cursor: "pointer" }}
+                            onClick={(e) => handleRemoveFromCart(e, design)}
+                        />
+                    </div>
+                </div>
             )}
-            {!field.isValid && id !== 'yardage' && <div className="invalid-feedback">This field is required.</div>}
-          </div>
-        ))}
-
-        <div className="form-group">
-          <label htmlFor="designNo">Design No. Selected</label>
-          {/* Render your design images here */}
         </div>
+    </div>
+    <div className="col-md-6">
+        <div className="mb-3">
+            <label className="form-label" htmlFor="fabricDetails">
+                Base Fabrics Details / Type of Fabric
+            </label>
+            <Controller
+                name="fabricDetails"
+                control={control}
+                rules={{
+                    required: "Base Fabrics Details / Type of Fabric is required",
+                }}
+                render={({ field }) => (
+                    <input
+                        {...field}
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter Base Fabrics Details / Type of Fabric"
+                    />
+                )}
+            />
+            {errors.fabricDetails && (
+                <span className="text-danger">{errors.fabricDetails.message}</span>
+            )}
+        </div>
+    </div>
+</div>
 
-        <button type="submit" className="btn btn-primary">Submit</button>
-      </form>
+
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="strikeRequired"
+                            >
+                              Strike Required
+                            </label>
+                            <Controller
+                              name="strikeRequired"
+                              control={control}
+                              rules={{
+                                required:
+                                  "Please select whether strike is required",
+                              }}
+                              render={({ field }) => (
+                                <select {...field} className="form-select">
+                                  <option value="">Select</option>
+                                  <option value="yes">Yes</option>
+                                  <option value="no">No</option>
+                                </select>
+                              )}
+                            />
+                            {errors.strikeRequired && (
+                              <span className="text-danger">
+                                {errors.strikeRequired.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="sampleDeliveryDate"
+                            >
+                              Sample Delivery Date
+                            </label>
+                            <Controller
+                              name="sampleDeliveryDate"
+                              control={control}
+                              rules={{
+                                required: "Sample Delivery Date is required",
+                              }}
+                              render={({ field }) => (
+                                <ReactDatePicker
+                                  selected={
+                                    field.value ? new Date(field.value) : null
+                                  }
+                                  onChange={(date) => field.onChange(date)}
+                                  className="form-control"
+                                  placeholderText="Select Sample Delivery Date"
+                                  dateFormat="yyyy-MM-dd"
+                                />
+                              )}
+                            />
+                            {errors.sampleDeliveryDate && (
+                              <span className="text-danger">
+                                {errors.sampleDeliveryDate.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="pricePerMeter"
+                            >
+                              Price per Meter
+                            </label>
+                            <Controller
+                              name="pricePerMeter"
+                              control={control}
+                              rules={{
+                                required: "Price per Meter is required",
+                                pattern: {
+                                  value: /^[0-9]+(\.[0-9]*)?$/, // Regular expression for numbers and optional decimal values
+                                  message: "Enter a valid Price per Meter",
+                                },
+                              }}
+                              render={({ field }) => (
+                                <input
+                                  {...field}
+                                  type="number"
+                                  className="form-control"
+                                  placeholder="Enter Price per Meter"
+                                  inputMode="numeric"
+                                  pattern="[0-9]*"
+                                />
+                              )}
+                            />
+                            {errors.pricePerMeter && (
+                              <span className="text-danger">
+                                {errors.pricePerMeter.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="bulkOrderDeliveryDate"
+                            >
+                              Bulk Order Delivery Date
+                            </label>
+
+                            <Controller
+                              name="bulkOrderDeliveryDate"
+                              control={control}
+                              rules={{
+                                required:
+                                  "Bulk Order Delivery Date is required",
+                              }}
+                              render={({ field }) => (
+                                <ReactDatePicker
+                                  selected={
+                                    field.value ? new Date(field.value) : null
+                                  }
+                                  onChange={(date) => field.onChange(date)}
+                                  className="form-control"
+                                  placeholderText="Select Bulk Order Delivery Date"
+                                  dateFormat="yyyy-MM-dd"
+                                />
+                              )}
+                            />
+
+                            {errors.bulkOrderDeliveryDate && (
+                              <span className="text-danger">
+                                {errors.bulkOrderDeliveryDate.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              className="form-label"
+                              htmlFor="shipmentSampleDate"
+                            >
+                              Shipment Sample Date
+                            </label>
+                            <Controller
+                              name="shipmentSampleDate"
+                              control={control}
+                              rules={{
+                                required: "Shipment Sample Date is required",
+                              }}
+                              render={({ field }) => (
+                                <ReactDatePicker
+                                  selected={
+                                    field.value ? new Date(field.value) : null
+                                  }
+                                  onChange={(date) => field.onChange(date)}
+                                  className="form-control"
+                                  placeholderText="Select Shipment Sample Date"
+                                  dateFormat="yyyy-MM-dd"
+                                />
+                              )}
+                            />
+                            {errors.shipmentSampleDate && (
+                              <span className="text-danger">
+                                {errors.shipmentSampleDate.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      </div>
+                      ))}
+
+                      <div className="row">
+                        <div className="col text-end">
+                        <Link
+                            className="btn btn-danger m-1"
+                            to={"/client-view-design"}
+                           
+                          >
+                            <i className="bx bx-x mr-1"></i> Cancel
+                          </Link>
+                          <button
+                            type="submit"
+                            className="btn btn-success m-1"
+                            data-bs-toggle="modal"
+                            data-bs-target="#success-btn"
+                          >
+                            <i className="bx bx-file me-1"></i> Save
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

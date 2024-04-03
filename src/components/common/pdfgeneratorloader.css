@@ -1,0 +1,54 @@
+.card {
+    position: relative;
+  
+  }
+.loader-container {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.5); /* semi-transparent background */
+    z-index: 9999; /* Ensures the loader is on top of other content */
+  }
+  
+  .loader {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  }
+  
+  .loader-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid #ccc;
+    border-top-color: #333; /* Change the color of the loader */
+    animation: rotate 2s linear infinite;
+  }
+  
+  .loader-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    color: #666;
+  }
+  
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  

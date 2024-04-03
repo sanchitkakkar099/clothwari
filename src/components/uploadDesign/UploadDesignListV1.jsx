@@ -139,8 +139,8 @@ function UploadDesignListV1() {
     e.preventDefault()
     if(variation?.label && (designObj?.variations && Array.isArray(designObj?.variations) && designObj?.variations?.length > 0)){
       const variationObj = designObj?.variations?.find(el => el?.color === variation?.label)
-      if(variationObj?.variation_image[0]?.tif_extract_img){
-        setVariationImg(variationObj?.variation_image[0]?.tif_extract_img)
+      if(variationObj?.variation_thumbnail[0]?.pdf_extract_img){
+        setVariationImg(variationObj?.variation_thumbnail[0]?.pdf_extract_img)
         setDesignId(designObj?._id)
       }
       
@@ -416,12 +416,12 @@ function UploadDesignListV1() {
                                             >
                                               <div className="product-box">
                                                 <div className="product-img pt-4 px-4">
-                                                {Array.isArray(el?.image) && el?.image[0]?.tif_extract_img ?
+                                                {el?.thumbnail && Array.isArray(el?.thumbnail) && el?.thumbnail?.length > 0 && el?.thumbnail[0]?.pdf_extract_img ?
                                                   <Link to={`/product-view/${el?._id}`}
                                                           target="_blank">
                                                   <img
                                                     src={
-                                                      (variationImg && el?._id === designID) ? variationImg :  el?.image[0]?.tif_extract_img
+                                                      (variationImg && el?._id === designID) ? variationImg :  el?.thumbnail[0]?.pdf_extract_img
                                                     }
                                                     alt="image post"
                                                     height={200}

@@ -1,6 +1,6 @@
 .filter-dropdown {
     position: relative;
-    text-align: right;
+    text-align: right !important;
   }
 
   .filter-dropdown button {
