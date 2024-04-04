@@ -41,7 +41,8 @@ function PDFDesign() {
           designNo:el?.designNo,
           imgUrl: el?.thumbnail && Array.isArray(el?.thumbnail) && el?.thumbnail?.length > 0 && el?.thumbnail?.some(im => im?.pdf_extract_img) ? el?.thumbnail[0]?.pdf_extract_img : null,
           variation:el?.variation
-        }))
+        })),
+        pdfName:pdfName
       });
       showLoader()
       // pdfGenerator("my-pdf","MyPDf.pdf")

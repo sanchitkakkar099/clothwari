@@ -26,22 +26,23 @@ function ClientCart() {
       cartItem:selectedBagItems
     }
   });
-  const { fields } = useFieldArray({
+  const { fields,remove } = useFieldArray({
     control,
     name: "cartItem"
   });
   console.log('fields',fields);
   const quantityPerCombo = watch("quantityPerCombo", 0);
 
-  const handleRemoveFromCart = (e, el) => {
+  const handleRemoveFromCart = (e, el,removeIndex) => {
     e.preventDefault();
-    console.log("el", el);
+    console.log("el", el,selectedBagItems);
     const res = selectedBagItems?.filter((sb) => sb?._id !== el?._id);
     dispatch(removeBagItems(res));
+    remove(removeIndex)
   };
 
   const onSubmit = (data) => {
-    console.log("data",data);
+    console.log("onSubmit data",data);
   };
 
   return (
@@ -210,8 +211,8 @@ function ClientCart() {
                       </div>
                       <hr/>
                       {fields.map((design, index) => (
-<div key={index}>
-<h5>Design No: {design?.designNo}</h5>
+                      <div key={index}>
+                      <h5>Design No: {design?.designNo}</h5>
                       <div className="row mt-3">
                         <div className="col-md-6">
                           <div className="mb-3">
@@ -222,7 +223,7 @@ function ClientCart() {
                               Quantity per Combo
                             </label>
                             <Controller
-                            id={`cartItem.${index}.quantityPerCombo`}
+                              id={`cartItem.${index}.quantityPerCombo`}
                               name={`cartItem.${index}.quantityPerCombo`}
                               control={control}
                               rules={{
@@ -239,10 +240,13 @@ function ClientCart() {
                                 />
                               )}
                             />
-                            {errors.quantityPerCombo && (
-                              <span className="text-danger">
-                                {errors.quantityPerCombo.message}
-                              </span>
+                            {errors?.cartItem && (
+                              <FormFeedback>
+                                {
+                                  errors?.cartItem[index]
+                                    ?.quantityPerCombo?.message
+                                }
+                              </FormFeedback>
                             )}
                           </div>
                         </div>
@@ -252,7 +256,8 @@ function ClientCart() {
                               Yardage
                             </label>
                             <Controller
-                              name="yardage"
+                              id={`cartItem.${index}.yardage`}
+                              name={`cartItem.${index}.yardage`}
                               control={control}
                               rules={{
                                 required: "Yardage is required",
@@ -276,67 +281,76 @@ function ClientCart() {
                                 />
                               )}
                             />
-                            {errors.yardage && (
-                              <span className="text-danger">
-                                {errors.yardage.message}
-                              </span>
+                            {errors?.cartItem && (
+                              <FormFeedback>
+                                {
+                                  errors?.cartItem[index]
+                                    ?.yardage?.message
+                                }
+                              </FormFeedback>
                             )}
                           </div>
                         </div>
                       </div>
 
                       <div className="row">
-    <div className="col-md-6">
-        <div className="mb-3">
-            <label className="form-label" htmlFor="totalQuantity" style={{display:'flex'}}>
-                Image Design
-            </label>
-            {design?.thumbnail[0] && (
-                <div style={{ position: "relative", display: "inline-block" }}>
-                    <img
-                        src={design?.thumbnail[0]?.pdf_extract_img}
-                        alt={`Design ${design?.designNo}`}
-                        width="100"
-                        height="100"
-                        style={{ display: "block" }} // Ensure the image is displayed as a block element
-                    />
-                    <div style={{ position: "absolute", top: "-10px", right: "-10px" }}>
-                        <XCircle
-                            size={21}
-                            style={{ color: "#000", cursor: "pointer" }}
-                            onClick={(e) => handleRemoveFromCart(e, design)}
-                        />
-                    </div>
-                </div>
-            )}
-        </div>
-    </div>
-    <div className="col-md-6">
-        <div className="mb-3">
-            <label className="form-label" htmlFor="fabricDetails">
-                Base Fabrics Details / Type of Fabric
-            </label>
-            <Controller
-                name="fabricDetails"
-                control={control}
-                rules={{
-                    required: "Base Fabrics Details / Type of Fabric is required",
-                }}
-                render={({ field }) => (
-                    <input
-                        {...field}
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter Base Fabrics Details / Type of Fabric"
-                    />
-                )}
-            />
-            {errors.fabricDetails && (
-                <span className="text-danger">{errors.fabricDetails.message}</span>
-            )}
-        </div>
-    </div>
-</div>
+                          <div className="col-md-6">
+                              <div className="mb-3">
+                                  <label className="form-label" htmlFor="totalQuantity" style={{display:'flex'}}>
+                                      Image Design
+                                  </label>
+                                  {design?.thumbnail[0] && (
+                                      <div style={{ position: "relative", display: "inline-block" }}>
+                                          <img
+                                              src={design?.thumbnail[0]?.pdf_extract_img}
+                                              alt={`Design ${design?.designNo}`}
+                                              width="100"
+                                              height="100"
+                                              style={{ display: "block" }} // Ensure the image is displayed as a block element
+                                          />
+                                          <div style={{ position: "absolute", top: "-10px", right: "-10px" }}>
+                                              <XCircle
+                                                  size={21}
+                                                  style={{ color: "#000", cursor: "pointer" }}
+                                                  onClick={(e) => handleRemoveFromCart(e, design,index)}
+                                              />
+                                          </div>
+                                      </div>
+                                  )}
+                              </div>
+                          </div>
+                          <div className="col-md-6">
+                              <div className="mb-3">
+                                  <label className="form-label" htmlFor="fabricDetails">
+                                      Base Fabrics Details / Type of Fabric
+                                  </label>
+                                  <Controller
+                                      id={`cartItem.${index}.fabricDetails`}
+                                      name={`cartItem.${index}.fabricDetails`}
+                                      control={control}
+                                      rules={{
+                                          required: "Base Fabrics Details / Type of Fabric is required",
+                                      }}
+                                      render={({ field }) => (
+                                          <input
+                                              {...field}
+                                              type="text"
+                                              className="form-control"
+                                              placeholder="Enter Base Fabrics Details / Type of Fabric"
+                                          />
+                                      )}
+                                  />
+                                  {errors?.cartItem && (
+                                    <FormFeedback>
+                                      {
+                                        errors?.cartItem[index]
+                                          ?.fabricDetails?.message
+                                      }
+                                    </FormFeedback>
+                                  )}
+                              </div>
+                          </div>
+                      </div>
 
 
                       <div className="row">
@@ -349,7 +363,8 @@ function ClientCart() {
                               Strike Required
                             </label>
                             <Controller
-                              name="strikeRequired"
+                              id={`cartItem.${index}.strikeRequired`}
+                              name={`cartItem.${index}.strikeRequired`}
                               control={control}
                               rules={{
                                 required:
@@ -363,10 +378,13 @@ function ClientCart() {
                                 </select>
                               )}
                             />
-                            {errors.strikeRequired && (
-                              <span className="text-danger">
-                                {errors.strikeRequired.message}
-                              </span>
+                            {errors?.cartItem && (
+                              <FormFeedback>
+                                {
+                                  errors?.cartItem[index]
+                                    ?.strikeRequired?.message
+                                }
+                              </FormFeedback>
                             )}
                           </div>
                         </div>
@@ -379,7 +397,8 @@ function ClientCart() {
                               Sample Delivery Date
                             </label>
                             <Controller
-                              name="sampleDeliveryDate"
+                              id={`cartItem.${index}.sampleDeliveryDate`}
+                              name={`cartItem.${index}.sampleDeliveryDate`}
                               control={control}
                               rules={{
                                 required: "Sample Delivery Date is required",
@@ -396,10 +415,13 @@ function ClientCart() {
                                 />
                               )}
                             />
-                            {errors.sampleDeliveryDate && (
-                              <span className="text-danger">
-                                {errors.sampleDeliveryDate.message}
-                              </span>
+                            {errors?.cartItem && (
+                              <FormFeedback>
+                                {
+                                  errors?.cartItem[index]
+                                    ?.sampleDeliveryDate?.message
+                                }
+                              </FormFeedback>
                             )}
                           </div>
                         </div>
@@ -415,7 +437,8 @@ function ClientCart() {
                               Price per Meter
                             </label>
                             <Controller
-                              name="pricePerMeter"
+                              id={`cartItem.${index}.pricePerMeter`}
+                              name={`cartItem.${index}.pricePerMeter`}
                               control={control}
                               rules={{
                                 required: "Price per Meter is required",
@@ -435,10 +458,13 @@ function ClientCart() {
                                 />
                               )}
                             />
-                            {errors.pricePerMeter && (
-                              <span className="text-danger">
-                                {errors.pricePerMeter.message}
-                              </span>
+                            {errors?.cartItem && (
+                              <FormFeedback>
+                                {
+                                  errors?.cartItem[index]
+                                    ?.pricePerMeter?.message
+                                }
+                              </FormFeedback>
                             )}
                           </div>
                         </div>
@@ -452,7 +478,8 @@ function ClientCart() {
                             </label>
 
                             <Controller
-                              name="bulkOrderDeliveryDate"
+                              id={`cartItem.${index}.bulkOrderDeliveryDate`}
+                              name={`cartItem.${index}.bulkOrderDeliveryDate`}
                               control={control}
                               rules={{
                                 required:
@@ -471,10 +498,13 @@ function ClientCart() {
                               )}
                             />
 
-                            {errors.bulkOrderDeliveryDate && (
-                              <span className="text-danger">
-                                {errors.bulkOrderDeliveryDate.message}
-                              </span>
+                            {errors?.cartItem && (
+                              <FormFeedback>
+                                {
+                                  errors?.cartItem[index]
+                                    ?.bulkOrderDeliveryDate?.message
+                                }
+                              </FormFeedback>
                             )}
                           </div>
                         </div>
@@ -489,7 +519,8 @@ function ClientCart() {
                               Shipment Sample Date
                             </label>
                             <Controller
-                              name="shipmentSampleDate"
+                              id={`cartItem.${index}.shipmentSampleDate`}
+                              name={`cartItem.${index}.shipmentSampleDate`}
                               control={control}
                               rules={{
                                 required: "Shipment Sample Date is required",
@@ -506,10 +537,13 @@ function ClientCart() {
                                 />
                               )}
                             />
-                            {errors.shipmentSampleDate && (
-                              <span className="text-danger">
-                                {errors.shipmentSampleDate.message}
-                              </span>
+                            {errors?.cartItem && (
+                              <FormFeedback>
+                                {
+                                  errors?.cartItem[index]
+                                    ?.shipmentSampleDate?.message
+                                }
+                              </FormFeedback>
                             )}
                           </div>
                         </div>

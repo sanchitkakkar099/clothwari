@@ -19,7 +19,6 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  Pagination,
   UncontrolledDropdown,
 } from "reactstrap";
 import { Download, Edit, Eye, Key, MoreVertical, Trash } from "react-feather";
@@ -27,6 +26,8 @@ import ChangePassowardModal from "../common/ChangePassowardModal";
 import { getSalesPerson } from "../../redux/salesPersonSlice";
 import { getDrive } from "../../redux/driveSlice";
 import PDFICON from "../../assets/images/pdf_icon.svg";
+import Pagination from "../common/Pagination";
+
 
 
 const cookies = new Cookies();
@@ -58,7 +59,7 @@ function DriveList() {
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
   const [totalCount, setTotalCount] = useState(0)
-  console.log('TBLData',TBLData);
+  console.log('TBLData',TBLData,totalCount);
 
 
   const [filterName, setFilterName] = useState('');
@@ -67,26 +68,26 @@ function DriveList() {
   useEffect(() => {
     if(filterName || filterUploadedBy){
       reqDrive({
-        page: 1,
-        limit: 10,
+        page: currentPage,
+        limit: pageSize,
         pdfName: filterName,
         uploadedBy: filterUploadedBy,
       });
     } else{
       reqDrive({
-        page: 1,
-        limit: 10,
+        page: currentPage,
+        limit: pageSize,
         pdfName: "",
         uploadedBy: "",
       });
     }
-  }, [filterName,filterUploadedBy]);
+  }, [currentPage, filterName,filterUploadedBy]);
 
   useEffect(() => {
     if (resDrive?.isSuccess) {
-      dispatch(getDrive(resDrive?.data?.data?.filter(el => el?.isgen)));
-      setTBLData(resDrive?.data?.data?.filter(el => el?.isgen))
-      setTotalCount(resDrive?.data?.data?.totalDocs)
+      dispatch(getDrive(resDrive?.data?.data?.docs));
+      setTBLData(resDrive?.data?.data?.docs)
+      setTotalCount(resDrive?.data?.data?.total)
     }
   }, [resDrive]);
 
@@ -146,7 +147,7 @@ function DriveList() {
                           className="btn btn-success waves-effect waves-light mb-4 me-2"
                           data-bs-toggle="modal"
                           data-bs-target=".add-new-order"
-                          // onClick={() => navigate("/sales-person-form")}
+                          onClick={() => navigate("/pdf-upload-form")}
                         >
                           <i className="mdi mdi-plus me-1"></i> Upload Drive
                         </button>

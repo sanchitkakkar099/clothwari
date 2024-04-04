@@ -362,14 +362,14 @@ function SalesPersonList() {
           <div className="row">
             <div className="col-12">
               <div className="page-title-box d-flex align-items-center justify-content-between">
-                <h4 className="mb-0">Sales Person</h4>
+                <h4 className="mb-0">Marketing</h4>
 
                 <div className="page-title-right">
                   <ol className="breadcrumb m-0">
                     <li className="breadcrumb-item">
                       <a href="#!">Clothwari</a>
                     </li>
-                    <li className="breadcrumb-item active">Sales Person</li>
+                    <li className="breadcrumb-item active">Marketing</li>
                   </ol>
                 </div>
               </div>
@@ -391,7 +391,7 @@ function SalesPersonList() {
                           data-bs-target=".add-new-order"
                           onClick={() => navigate("/sales-person-form")}
                         >
-                          <i className="mdi mdi-plus me-1"></i> Create Sales Person
+                          <i className="mdi mdi-plus me-1"></i> Create Marketing
                         </button>
                       </div>
                     </div>

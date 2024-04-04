@@ -468,27 +468,37 @@ export const fileApi = createApi({
         }
   }
   }
+    }),
+    uploadMarketingPDFFile: builder.mutation({
+      queryFn: async ({ url, data}, api) => {
+        try {
+            const result = await axios.post(url, data, {
+                onUploadProgress: upload => {
+                  let uploadloadProgress = Math.round((100 * upload.loaded) / upload.total);                         
+                  api.dispatch(setUploadProgress(uploadloadProgress ));
+                },
+            });
+        return { data: result.data }
+        } catch (axiosError) {
+              let err = axiosError
+              return {
+                    error: {
+                      status: err?.response?.status,
+                      data: err?.response?.data || err?.message,
+                    },
+              }
+        }
+      }
     })
-    // multipleFileUpload: builder.mutation({
-    //   query: (payload) => ({
-    //     url: `uploads/multiple?type=${payload?.type}`,
-    //     method: "POST",
-    //     body: payload?.file,
-    //   }),
-    //   invalidatesTags: ["file"],
-    // }),
-    // multipleThumbnailUpload: builder.mutation({
-    //   query: (payload) => ({
-    //     url: `uploads/multiple/pdf/?type=${payload?.type}`,
-    //     method: "POST",
-    //     body: payload?.file,
-    //   }),
-    //   invalidatesTags: ["file"],
-    // }),
   }),
 });
 
-export const { useFileUploadMutation,useMultipleFileUploadMutation,useMultipleThumbnailUploadMutation } = fileApi;
+export const { 
+  useFileUploadMutation,
+  useMultipleFileUploadMutation,
+  useMultipleThumbnailUploadMutation,
+  useUploadMarketingPDFFileMutation
+} = fileApi;
 
 
 export const designerApi = createApi({

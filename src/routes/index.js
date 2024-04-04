@@ -1,4 +1,5 @@
 import { lazy } from "react";
+import DriveForm from "../components/drive/DriveForm";
 
 const LoginComponent = lazy(() => import("../components/auth/login"));
 const Dashboard = lazy(() => import("../components/dashboard"));
@@ -79,6 +80,8 @@ export const privateRoutes = [
   { path: "/pdf-item", Component: PDFDesign },
 
   { path: "/drive-list", Component: DriveList },
+  { path: "/pdf-upload-form", Component: DriveForm },
+
 
 ];
 

@@ -160,11 +160,13 @@ function DashboardComponent() {
 
                     {(userInfo?.role === 'Super Admin') &&
                     <div className="col-lg-3 col-md-6">
-                        <div className="card" style={{cursor: 'pointer'}} onClick={() => navigate("/view-orders",{
-                            state:{
-                                from:location.pathname
-                            }
-                        })}>
+                        <div className="card" style={{cursor: 'pointer'}} 
+                        // onClick={() => navigate("/view-orders",{
+                        //     state:{
+                        //         from:location.pathname
+                        //     }
+                        // })}
+                        >
                             <div className="card-body">
                                 <div className="avatar">
                                     <span className="avatar-title bg-soft-success rounded">

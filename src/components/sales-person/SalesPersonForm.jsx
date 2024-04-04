@@ -17,6 +17,7 @@ function SalesPersonForm() {
   const resSalesPersonById = useSalesPersonByIdQuery(locationState?.salesPersonID, {
     skip: !locationState?.salesPersonID,
   });
+  // const permissionList = useGetAdminPermissionListQuery()
   const [permissionDropdown,setPermissionDropDown] = useState([])
   console.log('permissionDropdown',permissionDropdown);
   const userInfo = useSelector((state) => state?.authState.userInfo)
@@ -73,14 +74,14 @@ function SalesPersonForm() {
         <div className="row">
           <div className="col-12">
             <div className="page-title-box d-flex align-items-center justify-content-between">
-              <h4 className="mb-0">Create Sales Person</h4>
+              <h4 className="mb-0">Create Marketing</h4>
 
               <div className="page-title-right">
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item">
-                    <a href="#!">Sales Person</a>
+                    <a href="#!">Marketing</a>
                   </li>
-                  <li className="breadcrumb-item active">Create Sales Person</li>
+                  <li className="breadcrumb-item active">Create Marketing</li>
                 </ol>
               </div>
             </div>
@@ -101,7 +102,7 @@ function SalesPersonForm() {
                   <div className="p-4">
                     <div className="d-flex align-items-center">
                       <div className="flex-grow-1 overflow-hidden">
-                        <h5 className="font-size-16 mb-1">Sales Person Info</h5>
+                        <h5 className="font-size-16 mb-1">Marketing Info</h5>
                         <p className="text-muted text-truncate mb-0">
                           Fill all information below
                         </p>
@@ -230,7 +231,7 @@ function SalesPersonForm() {
                       </div>
                       </div>
                         
-                      {/* {userInfo?.role === 'Super Admin' &&
+                      {userInfo?.role === 'Super Admin' &&
                       <div className="col-md-6">
                           <div className="mb-3">
                             <Label for="permissions" className="form-label">
@@ -260,7 +261,7 @@ function SalesPersonForm() {
                             )}
                           </div>
                         </div>
-                      } */}
+                      }
                       </div>
                       
                       
