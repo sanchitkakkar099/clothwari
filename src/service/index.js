@@ -899,9 +899,18 @@ export const driveApi = createApi({
       }),
       providesTags: ["drive"],
     }),
+    uploadCreateDrive: builder.mutation({
+      query: (payload) => ({
+        url: "market/drive/upload/create",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["drive"],
+    }),
   }),
 });
 export const {
   useDriveListMutation,
-  useCreateDriveMutation
+  useCreateDriveMutation,
+  useUploadCreateDriveMutation
 } = driveApi;

@@ -190,7 +190,7 @@ function DashboardComponent() {
                                     </span>
                                 </div>
                                 <p className="text-muted mt-4 mb-0">Drive</p>
-                                <h4 className="mt-1 mb-0">{0}</h4> 
+                                <h4 className="mt-1 mb-0">{dashData?.drive ? dashData?.drive : 0}</h4> 
                             </div>
                         </div>
                     </div>

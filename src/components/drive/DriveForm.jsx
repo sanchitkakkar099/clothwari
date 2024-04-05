@@ -2,82 +2,94 @@ import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input, Progress } from "reactstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useClientByIdQuery, useSubmitClientMutation, useUploadMarketingPDFFileMutation } from "../../service";
+import {  useUploadCreateDriveMutation, useUploadMarketingPDFFileMutation } from "../../service";
 import toast from "react-hot-toast";
 import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
 import { X } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
+import PDFICON from "../../assets/images/pdf_icon.svg";
 
+const baseUrl =
+  import.meta.env.MODE === "development"
+    ? import.meta.env.VITE_APP_DEV_URL
+    :  import.meta.env.VITE_APP_PROD_URL;
+    
 
 function DriveForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation();
   const { state: locationState } = location;
-  const [reqClient, resClient] = useSubmitClientMutation();
-  const resClientById = useClientByIdQuery(locationState?.clientID, {
-    skip: !locationState?.clientID,
-  });
+  const [reqUploadDrive, resDriveUpload] = useUploadCreateDriveMutation();
   const uploadProgress = useSelector(
     (state) => state?.designUploadState.uploadProgress
   );
   const uploadTag= useSelector(
     (state) => state?.designUploadState.uploadTag
   );
+  console.log('uploadProgress',uploadProgress);
   const [mainFile, setMainFile] = useState(null);
   const [reqFile,resFile] = useUploadMarketingPDFFileMutation();
+  console.log('mainFile',mainFile);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
     setError
   } = useForm();
 
   const onNext = (state) => {
-    reqClient({...state});
+    reqUploadDrive({
+      ...state,
+      data:[],
+    });
   };
 
   useEffect(() => {
-    if (resClient?.isSuccess) {
-      toast.success(resClient?.data?.message, {
+    if (resDriveUpload?.isSuccess) {
+      toast.success("Uploaded SuccessFully", {
         position: "top-center",
       });
       reset()
       navigate("/drive-list");
     }
-    // if (resClient?.isError) {
-    //   setError("email", {
-    //     type: "manual",
-    //     message: resClient?.error?.data?.message,
-    //   })
-    // }
-  }, [resClient?.isSuccess,resClient?.isError]);
+    if (resDriveUpload?.isError) {
+      toast.error("Something went wrong", {
+        position: "top-center",
+      });
+    }
+  }, [resDriveUpload?.isSuccess,resDriveUpload?.isError]);
 
   const handleFile = async (e, name) => {
-    console.log("eeeee", name);
-    // if (name === "pdf_file" && e.target.files) {
-    //   dispatch(setUploadTag({pdf_file:true}))
-    //   const formData = new FormData();
-    //   formData.append("file", e.target.files[i]);
-    //   const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/multiple/pdf/?type=${reqData?.type}`, data:reqData?.file });
-    //   if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
-    //   if (fileResponse?.data?.data) {
-    //           setValue(name, fileResponse?.data?.data);
-    //           setError(name, "");
-    //           setMainFile(fileResponse?.data?.data);
-    //           dispatch(setUploadProgress(null))
-    //           dispatch(setUploadTag(null))
-    //         }
-    //       }else{
-    //         toast.error('Something went wrong',{
-    //           position:"top-center"
-    //         })
-    //         dispatch(setUploadProgress(null))
-    //         dispatch(setUploadTag(null))
-    //       }
-    // }
+    if (name === "pdfurl" && e.target.files) {
+      dispatch(setUploadTag({pdf_file:true}))
+      const formData = new FormData();
+      formData.append("file", e.target.files[0]);
+      const reqData = {
+        file: formData,
+        type: 99,
+      };
+      const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/drive/pdf/?type=${reqData?.type}`, data:reqData?.file });
+      console.log('fileResponse',fileResponse);
+      if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
+      if (fileResponse?.data?.data) {
+              setValue(name, fileResponse?.data?.data);
+              setError(name, "");
+              setMainFile(fileResponse?.data?.data);
+              dispatch(setUploadProgress(null))
+              dispatch(setUploadTag(null))
+            }
+          }else{
+            toast.error('Something went wrong',{
+              position:"top-center"
+            })
+            dispatch(setUploadProgress(null))
+            dispatch(setUploadTag(null))
+          }
+    }
   };
 
   const removeFile = (e, name) => {
@@ -140,12 +152,12 @@ function DriveForm() {
                       <div className="row">
                       <div className="col-md-12">
                       <div className="mb-3">
-                        <Label className="form-label" for="name">
+                        <Label className="form-label" for="pdfName">
                             Name
                         </Label>
                         <Controller
-                          id="name"
-                          name="name"
+                          id="pdfName"
+                          name="pdfName"
                           control={control}
                           rules={{ required: "Name is required" }}
                           render={({ field }) => (
@@ -157,20 +169,20 @@ function DriveForm() {
                             />
                           )}
                         />
-                        {errors.name && (
-                          <FormFeedback>{errors?.name?.message}</FormFeedback>
+                        {errors.pdfName && (
+                          <FormFeedback>{errors?.pdfName?.message}</FormFeedback>
                         )}
                       </div>
                       </div>
                         <div className="col-md-12">
                           <div className="mb-3">
-                            <Label className="form-label" for="pdf_file">
+                            <Label className="form-label" for="pdfurl">
                               Upload PDF
                             </Label>
                             <div className="border-top">
                           <Controller
-                            id="pdf_file"
-                            name="pdf_file"
+                            id="pdfurl"
+                            name="pdfurl"
                             control={control}
                             rules={{ required: "PDF is required" }}
                             render={({ field: { onChange, value } }) => (
@@ -179,13 +191,13 @@ function DriveForm() {
                                 accept="application/pdf"
                                 onChange={(e) => {
                                   onChange(e.target.files);
-                                  handleFile(e, "pdf_file");
+                                  handleFile(e, "pdfurl");
                                 }}
                               />
                             )}
                           />
-                          {errors.pdf_file && (
-                          <FormFeedback>{errors?.pdf_file?.message}</FormFeedback>
+                          {errors.pdfurl && (
+                          <FormFeedback>{errors?.pdfurl?.message}</FormFeedback>
                         )}
                           {(uploadProgress && uploadTag?.pdf_file) &&
                                   <div style={{marginTop:'10px'}}>
@@ -208,7 +220,7 @@ function DriveForm() {
                                         <X
                                           className="remove-icon"
                                           onClick={(e) =>
-                                            removeFile(e, "pdf_file")
+                                            removeFile(e, "pdfurl")
                                           }
                                         />
                                       </div>
