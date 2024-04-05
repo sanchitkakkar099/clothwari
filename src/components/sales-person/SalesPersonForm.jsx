@@ -5,7 +5,7 @@ import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
-import {  useSalesPersonByIdQuery, useSubmitSalesPersonMutation } from "../../service";
+import {  useGetSalesPermissionListQuery, useSalesPersonByIdQuery, useSubmitSalesPersonMutation } from "../../service";
 import toast from "react-hot-toast";
 
 function SalesPersonForm() {
@@ -17,7 +17,8 @@ function SalesPersonForm() {
   const resSalesPersonById = useSalesPersonByIdQuery(locationState?.salesPersonID, {
     skip: !locationState?.salesPersonID,
   });
-  // const permissionList = useGetAdminPermissionListQuery()
+  const permissionList = useGetSalesPermissionListQuery()
+
   const [permissionDropdown,setPermissionDropDown] = useState([])
   console.log('permissionDropdown',permissionDropdown);
   const userInfo = useSelector((state) => state?.authState.userInfo)
@@ -39,15 +40,24 @@ function SalesPersonForm() {
         name: resSalesPersonById?.data?.data?.name,
         email: resSalesPersonById?.data?.data?.email,
         phone: resSalesPersonById?.data?.data?.phone,
-        // permissions:resSalesPersonById?.data?.data?.permissions
+        permissions:resSalesPersonById?.data?.data?.permissions
       });
     }
   }, [resSalesPersonById]);
 
+  useEffect(() => {
+    if(permissionList?.isSuccess && permissionList?.data?.data && Array.isArray(permissionList?.data?.data) && permissionList?.data?.data?.length > 0){
+      setPermissionDropDown(permissionList?.data?.data?.map(el => ({label:el?.label,value:el?._id})))
+    }
+  },[permissionList])
+
 
   const onNext = (state) => {
     console.log("state", state);
-    reqSalesPerson(state);
+    reqSalesPerson({
+      ...state,
+      permissions:state?.permissions?.map(el => el?.value)
+    });
   };
   console.log('resSalesPerson',resSalesPerson);
 

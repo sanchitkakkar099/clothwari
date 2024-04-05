@@ -852,13 +852,21 @@ export const salesPersonApi = createApi({
       }),
       invalidatesTags: ["salesPerson"],
     }),
+    getSalesPermissionList: builder.query({
+      query: (id) => ({
+        url: `market/salesperson/permission/list`,
+        method: "GET",
+      }),
+      providesTags: ["salesPerson"],
+    }),
   }),
 });
 export const {
   useSalesPersonListMutation,
   useSalesPersonByIdQuery,
   useSubmitSalesPersonMutation,
-  useDeleteSalesPersonMutation
+  useDeleteSalesPersonMutation,
+  useGetSalesPermissionListQuery
 } = salesPersonApi;
 
 

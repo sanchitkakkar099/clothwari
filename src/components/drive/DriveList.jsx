@@ -139,7 +139,7 @@ function DriveList() {
               <div className="card">
                 <div className="card-body">
                   {(userInfo?.role === "Super Admin" ||
-                    userInfo?.permissions?.includes("Drive")) && (
+                    userInfo?.permissions?.includes("Drive") || (userInfo?.role === "SalesPerson" && userInfo?.permissions?.includes("Upload PDF"))) && (
                     <div className="position-relative">
                       <div className="modal-button modal-button-s mt-2">
                         <button
@@ -180,7 +180,7 @@ function DriveList() {
                           <td>{ele?.pdfName}</td>
                           <td>{ele?.userId?.name}</td>
                           <td>
-                          {((userInfo?.role === 'Super Admin' || userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson') || userInfo?.permissions?.some(el => el === "Drive")) ?
+                          {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Client' || userInfo?.permissions?.some(el => el === "Drive") || (userInfo?.role === "SalesPerson" && userInfo?.permissions?.includes("Download PDF")))  ?
         <UncontrolledDropdown>
                                 <DropdownToggle
                                   className="icon-btn hide-arrow moreOption"
@@ -192,7 +192,7 @@ function DriveList() {
                                 </DropdownToggle>
                                 <DropdownMenu>
                               
-
+                              
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => pdfDownload(e,ele)}
@@ -200,6 +200,7 @@ function DriveList() {
                                     <Download className="me-50" size={15} />{" "}
                                     <span className="align-middle">Download</span>
                                   </DropdownItem>
+                              
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                               :'No Permission'}

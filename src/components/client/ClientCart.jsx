@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { clearBagItems, removeBagItems } from "../../redux/clientSlice";
 import { useAddToBagByClientMutation } from "../../service";
 import toast from "react-hot-toast";
@@ -46,6 +46,9 @@ function ClientCart() {
   };
 
   return (
+    <>
+    {(selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0) ?            
+
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -579,6 +582,10 @@ function ClientCart() {
         </div>
       </div>
     </div>
+    :
+    <Navigate to="/dashboard"/>
+    }
+    </>
   );
 }
 
