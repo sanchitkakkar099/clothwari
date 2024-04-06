@@ -210,7 +210,7 @@ function AddDesign() {
         file: formData,
         type: 1,
       };
-      const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/multiple?type=${reqData?.type}`, data:reqData?.file });
+      const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/multiple/tiff/?type=${reqData?.type}`, data:reqData?.file });
       if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
         if (fileResponse?.data?.data) {
           setValue(name, fileResponse?.data?.data);
