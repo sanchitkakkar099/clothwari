@@ -489,6 +489,27 @@ export const fileApi = createApi({
               }
         }
       }
+    }),
+    uploadDesignImageFile: builder.mutation({
+      queryFn: async ({ url, data}, api) => {
+        try {
+            const result = await axios.post(url, data, {
+                onUploadProgress: upload => {
+                  let uploadloadProgress = Math.round((100 * upload.loaded) / upload.total);                         
+                  api.dispatch(setUploadProgress(uploadloadProgress ));
+                },
+            });
+        return { data: result.data }
+        } catch (axiosError) {
+              let err = axiosError
+              return {
+                    error: {
+                      status: err?.response?.status,
+                      data: err?.response?.data || err?.message,
+                    },
+              }
+        }
+      }
     })
   }),
 });
@@ -497,7 +518,8 @@ export const {
   useFileUploadMutation,
   useMultipleFileUploadMutation,
   useMultipleThumbnailUploadMutation,
-  useUploadMarketingPDFFileMutation
+  useUploadMarketingPDFFileMutation,
+  useUploadDesignImageFileMutation
 } = fileApi;
 
 
@@ -574,6 +596,14 @@ export const designerApi = createApi({
       }),
       invalidatesTags: ["designer"],
     }),
+    submitDesigneImage: builder.mutation({
+      query: (payload) => ({
+        url: "designupload/design/image",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["designer"],
+    }),
   }),
 });
 export const {
@@ -584,7 +614,8 @@ export const {
   useGetDesignerPermissionListQuery,
   useStaffApprovalBySuperAdminMutation,
   useManageStaffSessionByAdminMutation,
-  useDesignerDropDownListQuery
+  useDesignerDropDownListQuery,
+  useSubmitDesigneImageMutation
 } = designerApi;
 
 

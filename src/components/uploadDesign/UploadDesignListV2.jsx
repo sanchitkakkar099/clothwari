@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { downloadFile } from "../common/FileDownload";
 import UploadDesignView from "./UploadDesignView";
-import { ChevronDown, ChevronUp, Download, Edit, Eye, MoreVertical, Trash } from "react-feather";
+import { ChevronDown, ChevronUp, Download, Edit, Eye, Image, MoreVertical, Trash } from "react-feather";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { useRef } from "react";
 import Pagination from "../common/Pagination";
@@ -261,6 +261,16 @@ function UploadDesignListV2() {
     // })
   }
 
+  const handleDesignImage = (e, ID) => {
+    e.preventDefault();
+    navigate("/upload-design-image", {
+      state: {
+        designID: ID,
+        isEdit:true
+      },
+    });
+  };
+
 
   
 
@@ -438,6 +448,15 @@ function UploadDesignListV2() {
                                   >
                                     <Trash className="me-50" size={15} />{" "}
                                     <span className="align-middle">Delete</span>
+                                  </DropdownItem>
+                                }
+                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
+                                   <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleDesignImage(e,ele?._id)}
+                                  >
+                                    <Image className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Design Image</span>
                                   </DropdownItem>
                                 }
                                 </DropdownMenu>

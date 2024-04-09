@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import DriveForm from "../components/drive/DriveForm";
+import DesignImageForm from "../components/uploadDesign/DesignImageForm";
 
 const LoginComponent = lazy(() => import("../components/auth/login"));
 const Dashboard = lazy(() => import("../components/dashboard"));
@@ -48,6 +49,7 @@ export const privateRoutes = [
   { path: "/design-list-v1", Component: UploadDesignListV1 },
   { path: "/design-list-v2", Component: UploadDesignListV2 },
   { path: "/upload-design-form", Component: UploadDesignForm },
+  { path: "/upload-design-image", Component: DesignImageForm },
   { path: "/upload-multiple-design-form", Component: UploadDesignMultipleForm },
   { path: "/product-view/:id", Component: ProductView },
 
