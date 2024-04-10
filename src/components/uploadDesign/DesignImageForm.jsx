@@ -58,9 +58,8 @@ function DesignImageForm() {
     if (resDesignById?.isSuccess && resDesignById?.data?.data) {
       const designMainObj = {
         label: resDesignById?.data?.data?.designNo,
-        value: resDesignById?.data?.data?._id,
-        pdf_extract_img:
-          resDesignById?.data?.data?.thumbnail[0]?.pdf_extract_img,
+        value: (resDesignById?.data?.data?.thumbnail && Array.isArray(resDesignById?.data?.data?.thumbnail) && resDesignById?.data?.data?.thumbnail?.length > 0) ? resDesignById?.data?.data?.thumbnail[0]?._id : "",
+        pdf_extract_img: (resDesignById?.data?.data?.thumbnail && Array.isArray(resDesignById?.data?.data?.thumbnail) && resDesignById?.data?.data?.thumbnail?.length > 0) ? resDesignById?.data?.data?.thumbnail[0]?.pdf_extract_img : ""
       };
       const desingVariation = resDesignById?.data?.data?.variations;
       let designOptions = designMainObj ? [designMainObj] : [];
@@ -72,8 +71,8 @@ function DesignImageForm() {
         desingVariation?.forEach((el) => {
           designOptions?.push({
             label: el?.variation_designNo,
-            value: el?._id,
-            pdf_extract_img: el?.variation_thumbnail[0]?.pdf_extract_img,
+            value: (el?.variation_thumbnail && Array.isArray(el?.variation_thumbnail) && el?.variation_thumbnail?.length > 0) ? el?.variation_thumbnail[0]?._id : "",
+            pdf_extract_img: (el?.variation_thumbnail && Array.isArray(el?.variation_thumbnail) && el?.variation_thumbnail?.length > 0) ? el?.variation_thumbnail[0]?.pdf_extract_img : "",
           });
         });
       }
