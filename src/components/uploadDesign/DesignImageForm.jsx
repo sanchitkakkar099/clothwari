@@ -263,6 +263,7 @@ function DesignImageForm() {
                                   />
                                 )}
                               />
+                              <h6 style={{fontSize:'12px',padding:"5px",color:'#9e6319'}}>Note: Allowed only jpg,jpeg and png image format</h6>
                               {uploadProgress && uploadTag?.image && (
                                 <div style={{ marginTop: "10px" }}>
                                   <Progress
