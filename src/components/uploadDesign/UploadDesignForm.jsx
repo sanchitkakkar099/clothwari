@@ -799,7 +799,7 @@ function AddDesign() {
                                   <div className="image-item"  key={tinx}>
                                     <Link
                                       to=""
-                                      download="image2.jpg"
+                                      download={el?.originalname}
                                       className="download-button"
                                     >
                                       <img src={IMGICON} alt="Image 2" />
