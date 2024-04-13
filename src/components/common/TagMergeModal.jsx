@@ -9,16 +9,16 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { useMergeTagMutation, useTagDropdownListQuery, useTagListMutation } from "../../service";
+import { useMergeTagMutation, useTagDropdownListQuery, useTagListV2Mutation } from "../../service";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { useDispatch } from "react-redux";
 import { getTag } from "../../redux/tagSlice";
-function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseClick}) {
+function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseClick,currentPage,pageSize,setTBLData,setTotalCount}) {
   const dispatch = useDispatch()
   const tagDropdownRes = useTagDropdownListQuery();
   const [reqMergeTag,resMergeTag] = useMergeTagMutation()
-  const [reqTag,resTag] = useTagListMutation()
+  const [reqTag,resTag] = useTagListV2Mutation()
 
   const [tagDropdown,setTagDropdown] = useState([])
   const [confirmOpen,setConfirmOpen] = useState(false)
@@ -64,9 +64,8 @@ function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseCl
           setMergeTo(null)
           setConfirmOpen(false)
             reqTag({
-            page: 0,
-            limit: 0,
-            search: "",
+              page: currentPage,
+              limit: pageSize,
             });
       }
       if(resMergeTag?.isError){
@@ -82,6 +81,8 @@ function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseCl
     useEffect(() => {
         if (resTag?.isSuccess) {
           dispatch(getTag(resTag?.data?.data?.docs));
+          setTBLData(resTag?.data?.data?.docs)
+          setTotalCount(resTag?.data?.data?.totalDocs)
         }
       }, [resTag]);
   return (

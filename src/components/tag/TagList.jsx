@@ -41,19 +41,12 @@ function TagList() {
   // filter
   const [filterName, setFilterName] = useState('');
 
-  // useEffect(() => {
-  //   reqTag({
-  //     page: 0,
-  //     limit: 0,
-  //     search: "",
-  //   });
-  // }, []);
   useEffect(() => {
     if(filterName || sortingBy){
       reqTag({
         page:currentPage,
         limit:pageSize,
-        name:filterName,
+        search:filterName,
         sortBy:sortingBy
       })
     }else{
@@ -79,7 +72,6 @@ function TagList() {
         setIsOpen(false);
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -111,9 +103,9 @@ function TagList() {
         position: "top-center",
       });
       reqTag({
-        page: 0,
-        limit: 0,
-        search: "",
+        page: currentPage,
+        limit: pageSize,
+        sortBy:sortingBy
       });
       setShowModal(false);
       setModalDetails(null);
@@ -136,85 +128,12 @@ function TagList() {
 
   const handleSorting = (e) => {
     setSortingBy(e.target.value)
-    // if(e.target.value === 'asc'){
-    //   reqTag({
-    //     page: 0,
-    //     limit: 0,
-    //     search: "",
-    //     sortBy:e.target.value
-    //   });
-
-    // }else if(e.target.value === 'desc'){
-    //   reqTag({
-    //     page: 0,
-    //     limit: 0,
-    //     search: "",
-    //     sortBy:e.target.value
-    //   });
-    // }
   }
 
   const handleNameFilter = (e) => {
     setFilterName(e.target.value)
   }
 
-
-    // const columns = [
-    //     {
-    //       Header: "Tag Name",
-    //       accessor: "label",
-    //       Filter: TextSearchFilter,
-    //       filter: "rankedMatchSorter",
-    //     },
-    //     {
-    //       Header: "Action",
-    //       accessor: "action",
-    //       Cell: (row) => (
-    //         <UncontrolledDropdown>
-    //                             <DropdownToggle
-    //                               className="icon-btn hide-arrow moreOption"
-    //                               color="transparent"
-    //                               size="sm"
-    //                               caret
-    //                             >
-    //                               <MoreVertical size={15} />
-    //                             </DropdownToggle>
-    //                             <DropdownMenu>
-    //                               <DropdownItem
-    //                                 href="#!"
-    //                                 onClick={(e) => onEditAction(e,row)}
-    //                               >
-    //                                 <Edit className="me-50" size={15} />{" "}
-    //                                 <span className="align-middle">Edit</span>
-    //                               </DropdownItem>
-    //                               <DropdownItem
-    //                                 href="#!"
-    //                                 onClick={(e) => handleDelete(e,row)}
-    //                               >
-    //                                 <Trash className="me-50" size={15} />{" "}
-    //                                 <span className="align-middle">Delete</span>
-    //                               </DropdownItem>
-
-    //                               <DropdownItem
-    //                                 href="#!"
-    //                                 onClick={(e) => handleMerge(e,row)}
-    //                               >
-    //                                 <GitMerge className="me-50" size={15} />{" "}
-    //                                 <span className="align-middle">Merge Tag</span>
-    //                               </DropdownItem>
-    //                             </DropdownMenu>
-    //                           </UncontrolledDropdown>
-           
-    //       ),
-    //       // Cell: (row) => (
-    //       //   <div>
-    //       //     <button onClick={(e) => onEditAction(e,row)}>Edit</button>
-    //       //     <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
-    //       //   </div>
-    //       // ),
-         
-    //     },
-    //   ];
   return (
     <>
     {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') ?
@@ -258,7 +177,7 @@ function TagList() {
               </div>
               <div className="position-relative">
                   <div className="filter-dropdown" ref={dropdownRef}>
-                  <Button onClick={() => setIsOpen(!isOpen)}> <i className="mdi mdi-filter me-1"></i> Filter</Button>
+                  <Button onClick={() => setIsOpen(!isOpen)}> <i className="mdi mdi-filter me-1"></i> Sort By</Button>
                   {isOpen && (
                   <div className="filter-dropdown-content" id="dropdownContent">
                     <div className="filter-section">
@@ -366,6 +285,10 @@ function TagList() {
       mergeTo={mergeTo}
       setMergeTo={setMergeTo}
       onMergeCloseClick={onMergeCloseClick}
+      currentPage={currentPage}
+      pageSize={pageSize}
+      setTBLData={setTBLData}
+      setTotalCount={setTotalCount}
     />
   </>
   )

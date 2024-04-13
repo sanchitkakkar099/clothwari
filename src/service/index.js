@@ -181,6 +181,14 @@ export const categoryApi = createApi({
       }),
       providesTags: ["category"],
     }),
+    categoryListV2: builder.mutation({
+      query: (payload) => ({
+        url: "category/list/v2",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["category"],
+    }),
     categoryDropdownList: builder.query({
       query: () => ({
         url: "category/drop/dwon/list",
@@ -230,6 +238,7 @@ export const categoryApi = createApi({
 });
 export const {
   useCategoryListMutation,
+  useCategoryListV2Mutation,
   useCategoryDropdownListQuery,
   useSubmitCategoryMutation,
   useDeleteCategoryMutation,

@@ -9,17 +9,17 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import { useCategoryDropdownListQuery, useCategoryListMutation, useChangePasswordBySuperAdminMutation, useMergeCategoryMutation } from "../../service";
+import { useCategoryDropdownListQuery, useCategoryListV2Mutation, useChangePasswordBySuperAdminMutation, useMergeCategoryMutation } from "../../service";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { set } from "react-hook-form";
 import { getCategory } from "../../redux/categorySlice";
 import { useDispatch } from "react-redux";
-function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseClick}) {
+function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseClick,currentPage,pageSize,setTBLData,setTotalCount}) {
   const dispatch = useDispatch()
   const categoryDropdownRes = useCategoryDropdownListQuery();
   const [reqMergeCategory,resMergeCategory] = useMergeCategoryMutation()
-  const [reqCategory,resCategory] = useCategoryListMutation()
+  const [reqCategory,resCategory] = useCategoryListV2Mutation()
 
   const [categoryDropdown,setCategoryDropdown] = useState([])
   const [confirmOpen,setConfirmOpen] = useState(false)
@@ -61,9 +61,8 @@ function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCl
           setMergeTo(null)
           setConfirmOpen(false)
             reqCategory({
-            page: 0,
-            limit: 0,
-            search: "",
+            page: currentPage,
+            limit: pageSize,
             });
       }
       if(resMergeCategory?.isError){
@@ -79,6 +78,8 @@ function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCl
     useEffect(() => {
         if (resCategory?.isSuccess) {
           dispatch(getCategory(resCategory?.data?.data?.docs));
+          setTBLData(resCategory?.data?.data?.docs)
+          setTotalCount(resCategory?.data?.data?.totalDocs)
         }
       }, [resCategory]);
   return (
