@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input, Progress } from "reactstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {  useUploadCreateDriveMutation, useUploadMarketingPDFFileMutation } from "../../service";
+import {   useEditDriveMutation, useUploadCreateDriveMutation, useUploadMarketingPDFFileMutation } from "../../service";
 import toast from "react-hot-toast";
 import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
 import { X } from "react-feather";
@@ -20,7 +20,13 @@ function DriveForm() {
   const navigate = useNavigate()
   const location = useLocation();
   const { state: locationState } = location;
+  // const resDriveById = useDriveByIdQuery(locationState?.driveID, {
+  //   skip: !locationState?.driveID,
+  // });
+  console.log('locationState',locationState);
   const [reqUploadDrive, resDriveUpload] = useUploadCreateDriveMutation();
+  const [reqEditDrive, resEditDrive] = useEditDriveMutation();
+
   const uploadProgress = useSelector(
     (state) => state?.designUploadState.uploadProgress
   );
@@ -42,11 +48,29 @@ function DriveForm() {
   } = useForm();
 
   const onNext = (state) => {
-    reqUploadDrive({
-      ...state,
-      data:[],
-    });
+    if(locationState?.isEdit){
+      reqEditDrive({
+        _id:locationState?.data?._id,
+        pdfName:state?.pdfName
+      })
+    }else{
+      reqUploadDrive({
+        ...state,
+        data:[],
+      });
+    }
   };
+
+  useEffect(() => {
+    if (locationState?.isEdit && locationState?.data) {
+      reset({
+        _id:locationState?.data?._id,
+        pdfName:locationState?.data?.pdfName,
+        pdfurl:locationState?.data?.pdfurl
+      });
+      setMainFile(locationState?.data?.pdfurl);
+    }
+  }, [locationState]);
 
   useEffect(() => {
     if (resDriveUpload?.isSuccess) {
@@ -62,6 +86,21 @@ function DriveForm() {
       });
     }
   }, [resDriveUpload?.isSuccess,resDriveUpload?.isError]);
+
+  useEffect(() => {
+    if (resEditDrive?.isSuccess) {
+      toast.success("Drive Name Updated SuccessFully", {
+        position: "top-center",
+      });
+      reset()
+      navigate("/drive-list");
+    }
+    if (resEditDrive?.isError) {
+      toast.error("Something went wrong", {
+        position: "top-center",
+      });
+    }
+  }, [resEditDrive?.isSuccess,resEditDrive?.isError])
 
   const handleFile = async (e, name) => {
     if (name === "pdfurl" && e.target.files) {
@@ -174,64 +213,66 @@ function DriveForm() {
                         )}
                       </div>
                       </div>
-                        <div className="col-md-12">
-                          <div className="mb-3">
-                            <Label className="form-label" for="pdfurl">
-                              Upload PDF
-                            </Label>
-                            <div className="border-top">
-                          <Controller
-                            id="pdfurl"
-                            name="pdfurl"
-                            control={control}
-                            rules={{ required: "PDF is required" }}
-                            render={({ field: { onChange, value } }) => (
-                              <Input
-                                type="file"
-                                accept="application/pdf"
-                                onChange={(e) => {
-                                  onChange(e.target.files);
-                                  handleFile(e, "pdfurl");
-                                }}
-                              />
-                            )}
-                          />
-                          {errors.pdfurl && (
-                          <FormFeedback>{errors?.pdfurl?.message}</FormFeedback>
-                        )}
-                          {(uploadProgress && uploadTag?.pdf_file) &&
-                                  <div style={{marginTop:'10px'}}>
-                                    <Progress animated color="success" value={uploadProgress} />
-                                    <p>Progress: {uploadProgress}%</p>
-                                  </div>
-                          }
-                          {mainFile &&
-                            
-                                <div className="image-gallery">
-                                  <div className="image-item">
-                                    <Link
-                                      to=""
-                                      download="image2.jpg"
-                                      className="download-button"
-                                    >
-                                      <img src={PDFICON} alt="Image 2" />
-                                      
-                                      <div className="remove-wrapper">
-                                        <X
-                                          className="remove-icon"
-                                          onClick={(e) =>
-                                            removeFile(e, "pdfurl")
-                                          }
-                                        />
-                                      </div>
-                                    </Link>
-                                  </div>
+                      {!locationState?.isEdit &&
+                      <div className="col-md-12">
+                        <div className="mb-3">
+                          <Label className="form-label" for="pdfurl">
+                            Upload PDF
+                          </Label>
+                          <div className="border-top">
+                        <Controller
+                          id="pdfurl"
+                          name="pdfurl"
+                          control={control}
+                          rules={{ required: "PDF is required" }}
+                          render={({ field: { onChange, value } }) => (
+                            <Input
+                              type="file"
+                              accept="application/pdf"
+                              onChange={(e) => {
+                                onChange(e.target.files);
+                                handleFile(e, "pdfurl");
+                              }}
+                            />
+                          )}
+                        />
+                        {errors.pdfurl && (
+                        <FormFeedback>{errors?.pdfurl?.message}</FormFeedback>
+                      )}
+                        {(uploadProgress && uploadTag?.pdf_file) &&
+                                <div style={{marginTop:'10px'}}>
+                                  <Progress animated color="success" value={uploadProgress} />
+                                  <p>Progress: {uploadProgress}%</p>
                                 </div>
-                              
-                            }
+                        }
+                        {mainFile &&
+                          
+                              <div className="image-gallery">
+                                <div className="image-item">
+                                  <Link
+                                    to=""
+                                    download="image2.jpg"
+                                    className="download-button"
+                                  >
+                                    <img src={PDFICON} alt="Image 2" />
+                                    
+                                    <div className="remove-wrapper">
+                                      <X
+                                        className="remove-icon"
+                                        onClick={(e) =>
+                                          removeFile(e, "pdfurl")
+                                        }
+                                      />
+                                    </div>
+                                  </Link>
+                                </div>
+                              </div>
+                            
+                          }
+                      </div>
                         </div>
-                          </div>
-                        </div>
+                      </div>
+                      }
                       </div>                      
                       <div className="row">
                         <div className="col text-end">

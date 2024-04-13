@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DateSearchFilter, DropdownFilter, TextSearchFilter } from "../common/Filter";
+import { DateSearchFilter, DropdownFilter, SessionDropDown, TextSearchFilter } from "../common/Filter";
 import DataTable from "../common/DataTable";
 import { useNavigate,Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -200,7 +200,8 @@ function ClientList() {
     },
     {
       Header: "Session",
-      accessor: "session",
+      accessor: "isDel",
+      Filter: SessionDropDown,
       Cell: (row) =>
         userInfo?.role === "Super Admin" || userInfo?.role === "Admin" ? (
           <Button

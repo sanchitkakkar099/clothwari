@@ -956,10 +956,28 @@ export const driveApi = createApi({
       }),
       providesTags: ["drive"],
     }),
+    deleteDrive: builder.mutation({
+      query: (id) => ({
+        url: `market/drive/delete`,
+        method: "POST",
+        body: {id},
+      }),
+      invalidatesTags: ["drive"],
+    }),
+    editDrive: builder.mutation({
+      query: (payload) => ({
+        url: `market/drive/edit`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["drive"],
+    }),
   }),
 });
 export const {
   useDriveListMutation,
   useCreateDriveMutation,
-  useUploadCreateDriveMutation
+  useUploadCreateDriveMutation,
+  useDeleteDriveMutation,
+  useEditDriveMutation
 } = driveApi;

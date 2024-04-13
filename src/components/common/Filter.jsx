@@ -2,6 +2,7 @@ import React from "react";
 // dependencies
 import { matchSorter } from "match-sorter";
 import ReactDatePicker from "react-datepicker";
+import ReactSelect from "react-select";
 // text search input
 export function TextSearchFilter({
   column: { filterValue, preFilteredRows, setFilter }
@@ -24,16 +25,22 @@ export function DateSearchFilter({
     console.log('filterValue',filterValue);
     return (
       <ReactDatePicker selected={filterValue} onChange={(date) => setFilter(date || '')} placeholderText="Date" />
-      // <input
-      //   value={filterValue || ""}
-      //   onChange={(e) => {
-      //     setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
-      //   }}
-      //   placeholder={`Search BirthDate`}
-      //   type="date"
-      // />
     );
-  }
+}
+
+export function SessionDropDown({
+  column: { filterValue, preFilteredRows, setFilter }
+}) {
+  console.log('filterValue',filterValue);
+  return (
+    <select onChange={(e) => setFilter(e.target.value)}
+    >
+      <option value={""}>All</option>
+      <option value={false}>Active</option>
+      <option value={true}>In-Active</option>
+    </select>
+  );
+}
 
 // a dropdown list filter
 export function DropdownFilter({

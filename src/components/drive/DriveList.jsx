@@ -8,6 +8,7 @@ import DataTable from "../common/DataTable";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  useDeleteDriveMutation,
   useDriveListMutation,
 } from "../../service";
 import toast from "react-hot-toast";
@@ -27,9 +28,6 @@ import { getSalesPerson } from "../../redux/salesPersonSlice";
 import { getDrive } from "../../redux/driveSlice";
 import PDFICON from "../../assets/images/pdf_icon.svg";
 import Pagination from "../common/Pagination";
-
-
-
 const cookies = new Cookies();
 
 function DriveList() {
@@ -37,6 +35,8 @@ function DriveList() {
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqDrive, resDrive] = useDriveListMutation();
+  const [reqDelete, resDelete] = useDeleteDriveMutation();
+
 
   const driveList = useSelector(
     (state) => state?.driveState.driveList
@@ -100,16 +100,52 @@ function DriveList() {
   }
 
   const pdfDownload = (e,file) =>  {
-    e.preventDefault()
-    const a = document.createElement('a');
-    a.href = file?.pdfurl;
-    a.download = `${new Date()}.pdf`;
-    a.target = '_blank'
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
+      e.preventDefault()
+      const a = document.createElement('a');
+      a.href = file?.pdfurl;
+      a.download = `${new Date()}.pdf`;
+      a.target = '_blank'
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  }
+
+  const onEditAction = (e, st) => {
+    e.preventDefault();
+    navigate("/pdf-upload-form", {
+      state: {
+        data: st,
+        isEdit:true
+      },
+    });
+  };
+
+  const handleDelete = (e, st) => {
+    e.preventDefault();
+    console.log("sssss", st);
+    setModalDetails({
+      title: st?.pdfName,
+      id: st?._id,
+    });
+    setShowModal(true);
+  };
+
+  useEffect(() => {
+    if (resDelete?.isSuccess) {
+      toast.success(resDelete?.data?.message, {
+        position: "top-center",
+      });
+      reqDrive({
+        page: currentPage,
+        limit: pageSize,
+        pdfName: "",
+        uploadedBy: "",
+      });
+      setShowModal(false);
+      setModalDetails(null);
+    }
+  }, [resDelete]);
 
   return (
     <>
@@ -181,7 +217,7 @@ function DriveList() {
                           <td>{ele?.userId?.name}</td>
                           <td>
                           {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Client' || userInfo?.permissions?.some(el => el === "Drive") || (userInfo?.role === "SalesPerson" && userInfo?.permissions?.includes("Download PDF")))  ?
-        <UncontrolledDropdown>
+                              <UncontrolledDropdown>
                                 <DropdownToggle
                                   className="icon-btn hide-arrow moreOption"
                                   color="transparent"
@@ -191,7 +227,24 @@ function DriveList() {
                                   <MoreVertical size={15} />
                                 </DropdownToggle>
                                 <DropdownMenu>
-                              
+                                {userInfo?.role === 'Super Admin' &&
+                                <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onEditAction(e,ele)}
+                                  >
+                                    <Edit className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Edit</span>
+                                  </DropdownItem>
+                                }
+                                {userInfo?.role === 'Super Admin' &&
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleDelete(e,ele)}
+                                  >
+                                    <Trash className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Delete</span>
+                                  </DropdownItem>
+                                }
                               
                                   <DropdownItem
                                     href="#!"
@@ -228,6 +281,12 @@ function DriveList() {
           </div>
         </div>
       </div>
+      <VerifyDeleteModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        modalDetails={modalDetails}
+        confirmAction={reqDelete}
+      />
     </>
     :
     <Navigate to={"/dashboard"}/>

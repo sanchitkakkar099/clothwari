@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   DateSearchFilter,
   DropdownFilter,
+  SessionDropDown,
   TextSearchFilter,
 } from "../common/Filter";
 import DataTable from "../common/DataTable";
@@ -201,7 +202,8 @@ function AdmintList() {
     },
     {
       Header: "Session",
-      accessor: "session",
+      accessor: "isDel",
+      Filter: SessionDropDown,
       Cell: (row) =>
         userInfo?.role === "Super Admin" ? (
           <Button
