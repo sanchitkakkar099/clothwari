@@ -59,6 +59,8 @@ function UploadDesignListV1() {
   const [totalCount, setTotalCount] = useState(0)
 
   const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
   const [search, setSearch] = useState('');
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
@@ -70,12 +72,14 @@ function UploadDesignListV1() {
   
 
   useEffect(() => {
-    if(search || startDate || tagsSearch || selectedStaff || categorySearch || colorSearch){
+    if(search || (startDate && endDate) || tagsSearch || selectedStaff || categorySearch || colorSearch){
       reqDesign({
         page: currentPage,
         limit: pageSize,
         search: search,
-        date_filter:startDate ?  dayjs(startDate).format() : '',
+        // date_filter:startDate ?  dayjs(startDate).format() : '',
+        start_date:(startDate && endDate) ? dayjs(startDate).format() : "",
+        end_date:(startDate && endDate) ? dayjs(endDate).format() : "",
         tags:tagsSearch,
         uploadedBy:selectedStaff ? selectedStaff : '',
         category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : [],
@@ -86,14 +90,16 @@ function UploadDesignListV1() {
         page: currentPage,
         limit: pageSize,
         search: "",
-        date_filter:'',
+        // date_filter:'',
+        start_date: "",
+        end_date:"",
         tags:[],
         uploadedBy: '',
         category:[],
         color:[]
       });
     }
-  }, [currentPage,search,startDate,tagsSearch,selectedStaff,categorySearch,colorSearch]);
+  }, [currentPage,search,startDate,endDate,tagsSearch,selectedStaff,categorySearch,colorSearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -154,16 +160,12 @@ function UploadDesignListV1() {
     setVariationImg(null)
   }
 
-  const handleDateFilter = (date) => {
-    setStartDate(date)
-    // reqDesign({
-    //   page:currentPage,
-    //   limit:pageSize,
-    //   search:search,
-    //   date_filter:dayjs(date).format(),
-    //   tags:tagsSearch,
-    //   uploadedBy:selectedStaff ? selectedStaff : ''
-    // })
+  const handleDateFilter = (tag,date) => {
+    if(tag === 'start'){
+      setStartDate(date)
+    }else{
+      setEndDate(date)
+    }
   }
 
   useEffect(() => {
@@ -252,7 +254,7 @@ function UploadDesignListV1() {
                     
                   </div>
                   <div className="row m-4">
-                  <div className="col-md-4">
+                  <div className="col-md-3">
                       <div className="form-inline">
                         <div className="search-box ms-2">
                           <div className="position-relative">
@@ -275,15 +277,33 @@ function UploadDesignListV1() {
                         <div className="search-box ms-2">
                         <ReactDatePicker 
                               selected={startDate} 
-                              onChange={(date) => handleDateFilter(date)}
-                              placeholderText="Select Date"
+                              onChange={(date) => handleDateFilter("start",date)}
+                              placeholderText="Select From Date"
                               className="form-control "
-
+                              selectsStart
+                              startDate={startDate}
+                              endDate={endDate}
                         />
                         </div>
                         </div>
                     </div>
-                    <div className="col-md-5">
+                    <div className="col-md-3">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                        <ReactDatePicker 
+                              selected={endDate} 
+                              onChange={(date) => handleDateFilter("end",date)}
+                              placeholderText="Select To Date"
+                              className="form-control "
+                              selectsEnd
+                              startDate={startDate}
+                              endDate={endDate}
+                              minDate={startDate}
+                        />
+                        </div>
+                        </div>
+                    </div>
+                    <div className="col-md-3">
                     <div className="form-inline">
                         <div className="search-box ms-2">
                           

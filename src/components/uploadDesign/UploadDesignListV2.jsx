@@ -38,6 +38,8 @@ function UploadDesignListV2() {
   const [mainFiles, setMainFiles] = useState([])
   console.log('mainFiless',mainFiles);
   const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
@@ -63,14 +65,16 @@ function UploadDesignListV2() {
   
 
   useEffect(() => {
-    if(filterName || filterCategory || filterUploadedBy || startDate){
+    if(filterName || filterCategory || filterUploadedBy || (startDate && endDate)){
       reqDesign({
         page:currentPage,
         limit:pageSize,
         name:filterName,
         category:filterCategory,
         uploadedBy:filterUploadedBy,
-        date_filter:startDate ? dayjs(startDate).format() : ""
+        // date_filter:startDate ? dayjs(startDate).format() : "",
+        start_date:(startDate && endDate) ? dayjs(startDate).format() : "",
+        end_date:(startDate && endDate) ? dayjs(endDate).format() : ""
       })
     }else{
       reqDesign({
@@ -78,7 +82,7 @@ function UploadDesignListV2() {
         limit: pageSize
       });
     }
-  }, [currentPage,filterName,filterCategory,filterUploadedBy,startDate]);
+  }, [currentPage,filterName,filterCategory,filterUploadedBy,startDate,endDate]);
 
   
   useEffect(() => {
@@ -249,16 +253,12 @@ function UploadDesignListV2() {
     setFilterUploadedBy(e.target.value)
   }
 
-  const handleDateFilter = (date) => {
-    setStartDate(date)
-    // reqDesign({
-    //   page:currentPage,
-    //   limit:pageSize,
-    //   name:filterName,
-    //   category:filterCategory,
-    //   uploadedBy:filterUploadedBy,
-    //   date_filter:dayjs(date).format()
-    // })
+  const handleDateFilter = (tag, date) => {
+    if(tag === "start"){
+      setStartDate(date)
+    }else{
+      setEndDate(date)
+    }
   }
 
   const handleDesignImage = (e, ID) => {
@@ -384,10 +384,22 @@ function UploadDesignListV2() {
                         <td><input type="text" value={filterName} onChange={(e) => handleNameFilter(e)}/></td>
                         <td><input type="text" value={filterCategory} onChange={(e) => handleCategoryFilter(e)}/></td>
                         <td><input type="text" value={filterUploadedBy} onChange={(e) => handleUploadedByFilter(e)}/></td>
-                        <td><ReactDatePicker 
+                        <td style={{display:'flex'}}><ReactDatePicker 
                               selected={startDate} 
-                              onChange={(date) => handleDateFilter(date)}
-                              placeholderText="Select Date"
+                              onChange={(date) => handleDateFilter("start",date)}
+                              placeholderText="Select From Date"
+                              selectsStart
+                              startDate={startDate}
+                              endDate={endDate}
+                              
+                        /><ReactDatePicker 
+                              selected={endDate} 
+                              onChange={(date) => handleDateFilter("end",date)}
+                              placeholderText="Select To Date"
+                              selectsEnd
+                              startDate={startDate}
+                              endDate={endDate}
+                              minDate={startDate}
                         /></td>
                         <td/>
                         </tr>

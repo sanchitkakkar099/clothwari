@@ -1,16 +1,17 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation,useNavigate } from "react-router-dom";
 import { addedBagItems, addedPDFItems, removeBagItems, removePDFItems } from "../../redux/clientSlice";
 
 function DesignVariationList() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const selectedBagItems = useSelector((state) => state?.clientState.selectedBagItems)
   const selectedPDFItems = useSelector((state) => state?.clientState.selectedPDFItems)
 
-  console.log("location?.state?.data", location?.state?.data);
+  console.log("location?.state?.data", location?.state);
   const { data } = location?.state;
   console.log('selectedPDFItems',selectedPDFItems);
 
@@ -66,6 +67,24 @@ function DesignVariationList() {
     }))
   }
 
+  const backToDesign = (e) => {
+    e.preventDefault()
+    if(location?.state?.tag === "sales"){
+      navigate('/sales-view-design',{
+        state:{
+          currentPage:location?.state?.currentPage
+        }
+      })
+    }
+    if(location?.state?.tag === "client"){
+      navigate('/client-view-design',{
+        state:{
+          currentPage:location?.state?.currentPage
+        }
+      })
+    }
+   
+  }
   return (
     <>
       {userInfo?.role === "Client" || userInfo?.role === "SalesPerson" ? (
@@ -75,8 +94,12 @@ function DesignVariationList() {
               <div className="col-12">
                 <div className="page-title-box d-flex align-items-center justify-content-between">
                   <h4 className="mb-0">Select Designs</h4>
+
                 </div>
               </div>
+            </div>
+            <div className="d-flex justify-content-end">
+            <button className="btn btn-primary" onClick={(e) => backToDesign(e)}>Back To View Design</button>
             </div>
 
             <div className="row ">

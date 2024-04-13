@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDesignUploadListMutation, useTagListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useLocation } from "react-router-dom";
 import Pagination from "../common/Pagination";
 import { addedBagItems, removeBagItems } from "../../redux/clientSlice";
 import ReactDatePicker from "react-datepicker";
@@ -19,6 +19,7 @@ dayjs.extend(timezone);
 function SalesPersonViewDesign() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation()
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag,resTag] = useTagListMutation()
   const tagList = useSelector((state) => state?.tagState.tagList)
@@ -40,6 +41,12 @@ function SalesPersonViewDesign() {
   const [startDate, setStartDate] = useState(null);
   const [search, setSearch] = useState('');
   const [tagsSearch, setTagSearch] = useState([]);
+
+  useEffect(() => {
+    if(location?.state?.currentPage){
+      setCurrentPage(location?.state?.currentPage)
+    }
+  },[location])
 
 
   useEffect(() => {
@@ -123,7 +130,9 @@ function SalesPersonViewDesign() {
     e.preventDefault()
     navigate('/design-selection',{
       state:{
-        data:el
+        data:el,
+        currentPage:currentPage,
+        tag:"sales"
       }
     })
   }

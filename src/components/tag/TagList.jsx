@@ -3,7 +3,7 @@ import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useDeleteTagMutation, useTagListMutation } from '../../service';
+import { useDeleteTagMutation, useTagListMutation, useTagListV2Mutation } from '../../service';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
 import { getTag } from '../../redux/tagSlice';
 import toast from 'react-hot-toast';
@@ -11,13 +11,14 @@ import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdow
 import { Edit, GitMerge, MoreVertical, Trash } from 'react-feather';
 import TagMergeModal from '../common/TagMergeModal';
 import '../../components/uploadDesign/dropdown-filter.css'
+import Pagination from '../common/Pagination';
 
 
 function TagList() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const userInfo = useSelector((state) => state?.authState.userInfo);
-  const [reqTag,resTag] = useTagListMutation()
+  const [reqTag,resTag] = useTagListV2Mutation()
   const [reqDelete, resDelete] = useDeleteTagMutation();
   const tagList = useSelector((state) => state?.tagState.tagList)
   console.log('tagList',tagList);
@@ -28,20 +29,47 @@ function TagList() {
   
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const [sortingBy,setSortingBy] = useState('')
+  const [sortingBy,setSortingBy] = useState('asc')
   console.log('sortingBy',sortingBy);
 
+  // pagination 
+  const [TBLData, setTBLData] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 10
+  const [totalCount, setTotalCount] = useState(0)
+
+  // filter
+  const [filterName, setFilterName] = useState('');
+
+  // useEffect(() => {
+  //   reqTag({
+  //     page: 0,
+  //     limit: 0,
+  //     search: "",
+  //   });
+  // }, []);
   useEffect(() => {
-    reqTag({
-      page: 0,
-      limit: 0,
-      search: "",
-    });
-  }, []);
+    if(filterName || sortingBy){
+      reqTag({
+        page:currentPage,
+        limit:pageSize,
+        name:filterName,
+        sortBy:sortingBy
+      })
+    }else{
+      reqTag({
+        page: currentPage,
+        limit: pageSize
+      });
+    }
+  }, [currentPage,filterName,sortingBy]);
+
 
   useEffect(() => {
     if (resTag?.isSuccess) {
       dispatch(getTag(resTag?.data?.data?.docs));
+      setTBLData(resTag?.data?.data?.docs)
+      setTotalCount(resTag?.data?.data?.totalDocs)
     }
   }, [resTag]);
 
@@ -62,17 +90,17 @@ function TagList() {
     e.preventDefault();
     navigate("/tag-form", {
       state: {
-        tagID: st?.row?.original?._id,
+        tagID: st?._id,
       },
     });
   };
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st?.row?.original);
+    console.log("sssss", st);
     setModalDetails({
-      title: st?.row?.original?.label,
-      id: st?.row?.original?._id,
+      title: st?.label,
+      id: st?._id,
     });
     setShowModal(true);
   };
@@ -94,8 +122,8 @@ function TagList() {
 
   const handleMerge = (e, st) => {
     e.preventDefault();
-    console.log("Merge", st?.row?.original);
-    setMergeTo(st?.row?.original)
+    console.log("Merge", st);
+    setMergeTo(st)
   }
 
   
@@ -108,81 +136,85 @@ function TagList() {
 
   const handleSorting = (e) => {
     setSortingBy(e.target.value)
-    if(e.target.value === 'asc'){
-      reqTag({
-        page: 0,
-        limit: 0,
-        search: "",
-        sortBy:e.target.value
-      });
+    // if(e.target.value === 'asc'){
+    //   reqTag({
+    //     page: 0,
+    //     limit: 0,
+    //     search: "",
+    //     sortBy:e.target.value
+    //   });
 
-    }else if(e.target.value === 'desc'){
-      reqTag({
-        page: 0,
-        limit: 0,
-        search: "",
-        sortBy:e.target.value
-      });
-    }
+    // }else if(e.target.value === 'desc'){
+    //   reqTag({
+    //     page: 0,
+    //     limit: 0,
+    //     search: "",
+    //     sortBy:e.target.value
+    //   });
+    // }
+  }
+
+  const handleNameFilter = (e) => {
+    setFilterName(e.target.value)
   }
 
 
-    const columns = [
-        {
-          Header: "Tag Name",
-          accessor: "label",
-          Filter: TextSearchFilter,
-          filter: "rankedMatchSorter",
-        },
-        {
-          Header: "Action",
-          accessor: "action",
-          Cell: (row) => (
-            <UncontrolledDropdown>
-                                <DropdownToggle
-                                  className="icon-btn hide-arrow moreOption"
-                                  color="transparent"
-                                  size="sm"
-                                  caret
-                                >
-                                  <MoreVertical size={15} />
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                  <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => onEditAction(e,row)}
-                                  >
-                                    <Edit className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Edit</span>
-                                  </DropdownItem>
-                                  <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => handleDelete(e,row)}
-                                  >
-                                    <Trash className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Delete</span>
-                                  </DropdownItem>
+    // const columns = [
+    //     {
+    //       Header: "Tag Name",
+    //       accessor: "label",
+    //       Filter: TextSearchFilter,
+    //       filter: "rankedMatchSorter",
+    //     },
+    //     {
+    //       Header: "Action",
+    //       accessor: "action",
+    //       Cell: (row) => (
+    //         <UncontrolledDropdown>
+    //                             <DropdownToggle
+    //                               className="icon-btn hide-arrow moreOption"
+    //                               color="transparent"
+    //                               size="sm"
+    //                               caret
+    //                             >
+    //                               <MoreVertical size={15} />
+    //                             </DropdownToggle>
+    //                             <DropdownMenu>
+    //                               <DropdownItem
+    //                                 href="#!"
+    //                                 onClick={(e) => onEditAction(e,row)}
+    //                               >
+    //                                 <Edit className="me-50" size={15} />{" "}
+    //                                 <span className="align-middle">Edit</span>
+    //                               </DropdownItem>
+    //                               <DropdownItem
+    //                                 href="#!"
+    //                                 onClick={(e) => handleDelete(e,row)}
+    //                               >
+    //                                 <Trash className="me-50" size={15} />{" "}
+    //                                 <span className="align-middle">Delete</span>
+    //                               </DropdownItem>
 
-                                  <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => handleMerge(e,row)}
-                                  >
-                                    <GitMerge className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Merge Tag</span>
-                                  </DropdownItem>
-                                </DropdownMenu>
-                              </UncontrolledDropdown>
+    //                               <DropdownItem
+    //                                 href="#!"
+    //                                 onClick={(e) => handleMerge(e,row)}
+    //                               >
+    //                                 <GitMerge className="me-50" size={15} />{" "}
+    //                                 <span className="align-middle">Merge Tag</span>
+    //                               </DropdownItem>
+    //                             </DropdownMenu>
+    //                           </UncontrolledDropdown>
            
-          ),
-          // Cell: (row) => (
-          //   <div>
-          //     <button onClick={(e) => onEditAction(e,row)}>Edit</button>
-          //     <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
-          //   </div>
-          // ),
+    //       ),
+    //       // Cell: (row) => (
+    //       //   <div>
+    //       //     <button onClick={(e) => onEditAction(e,row)}>Edit</button>
+    //       //     <button onClick={(e) => handleDelete(e,row)} className='ms-2'>Delete</button>
+    //       //   </div>
+    //       // ),
          
-        },
-      ];
+    //     },
+    //   ];
   return (
     <>
     {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') ?
@@ -244,8 +276,74 @@ function TagList() {
                 </div>
               </div>
               
-                <DataTable data={tagList} columns={columns} />
-              
+                {/* <DataTable data={tagList} columns={columns} /> */}
+                <table className="filter-table">
+                    <thead>
+                      <tr>
+                        <th>Tag Name</th>
+                        <th>Action</th>
+                      </tr>
+                      <tr>
+                        <td><input type="text" value={filterName} onChange={(e) => handleNameFilter(e)}/></td>
+                        <td/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {(TBLData && Array.isArray(TBLData) && TBLData?.length > 0) ? 
+                      TBLData?.map((ele) => {
+                        return(
+                          <tr key={ele?._id}>
+                          <td>{ele?.label}</td>
+                          <td>
+                          <UncontrolledDropdown>
+                                <DropdownToggle
+                                  className="icon-btn hide-arrow moreOption"
+                                  color="transparent"
+                                  size="sm"
+                                  caret
+                                >
+                                  <MoreVertical size={15} />
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onEditAction(e,ele)}
+                                  >
+                                    <Edit className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Edit</span>
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleDelete(e,ele)}
+                                  >
+                                    <Trash className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Delete</span>
+                                  </DropdownItem>
+
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleMerge(e,ele)}
+                                  >
+                                    <GitMerge className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Merge Tag</span>
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                          </td>
+                          </tr>
+                        )
+                      }):
+                      <tr><td colSpan={4} className="text-center">No Data To Display</td></tr>
+                    }
+                    </tbody>
+                  </table>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalCount={totalCount}
+                    pageSize={pageSize}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    TBLData={TBLData}
+                  />
             </div>
           </div>
         </div>

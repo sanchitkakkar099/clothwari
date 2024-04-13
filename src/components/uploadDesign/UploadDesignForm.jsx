@@ -86,7 +86,7 @@ function AddDesign() {
   const [variationThumbnailFile, setVariationThumbnailFile] = useState([]);
   const [categoryDropdown, setCategoryDropdown] = useState([]);
   const [colorDropdown, setColorDropdown] = useState([]);
-  console.log("thumbnailFile", thumbnailFile);
+  console.log("colorDropdown", colorDropdown);
 
   const [tagDropdown, setTagDropdown] = useState([]);
 
@@ -589,6 +589,13 @@ function AddDesign() {
     }
   };
 
+  const customStyles = { 
+    multiValueRemove: (base, { data }) => ({
+        ...base,
+        display: (userInfo?.role !== "Super Admin" && resDesignById?.data?.data?.color && Array.isArray(resDesignById?.data?.data?.color) && resDesignById?.data?.data?.color?.length > 0 && resDesignById?.data?.data?.color?.some(option => option.value === data.value)) ? 'none' : 'block'
+    })
+  };
+
   return (
     <div className="page-content">
       <div className="container-fluid">
@@ -990,9 +997,10 @@ function AddDesign() {
                               // rules={{ required: "Variation is required" }}
                               render={({ field: { onChange, value } }) => (
                                 <Select
-                                  isClearable
+                                  isClearable={userInfo?.role === "Super Admin"}
                                   isMulti
                                   options={colorDropdown || []}
+                                  styles={customStyles}
                                   className="react-select"
                                   classNamePrefix="select"
                                   onChange={(v, c) => {
@@ -1000,6 +1008,7 @@ function AddDesign() {
                                     appendVariation(v, c);
                                   }}
                                   value={value ? value : null}
+                                  
                                 />
                               )}
                             />

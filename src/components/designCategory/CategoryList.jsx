@@ -29,7 +29,7 @@ function CategoryList() {
 
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const [sortingBy,setSortingBy] = useState('')
+  const [sortingBy,setSortingBy] = useState('asc')
 
   useEffect(() => {
     reqCategory({

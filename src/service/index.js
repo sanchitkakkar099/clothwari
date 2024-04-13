@@ -260,6 +260,14 @@ export const designTagApi = createApi({
       }),
       providesTags: ["designTag"],
     }),
+    tagListV2: builder.mutation({
+      query: (payload) => ({
+        url: "tag/list/v2",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["designTag"],
+    }),
     tagDropdownList: builder.query({
       query: () => ({
         url: "tag/drop/dwon/list",
@@ -309,6 +317,7 @@ export const designTagApi = createApi({
 });
 export const {
   useTagListMutation,
+  useTagListV2Mutation,
   useSubmitTagMutation,
   useSearchTagMutation,
   useDeleteTagMutation,
