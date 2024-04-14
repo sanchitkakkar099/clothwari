@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {  Link, useLocation } from "react-router-dom";
 import { useMyAllOrdersMutation } from "../../service";
+import { Eye } from "react-feather";
+import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import Pagination from "../common/Pagination";
 
 
 function ViewMyOrders() {
@@ -17,6 +20,13 @@ function ViewMyOrders() {
   const pageSize = 9
   const [totalCount, setTotalCount] = useState(0)
 
+  // filter
+  const [searchCustomerName, setSearchCustomerName] = useState('');
+  const [searchMarketerName, setSearchMarketerName] = useState('');
+  const [searchCustomerCode, setSearchCustomerCode] = useState('');
+  const [searchSalesOrder, setSearchSalesOrder] = useState('');
+
+
   console.log('TBLData',TBLData);
 
   useEffect(() => {
@@ -30,15 +40,14 @@ function ViewMyOrders() {
 
   useEffect(() => {
     if (resOrders?.isSuccess) {
-      setTBLData(resOrders?.data?.data?.docs)
-      setTotalCount(resOrders?.data?.data?.totalDocs)
+      // setTBLData(resOrders?.data?.data?.docs)
+      // setTotalCount(resOrders?.data?.data?.totalDocs)
     }
   }, [resOrders]);
 
 
   return (
     <>
-    {userInfo?.role === 'Client' ?
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -48,83 +57,99 @@ function ViewMyOrders() {
             </div>
           </div>
         </div>
-
         <div className="row">
-          <div className="col-xl-12">
-            {location?.state?.data &&
-            Array.isArray(location?.state?.data) &&
-            location?.state?.data?.length > 0 ? (
-              location?.state?.data?.map((el, i) => {
-                return (
-                  <div className="card border shadow-none" key={i}>
-                    <div className="card-body">
-                      <div className="d-flex align-items-start border-bottom pb-3">
-                        <div className="me-4">
-                          {Array.isArray(el?.designId?.thumbnail) &&
-                          el?.designId?.thumbnail[0]?.pdf_extract_img ? (
-                            <img
-                              src={el?.designId?.thumbnail[0]?.pdf_extract_img}
-                              alt="image post"
-                              height={80}
-                              width={80}
-                            />
-                          ) : (
-                            <img
-                              src="https://www.bootdey.com/image/80x80/FFB6C1/000000"
-                              alt="image post"
-                              onClick={() =>
-                                navigate(`/product-view/${el?._id}`)
-                              }
-                            />
-                          )}
-                        </div>
-                        <div className="flex-grow-1 align-self-center overflow-hidden">
-                          <div>
-                            <h5 className="text-truncate font-size-16">
-                              <Link
-                                to={`/product-view/${el?.designId?._id}`}
-                                className="text-dark"
-                              >
-                                {el?.designId?.name}
-                              </Link>
-                            </h5>
-                            <p className="mb-1">
-                              Tag :{" "}
-                              <span className="fw-medium">
-                                {el?.designId?.tag &&
-                                Array.isArray(el?.designId?.tag) &&
-                                el?.designId?.tag?.length > 0
-                                  ? el?.designId?.tag?.map((el) => el?.label)?.join(",")
-                                  : ""}
-                              </span>
-                            </p>
-                            <p className="mb-1">
-                              Meter:{" "}
-                              <span className="fw-medium">{el?.meter}</span>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+        <div className="col-12">
+          <div className="card">
+            <div className="card-body">
+               
+              {/* <div className="position-relative">
+                  <div className="filter-dropdown" ref={dropdownRef}>
+                  <Button onClick={() => setIsOpen(!isOpen)}> <i className="mdi mdi-filter me-1"></i> Sort By</Button>
+                  {isOpen && (
+                  <div className="filter-dropdown-content" id="dropdownContent">
+                    <div className="filter-section">
+                    
+                      <h4>Order</h4>
+                      <label className="option">
+                        <input type="radio" name="sorting" value={'asc'} checked={sortingBy === 'asc'}  onChange={(e) => handleSorting(e)}/> A TO Z
+                      </label>
+                      <label className="option">
+                        <input type="radio" name="sorting" value={'desc'} checked={sortingBy === 'desc'} onChange={(e) => handleSorting(e)}/> Z TO A
+                      </label>
                     </div>
                   </div>
-                );
-              })
-            ) : (
-              <div className="card border shadow-none">
-                <div className="card-body">
-                  <div className="d-flex justify-content-center pb-2">
-                    No Order Item To Display
-                  </div>
+                  )}
                 </div>
-              </div>
-            )}
+              </div> */}
+              
+                <table className="filter-table">
+                    <thead>
+                      <tr>
+                        <th>Customer Name</th>
+                        <th>Customer Code</th>
+                        <th>Marketing Person Name</th>
+                        <th>Sales Order Number</th>
+                        <th>Action</th>
+                      </tr>
+                      <tr>
+                        <td><input type="text" value={searchCustomerName} onChange={(e) => setSearchCustomerName(e.target.value)}/></td>
+                        <td><input type="text" value={searchCustomerCode} onChange={(e) => setSearchCustomerCode(e.target.value)}/></td>
+                        <td><input type="text" value={searchMarketerName} onChange={(e) => setSearchMarketerName(e.target.value)}/></td>
+                        <td><input type="text" value={searchSalesOrder} onChange={(e) => setSearchSalesOrder(e.target.value)}/></td>
+                        <td/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {(TBLData && Array.isArray(TBLData) && TBLData?.length > 0) ? 
+                      TBLData?.map((ele) => {
+                        return(
+                          <tr key={ele?._id}>
+                          <td>{ele?.customerName}</td>
+                          <td>{ele?.customerCode}</td>
+                          <td>{ele?.marketingPersonName}</td>
+                          <td>{ele?.salesOrderNumber}</td>
+                          <td>
+                          <UncontrolledDropdown>
+                                <DropdownToggle
+                                  className="icon-btn hide-arrow moreOption"
+                                  color="transparent"
+                                  size="sm"
+                                  caret
+                                >
+                                  <MoreVertical size={15} />
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                <DropdownItem
+                                    href="#!"
+                                    // onClick={(e) => onViewAction(e,row)}
+                                  >
+                                    <Eye className="me-50" size={15} />{" "}
+                                    <span className="align-middle">View</span>
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                          </td>
+                          </tr>
+                        )
+                      }):
+                      <tr><td colSpan={4} className="text-center">No Data To Display</td></tr>
+                    }
+                    </tbody>
+                  </table>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalCount={totalCount}
+                    pageSize={pageSize}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    TBLData={TBLData}
+                  />
+            </div>
           </div>
         </div>
       </div>
+      </div>
     </div>
-    :
-    "Page Not Found"
-    }
+  
     </>
   );
 }

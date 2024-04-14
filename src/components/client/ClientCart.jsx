@@ -2,16 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { clearBagItems, removeBagItems } from "../../redux/clientSlice";
-import { useAddToBagByClientMutation } from "../../service";
+import { useAddToBagByClientMutation, useClientDropDownListQuery, useSalesPersonDropDownQuery, useSaveCartItemMutation } from "../../service";
 import toast from "react-hot-toast";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FormFeedback, Input } from "reactstrap";
 import ReactDatePicker from "react-datepicker";
 import { XCircle } from "react-feather";
+import ReactSelect from "react-select";
+import { generateOrderNumber } from "../../utils/orderNumberGenerator";
+import dayjs from "dayjs";
 
 function ClientCart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const selectedBagItems = useSelector(
     (state) => state?.clientState.selectedBagItems
   );
@@ -23,6 +27,12 @@ function ClientCart() {
     watch,
   } = useForm({
     defaultValues:{
+      marketingPersonName:userInfo?.role === "SalesPerson" ? userInfo?.name : "",
+      marketerId:userInfo?.role === "SalesPerson" ? userInfo?._id : "",
+      customerName:userInfo?.role === "Client" ? userInfo?.name : "",
+      clientId:userInfo?.role === "Client" ? userInfo?._id : "",
+      salesOrderNumber:generateOrderNumber(userInfo?.name),
+      customerCode:"CN1234",
       cartItem:selectedBagItems
     }
   });
@@ -31,7 +41,27 @@ function ClientCart() {
     name: "cartItem"
   });
   console.log('fields',fields);
-  const quantityPerCombo = watch("quantityPerCombo", 0);
+  const [clientDropDown,setClientDropDown] = useState([])
+  const [salesPersonDropDown,setSalesPersonDropDown] = useState([])
+
+  const [reqSaveCartItem,resSaveCartItem] = useSaveCartItemMutation()
+  const resClientDropDown = useClientDropDownListQuery()
+  const resSalesPersonDropDown = useSalesPersonDropDownQuery()
+
+  useEffect(() => {
+    if(resClientDropDown?.isSuccess && resClientDropDown?.data){
+      const clientList = resClientDropDown?.data?.data?.map(el => ({label:el?.name,value:el?._id}))
+      setClientDropDown(clientList)
+    }
+  },[resClientDropDown?.isSuccess]) 
+  
+  useEffect(() => {
+    if(resSalesPersonDropDown?.isSuccess && resSalesPersonDropDown?.data){
+      const salesList = resSalesPersonDropDown?.data?.data?.map(el => ({label:el?.name,value:el?._id}))
+      setSalesPersonDropDown(salesList)
+    }
+  },[resSalesPersonDropDown?.isSuccess]) 
+
 
   const handleRemoveFromCart = (e, el,removeIndex) => {
     e.preventDefault();
@@ -42,8 +72,44 @@ function ClientCart() {
   };
 
   const onSubmit = (data) => {
-    console.log("onSubmit data",data);
+    const payload = { 
+      ...data,
+      customerName:userInfo?.role === "SalesPerson" ? data?.customerName?.label : data?.customerName,
+      clientId:userInfo?.role === "SalesPerson" ? data?.customerName?.value : data?.clientId,
+      marketerId: userInfo?.role === "Client" ? data?.marketingPersonName?.value : data?.marketerId,
+      marketingPersonName: userInfo?.role === "Client" ? data?.marketingPersonName?.label : data?.marketingPersonName,
+      cartItem:data?.cartItem?.map((el => ({
+        ...el,
+        bulkOrderDeliveryDate:dayjs(el?.bulkOrderDeliveryDate).format(),
+        sampleDeliveryDate:dayjs(el?.sampleDeliveryDate).format(),
+        shipmentSampleDate:dayjs(el?.shipmentSampleDate).format(),
+        strikeRequired:el?.strikeRequired?.value,
+        thumbnail:el?.thumbnail[0]?._id
+      })))
+    }
+    reqSaveCartItem(payload)
+    console.log("onSubmit data",payload);
   };
+
+  useEffect(() => {
+    if (resSaveCartItem?.isSuccess) {
+      toast.success("Order Success", {
+        position: "top-center",
+      });
+      reset()
+      if(userInfo?.role === 'SalesPerson'){
+        navigate("/sales-view-design");
+      }
+      if(userInfo?.role === 'Client'){
+        navigate("/client-view-design");
+      }
+    }
+    if (resSaveCartItem?.isError) {
+      toast.error("Something went wrong", {
+        position: "top-center",
+      });
+    }
+  }, [resSaveCartItem?.isSuccess,resSaveCartItem?.isError]);
 
   return (
     <>
@@ -95,6 +161,24 @@ function ClientCart() {
                             <label className="form-label" htmlFor="name">
                               Customer Name
                             </label>
+                            {userInfo?.role === "SalesPerson" ?
+                            <Controller
+                              id={"customerName"}
+                              name={"customerName"}
+                              control={control}
+                              rules={{
+                                required:
+                                  "Please Select Customer",
+                              }}
+                              render={({ field }) => (
+                                <ReactSelect 
+                                  {...field} 
+                                  onChange={(val) => field.onChange(val)}
+                                  options={clientDropDown || []}
+                                />
+                              )}
+                            />
+                            :
                             <Controller
                               name="customerName"
                               control={control}
@@ -105,9 +189,11 @@ function ClientCart() {
                                   type="text"
                                   className="form-control"
                                   placeholder="Enter Customer Name"
+                                  readOnly
                                 />
                               )}
                             />
+                            }
                             {errors.customerName && (
                               <span className="text-danger">
                                 {errors.customerName.message}
@@ -154,6 +240,7 @@ function ClientCart() {
                             >
                               Marketing Person Name
                             </label>
+                            {userInfo?.role === "SalesPerson" ?
                             <Controller
                               name="marketingPersonName"
                               control={control}
@@ -166,9 +253,28 @@ function ClientCart() {
                                   type="text"
                                   className="form-control"
                                   placeholder="Enter Marketing Person Name"
+                                  readOnly
                                 />
                               )}
                             />
+                            :
+                            <Controller
+                              id={"marketingPersonName"}
+                              name={"marketingPersonName"}
+                              control={control}
+                              rules={{
+                                required:
+                                  "Please Select Marketing Person",
+                              }}
+                              render={({ field }) => (
+                                <ReactSelect 
+                                  {...field} 
+                                  onChange={(val) => field.onChange(val)}
+                                  options={salesPersonDropDown || []}
+                                />
+                              )}
+                            />
+                            }
                             {errors.marketingPersonName && (
                               <span className="text-danger">
                                 {errors.marketingPersonName.message}
@@ -374,11 +480,16 @@ function ClientCart() {
                                   "Please select whether strike is required",
                               }}
                               render={({ field }) => (
-                                <select {...field} className="form-select">
-                                  <option value="">Select</option>
-                                  <option value="yes">Yes</option>
-                                  <option value="no">No</option>
-                                </select>
+                                <ReactSelect 
+                                  {...field} 
+                                  // className="form-select"
+                                  onChange={(val) => field.onChange(val)}
+                                  options={[
+                                    {label:'Yes',value:'yes'},
+                                    {label:'No',value:'no'}
+                                  ]}
+                                />
+                                  
                               )}
                             />
                             {errors?.cartItem && (
@@ -558,7 +669,7 @@ function ClientCart() {
                         <div className="col text-end">
                         <Link
                             className="btn btn-danger m-1"
-                            to={"/client-view-design"}
+                            to={userInfo?.role === "Client" ? "/client-view-design" : "/sales-view-design"}
                            
                           >
                             <i className="bx bx-x mr-1"></i> Cancel

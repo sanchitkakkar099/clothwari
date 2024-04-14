@@ -680,13 +680,30 @@ export const clientApi = createApi({
       }),
       invalidatesTags: ["client"],
     }),
+    clientDropDownList: builder.query({
+      query: () => ({
+        url: `client/drop/down/list`,
+        method: "GET",
+      }),
+      providesTags: ["client"],
+    }),
+    saveCartItem: builder.mutation({
+      query: (payload) => ({
+        url: "clilent/cart/save",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["client"],
+    }),
   }),
 });
 export const {
  useClientListMutation,
  useSubmitClientMutation,
  useClientByIdQuery,
- useDeleteClientMutation
+ useDeleteClientMutation,
+ useClientDropDownListQuery,
+ useSaveCartItemMutation
 } = clientApi;
 
 
@@ -908,6 +925,13 @@ export const salesPersonApi = createApi({
       }),
       providesTags: ["salesPerson"],
     }),
+    salesPersonDropDown: builder.query({
+      query: () => ({
+        url: `market/salesperson/drop/down/list`,
+        method: "GET",
+      }),
+      providesTags: ["salesPerson"],
+    }),
   }),
 });
 export const {
@@ -915,7 +939,8 @@ export const {
   useSalesPersonByIdQuery,
   useSubmitSalesPersonMutation,
   useDeleteSalesPersonMutation,
-  useGetSalesPermissionListQuery
+  useGetSalesPermissionListQuery,
+  useSalesPersonDropDownQuery
 } = salesPersonApi;
 
 
