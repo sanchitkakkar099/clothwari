@@ -1348,6 +1348,7 @@ function AddDesign() {
                           <button
                             type="submit"
                             className="btn btn-success m-1"
+                            disabled={resDesignUpload?.isLoading}
                           >
                             <i className=" bx bx-file me-1"></i> Save{" "}
                           </button>

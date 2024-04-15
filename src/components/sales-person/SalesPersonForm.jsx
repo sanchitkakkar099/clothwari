@@ -261,6 +261,11 @@ function SalesPersonForm() {
                                   classNamePrefix="select"
                                   onChange={onChange}
                                   value={value ? value : null}
+                                  menuPortalTarget={document.body}
+                                  styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                    menu: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                  }}
                                 />
                               )}
                             />
