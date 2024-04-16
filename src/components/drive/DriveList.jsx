@@ -5,7 +5,7 @@ import {
   TextSearchFilter,
 } from "../common/Filter";
 import DataTable from "../common/DataTable";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   useDeleteDriveMutation,
@@ -33,6 +33,7 @@ const cookies = new Cookies();
 function DriveList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqDrive, resDrive] = useDriveListMutation();
   const [reqDelete, resDelete] = useDeleteDriveMutation();
@@ -41,7 +42,7 @@ function DriveList() {
   const driveList = useSelector(
     (state) => state?.driveState.driveList
   );
-  console.log("driveList", driveList);
+  console.log("driveList", driveList,location);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [adminId, setAdminId] = useState(null);
@@ -75,13 +76,20 @@ function DriveList() {
       });
     } else{
       reqDrive({
-        page: currentPage,
+        page:currentPage,
         limit: pageSize,
         pdfName: "",
         uploadedBy: "",
       });
     }
   }, [currentPage, filterName,filterUploadedBy]);
+
+  useEffect(() => {
+    if(location?.state?.currentPage){
+      setCurrentPage(location?.state?.currentPage)
+    }
+  },[location])
+
 
   useEffect(() => {
     if (resDrive?.isSuccess) {
@@ -116,7 +124,8 @@ function DriveList() {
     navigate("/pdf-upload-form", {
       state: {
         data: st,
-        isEdit:true
+        isEdit:true,
+        currentPage:currentPage
       },
     });
   };

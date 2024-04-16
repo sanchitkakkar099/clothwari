@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {  useCategoryListV2Mutation, useDeleteCategoryMutation } from '../../service';
 import { getCategory } from '../../redux/categorySlice';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
@@ -12,11 +12,13 @@ import { Edit, Eye, GitMerge, MoreVertical,Trash } from 'react-feather';
 import CategoryMergeModal from '../common/CategoryMergeModal';
 import '../../components/uploadDesign/dropdown-filter.css'
 import Pagination from '../common/Pagination';
+import useLoader from '../../hook/useLoader';
 
 
 function CategoryList() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const location = useLocation()
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqCategory,resCategory] = useCategoryListV2Mutation()
   const [reqDelete, resDelete] = useDeleteCategoryMutation();
@@ -66,6 +68,12 @@ function CategoryList() {
   }, [currentPage,filterName,sortingBy]);
 
   useEffect(() => {
+    if(location?.state?.currentPage){
+      setCurrentPage(location?.state?.currentPage)
+    }
+  },[location])
+
+  useEffect(() => {
     if (resCategory?.isSuccess) {
       dispatch(getCategory(resCategory?.data?.data?.docs));
       setTBLData(resCategory?.data?.data?.docs)
@@ -92,6 +100,8 @@ function CategoryList() {
     navigate("/category-form", {
       state: {
         categoryID: st._id,
+        isEdit:true,
+        currentPage:currentPage
       },
     });
   };

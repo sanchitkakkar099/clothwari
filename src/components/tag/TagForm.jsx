@@ -51,7 +51,15 @@ function TagForm() {
         position: "top-center",
       });
       reset()
-      navigate("/tag-list");
+      if(location?.state?.isEdit){
+      navigate("/tag-list",{
+        state:{
+          currentPage:location?.state?.currentPage
+        }
+      });
+      }else{
+        navigate("/tag-list");
+      }
     }
     if (resTag?.isError) {
       setError("label", {

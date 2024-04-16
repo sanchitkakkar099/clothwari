@@ -2,7 +2,7 @@ import React,{useState,useEffect, useRef} from 'react'
 import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useDeleteTagMutation, useTagListMutation, useTagListV2Mutation } from '../../service';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
 import { getTag } from '../../redux/tagSlice';
@@ -17,6 +17,7 @@ import Pagination from '../common/Pagination';
 function TagList() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const location = useLocation()
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqTag,resTag] = useTagListV2Mutation()
   const [reqDelete, resDelete] = useDeleteTagMutation();
@@ -57,6 +58,12 @@ function TagList() {
     }
   }, [currentPage,filterName,sortingBy]);
 
+  useEffect(() => {
+    if(location?.state?.currentPage){
+      setCurrentPage(location?.state?.currentPage)
+    }
+  },[location])
+
 
   useEffect(() => {
     if (resTag?.isSuccess) {
@@ -83,6 +90,8 @@ function TagList() {
     navigate("/tag-form", {
       state: {
         tagID: st?._id,
+        isEdit:true,
+        currentPage:currentPage
       },
     });
   };

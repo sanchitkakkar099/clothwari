@@ -71,7 +71,15 @@ function CategoryForm() {
         position: "top-center",
       });
       reset()
-      navigate("/category-list");
+      if(location?.state?.isEdit){
+      navigate("/category-list",{
+        state:{
+          currentPage:location?.state?.currentPage
+        }
+      });
+      }else{
+        navigate("/category-list");
+      }
     }
     if (resCategory?.isError) {
       setError("name", {

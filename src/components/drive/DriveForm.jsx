@@ -93,14 +93,22 @@ function DriveForm() {
         position: "top-center",
       });
       reset()
-      navigate("/drive-list");
+      if(location?.state?.isEdit){
+        navigate("/drive-list",{
+          state:{
+            currentPage:location?.state?.currentPage
+          }
+        });
+      }else{
+        navigate("/drive-list")
+      }
     }
     if (resEditDrive?.isError) {
       toast.error("Something went wrong", {
         position: "top-center",
       });
     }
-  }, [resEditDrive?.isSuccess,resEditDrive?.isError])
+  }, [resEditDrive?.isSuccess,resEditDrive?.isError,location])
 
   const handleFile = async (e, name) => {
     if (name === "pdfurl" && e.target.files) {
