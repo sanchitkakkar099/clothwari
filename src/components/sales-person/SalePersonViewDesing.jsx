@@ -9,12 +9,12 @@ import ReactDatePicker from "react-datepicker";
 import { Typeahead } from "react-bootstrap-typeahead";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'; // Import UTC plugin
-import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
+// import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
 import { getTag } from "../../redux/tagSlice";
 
 // Extend Day.js with the plugins
 dayjs.extend(utc);
-dayjs.extend(timezone);
+// dayjs.extend(timezone);
 
 function SalesPersonViewDesign() {
   const dispatch = useDispatch();
@@ -55,7 +55,7 @@ function SalesPersonViewDesign() {
         page: currentPage,
         limit: pageSize,
         search: search,
-        date_filter:startDate ?  dayjs.utc(startDate).format() : '',
+        date_filter:startDate ?  dayjs(startDate).format() : '',
         tags:tagsSearch
       });
     }else{
@@ -83,7 +83,7 @@ function SalesPersonViewDesign() {
       page: currentPage,
       limit: pageSize,
       search: search,
-      date_filter:startDate ?  dayjs.utc(startDate).format() : '',
+      date_filter:startDate ?  dayjs(startDate).format() : '',
       tags:tagsSearch
     });
   };
@@ -122,7 +122,7 @@ function SalesPersonViewDesign() {
       page:currentPage,
       limit:pageSize,
       search:search,
-      date_filter:dayjs.utc(date).format()
+      date_filter:dayjs(date).format()
     })
   }
 
@@ -157,7 +157,7 @@ function SalesPersonViewDesign() {
       page:currentPage,
       limit:pageSize,
       search:search,
-      date_filter:dayjs.utc(startDate).format(),
+      date_filter:dayjs(startDate).format(),
       tags:selected
     })
   }
