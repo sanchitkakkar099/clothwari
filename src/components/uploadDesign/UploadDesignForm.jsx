@@ -16,6 +16,7 @@ import {
   useFileUploadMutation,
   useMultipleFileUploadMutation,
   useMultipleThumbnailUploadMutation,
+  useNewTiffUploadMutation,
   useSearchTagMutation,
   useSubmitDesignUploadMutation,
   useSubmitTagMutation,
@@ -35,6 +36,7 @@ import {
 import { ArrowDownCircle, Download, X } from "react-feather";
 import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
 import { useDebounce } from "../../hook/useDebpunce";
+import AWS from 'aws-sdk';
 const baseUrl =
   import.meta.env.MODE === "development"
     ? import.meta.env.VITE_APP_DEV_URL
@@ -45,7 +47,6 @@ function AddDesign() {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: locationState } = location;
-  console.log('locationState',locationState);
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const uploadProgress = useSelector(
     (state) => state?.designUploadState.uploadProgress
@@ -53,7 +54,6 @@ function AddDesign() {
   const uploadTag= useSelector(
     (state) => state?.designUploadState.uploadTag
   );
-  console.log('uploadProgress',uploadProgress,'uploadTag',uploadTag);
   const [reqDesignUpload, resDesignUpload] = useSubmitDesignUploadMutation();
   const resDesignById = useDesignUploadByIdQuery(locationState?.designID, {
     skip: !locationState?.designID,
@@ -65,10 +65,8 @@ function AddDesign() {
 
   const resTagListDropdown = useTagDropdownListQuery();
 
-  console.log("resCategoryListDropdown", resCategoryListDropdown);
-
   const [reqFile,resFile] = useMultipleFileUploadMutation();
-  console.log('resFile',resFile.pro);
+  const [reqNewTiffFile] = useNewTiffUploadMutation();
   const [reqThunmbnailFile] = useMultipleThumbnailUploadMutation();
 
   const [reqUniqueNameCheck,resUniqueNameCheck] = useUniqueDesignNameCheckMutation();
@@ -76,9 +74,6 @@ function AddDesign() {
 
   const [reqCreateTag, resCreateTag] = useSubmitTagMutation();
   const [reqSearchTag, resSearchTag] = useSearchTagMutation();
-  
-  // const [uploadProgress, setUploadProgress] = useState({});
-  // console.log('uploadProgress',uploadProgress);
 
   const [mainFile, setMainFile] = useState([]);
   const [thumbnailFile, setThumbnailFile] = useState([]);
@@ -86,19 +81,12 @@ function AddDesign() {
   const [variationThumbnailFile, setVariationThumbnailFile] = useState([]);
   const [categoryDropdown, setCategoryDropdown] = useState([]);
   const [colorDropdown, setColorDropdown] = useState([]);
-  console.log("colorDropdown", colorDropdown);
-
   const [tagDropdown, setTagDropdown] = useState([]);
+  // tag state
+  const [tagOptions, setTagOptions] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState('');
 
-
-    // tag state
-    const [tagOptions, setTagOptions] = useState([]);
-    const [tags, setTags] = useState([]);
-    const [tagInput, setTagInput] = useState('');
-    console.log('tags',tags,'tagInput',tagInput,'tagOptions',tagOptions);
-
-  console.log("mainFile", mainFile);
-  console.log("variationMainFile", variationMainFile);
   const {
     control,
     handleSubmit,
@@ -112,16 +100,10 @@ function AddDesign() {
 
   const debounceValue1 = useDebounce(watch('name'),500)
   const debounceValue2 = useDebounce(watch('designNo'),500)
-
-  console.log('debounceValue1',debounceValue1);
-  console.log('debounceValue2',debounceValue2);
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: "variations",
   });
-
-  console.log("fields", fields);
 
   useEffect(() => {
     if(debounceValue1 && !locationState?.designID ){
@@ -152,7 +134,6 @@ function AddDesign() {
 
   useEffect(() => {
     if (resDesignById?.isSuccess && resDesignById?.data?.data) {
-      console.log("resDesignById?.data?.data", resDesignById?.data?.data);
       reset({
         ...resDesignById.data.data,
         image: resDesignById?.data?.data?.image
@@ -199,7 +180,6 @@ function AddDesign() {
   }, [resTagListDropdown]);
 
   const handleFile = async (e, name) => {
-    console.log("eeeee", name);
     if (name === "image" && e.target.files) {
       dispatch(setUploadTag({image:true}))
       const formData = new FormData();
@@ -226,17 +206,6 @@ function AddDesign() {
         dispatch(setUploadProgress(null))
         dispatch(setUploadTag(null))
       }
-      // reqFile(reqData)
-      //   .then((res) => {
-      //     if (res?.data?.data) {
-      //       setValue(name, res?.data?.data);
-      //       setError(name, "");
-      //       setMainFile([...mainFile, ...res?.data?.data]);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log("err", err);
-      //   });
     }
     if (name === "thumbnail" && e.target.files) {
       dispatch(setUploadTag({thumbnail:true}))
@@ -265,17 +234,73 @@ function AddDesign() {
             dispatch(setUploadProgress(null))
             dispatch(setUploadTag(null))
           }
-      // reqThunmbnailFile(reqData)
-      //   .then((res) => {
-      //     if (res?.data?.data) {
-      //       setValue(name, res?.data?.data);
-      //       setError(name, "");
-      //       setThumbnailFile([...thumbnailFile, ...res?.data?.data]);
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log("err", err);
-      //   });
+    }
+  };
+
+  const handleS3Upload = async (e,name) => {
+    const selectedFiles = Array.from(e.target.files);
+    dispatch(setUploadTag({ image: true }));
+    try {
+        AWS.config.update({
+            accessKeyId: import.meta.env.VITE_APP_ACCESS_KEY_ID,
+            secretAccessKey: import.meta.env.VITE_APP_SECRET_ACCESS_KEY,
+            correctClockSkew: true,
+        });
+        const s3 = new AWS.S3({
+            params: { Bucket: import.meta.env.VITE_APP_BUCKET },
+            region: import.meta.env.VITE_APP_REGION,
+        });
+        const responses = [];
+        for (const file of selectedFiles) {
+            const params = {
+                Bucket: import.meta.env.VITE_APP_BUCKET,
+                Key: `design/${file.name}`,
+                Body: file,
+            };
+            try {
+                const res = await s3.putObject(params).on("httpUploadProgress", (evt) => {
+                  dispatch(setUploadProgress(parseInt((evt.loaded * 100) / evt.total)))
+                }).promise();
+                if (res && res.$response.httpResponse.statusCode === 200) {
+                    const location = `https://${import.meta.env.VITE_APP_BUCKET}.s3.${import.meta.env.VITE_APP_REGION}.amazonaws.com/${params.Key}`;
+                    responses.push({
+                        filename: file.name,
+                        originalname: file.name,
+                        mimetype: file.type,
+                        size: file.size,
+                        filepath: location,
+                    });
+                }
+            } catch (error) {
+                toast.error(error, {
+                    position: 'top-center'
+                });
+            }
+        }
+        if (responses.length > 0) {
+            try {
+                const res = await reqNewTiffFile({ file: responses });
+                if (res?.data?.code === 200 && res?.data?.data) {
+                    setValue(name, res?.data?.data);
+                    setError(name, "");
+                    setMainFile([...mainFile, ...res?.data?.data]);
+                    dispatch(setUploadProgress(null));
+                    dispatch(setUploadTag(null));
+                }
+            } catch (err) {
+                toast.error("Something went wrong while processing uploaded files", {
+                    position: 'top-center'
+                });
+                dispatch(setUploadProgress(null));
+                dispatch(setUploadTag(null));
+            }
+        }
+    } catch (error) {
+        toast.error("An error occurred while uploading files. Please try again later.", {
+            position: 'top-center'
+        });
+        dispatch(setUploadProgress(null));
+        dispatch(setUploadTag(null));
     }
   };
 
@@ -353,7 +378,6 @@ function AddDesign() {
 
   const removeFile = (e, name, fld) => {
     e.preventDefault();
-    console.log("eeeee", name, fld, mainFile, thumbnailFile);
     if (name === "image") {
       setValue(name, "");
       const res1 = mainFile?.filter((el) => el?._id !== fld?._id);
@@ -369,9 +393,7 @@ function AddDesign() {
   const handleVariationFile = async (e, name, tag, inx, fld) => {
     e.preventDefault();
     const existingVal = getValues("variations")[inx];
-    console.log("fld", existingVal);
     const variationCopys = getValues("variations");
-    console.log("variationCopys", variationCopys);
     if (tag === "image" && e.target.files) {
       dispatch(setUploadTag({variation_image:true,color:fld?.color}))
       const formData = new FormData();
@@ -383,7 +405,7 @@ function AddDesign() {
         type: 1,
       };
       const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/multiple?type=${reqData?.type}`, data:reqData?.file });
-      console.log('fileResponse',fileResponse);
+      
       if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
         if (fileResponse?.data?.data) {
                 const updatedFields = [...variationCopys]; // Create a copy of fields array
@@ -394,7 +416,7 @@ function AddDesign() {
                       ? fileResponse?.data?.data
                       : [...fld?.variation_image, ...fileResponse?.data?.data], // Add a new property to the field object
                   };
-                  console.log("updatedFields", updatedFields);
+                  
                   setValue(`variations`, updatedFields);
                   setError(name, "");
                   dispatch(setUploadProgress(null))
@@ -408,26 +430,6 @@ function AddDesign() {
         dispatch(setUploadProgress(null))
         dispatch(setUploadTag(null))
       }
-      // reqFile(reqData)
-      //   .then((res) => {
-      //     if (res?.data?.data) {
-      //       const updatedFields = [...variationCopys]; // Create a copy of fields array
-      //       if (existingVal) {
-      //         updatedFields[inx] = {
-      //           ...existingVal,
-      //           variation_image: !fld?.variation_image
-      //             ? res?.data?.data
-      //             : [...fld?.variation_image, ...res?.data?.data], // Add a new property to the field object
-      //         };
-      //         console.log("updatedFields", updatedFields);
-      //         setValue(`variations`, updatedFields);
-      //         setError(name, "");
-      //       }
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log("err", err);
-      //   });
     }
     if (tag === "thumbnail" && e.target.files) {
       dispatch(setUploadTag({variation_thumbnail:true,color:fld?.color}))
@@ -451,7 +453,7 @@ function AddDesign() {
                       ? fileResponse?.data?.data
                       : [...fld?.variation_thumbnail, ...fileResponse?.data?.data], // Add a new property to the field object
                   };
-                  console.log("updatedFields", updatedFields);
+                  
                   setValue(`variations`, updatedFields);
                   setError(name, "");
                   dispatch(setUploadProgress(null))
@@ -465,31 +467,89 @@ function AddDesign() {
         dispatch(setUploadProgress(null))
         dispatch(setUploadTag(null))
       }
-      // reqThunmbnailFile(reqData)
-      //   .then((res) => {
-      //     if (res?.data?.data) {
-      //       const updatedFields = [...variationCopys]; // Create a copy of fields array
-      //       if (existingVal) {
-      //         updatedFields[inx] = {
-      //           ...existingVal,
-      //           variation_thumbnail: !fld?.variation_thumbnail
-      //             ? res?.data?.data
-      //             : [...fld?.variation_thumbnail, ...res?.data?.data], // Add a new property to the field object
-      //         };
-      //         console.log("updatedFields", updatedFields);
-      //         setValue(`variations`, updatedFields);
-      //         setError(name, "");
-      //       }
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log("err", err);
-      //   });
+    }
+  };
+
+  const handleVariationFileS3 = async (e, name, tag, inx, fld) => {
+    e.preventDefault();
+    const selectedFiles = Array.from(e.target.files);
+    const existingVal = getValues("variations")[inx];
+    const variationCopys = getValues("variations");
+    dispatch(setUploadTag({variation_image:true,color:fld?.color}))
+    try {
+      AWS.config.update({
+          accessKeyId: import.meta.env.VITE_APP_ACCESS_KEY_ID,
+          secretAccessKey: import.meta.env.VITE_APP_SECRET_ACCESS_KEY,
+          correctClockSkew: true,
+      });
+      const s3 = new AWS.S3({
+          params: { Bucket: import.meta.env.VITE_APP_BUCKET },
+          region: import.meta.env.VITE_APP_REGION,
+      });
+      const responses = [];
+      for (const file of selectedFiles) {
+          const params = {
+              Bucket: import.meta.env.VITE_APP_BUCKET,
+              Key: `design/${file.name}`,
+              Body: file,
+          };
+          try {
+              const res = await s3.putObject(params).on("httpUploadProgress", (evt) => {
+                dispatch(setUploadProgress(parseInt((evt.loaded * 100) / evt.total)))
+              }).promise();
+              if (res && res.$response.httpResponse.statusCode === 200) {
+                  const location = `https://${import.meta.env.VITE_APP_BUCKET}.s3.${import.meta.env.VITE_APP_REGION}.amazonaws.com/${params.Key}`;
+                  responses.push({
+                      filename: file.name,
+                      originalname: file.name,
+                      mimetype: file.type,
+                      size: file.size,
+                      filepath: location,
+                  });
+              }
+          } catch (error) {
+              toast.error(error, {
+                  position: 'top-center'
+              });
+          }
+      }
+      if (responses.length > 0) {
+          try {
+              const res = await reqNewTiffFile({ file: responses });
+              if (res?.data?.code === 200 && res?.data?.data) {
+                const updatedFields = [...variationCopys]; // Create a copy of fields array
+                if (existingVal) {
+                  updatedFields[inx] = {
+                    ...existingVal,
+                    variation_image: !fld?.variation_image
+                      ? res?.data?.data
+                      : [...fld?.variation_image, ...res?.data?.data], // Add a new property to the field object
+                  };
+                  
+                  setValue(`variations`, updatedFields);
+                  setError(name, "");
+                  dispatch(setUploadProgress(null))
+                  dispatch(setUploadTag(null))
+              }
+            }
+          } catch (err) {
+              toast.error("Something went wrong while processing uploaded files", {
+                  position: 'top-center'
+              });
+              dispatch(setUploadProgress(null))
+              dispatch(setUploadTag(null))
+          }
+      }
+    } catch (error) {
+        toast.error("An error occurred while uploading files. Please try again later.", {
+            position: 'top-center'
+        });
+        dispatch(setUploadProgress(null))
+        dispatch(setUploadTag(null))
     }
   };
 
   const appendVariation = (element, context) => {
-    console.log("context", context);
     if (context?.action === "select-option") {
       append({
         color: context?.option?.label,
@@ -504,16 +564,16 @@ function AddDesign() {
         (fld) => fld?.color === context?.removedValue?.label
       );
       remove(fIndex);
-      console.log("fIndex", fields, fIndex);
+      
     }
   };
 
   const removeVariationFile = (e, tag, inx, fld) => {
     e.preventDefault();
     const existingVal = getValues("variations")[inx];
-    console.log("fld", existingVal);
+    
     const variationCopys = getValues("variations");
-    console.log("variationCopys", variationCopys, fld);
+  
     if (tag === "image") {
       const updatedFields = [...variationCopys]; // Create a copy of fields array
       if (existingVal) {
@@ -523,7 +583,7 @@ function AddDesign() {
             (el) => el?._id !== fld?._id
           ),
         };
-        console.log("updatedFields", updatedFields);
+   
         setValue(`variations`, updatedFields);
       }
     }
@@ -536,7 +596,7 @@ function AddDesign() {
             (el) => el?._id !== fld?._id
           ), // Add a new property to the field object
         };
-        console.log("updatedFields", updatedFields);
+       
         setValue(`variations`, updatedFields);
       }
     }
@@ -545,7 +605,6 @@ function AddDesign() {
 
 
   const handleTagInputChange = (input) => {
-    console.log('inputval',input);
     setTagInput(input);
     reqSearchTag({search:input}).then(res => {
       if(res.data?.data && res?.data?.data && res?.data?.data?.length > 0){
@@ -562,7 +621,6 @@ function AddDesign() {
   };
   
   const handleTagSelection = (selected) => {
-    console.log('selected',selected,tags);
     if ((selected && Array.isArray(selected)) &&
         (tags && Array.isArray(tags)) &&
         (selected.length > tags.length)) {
@@ -782,7 +840,9 @@ function AddDesign() {
                                 accept="image/tiff,.tif"
                                 onChange={(e) => {
                                   onChange(e.target.files);
-                                  handleFile(e, "image");
+                                  // handleFile(e, "image");
+                                  handleS3Upload(e, "image");
+
                                 }}
                                 disabled={
                                   (locationState?.isEdit && userInfo?.onlyUpload) || uploadProgress
@@ -1121,7 +1181,7 @@ function AddDesign() {
                                         accept="image/tiff,image/tif"
                                         onChange={(e) => {
                                           onChange(e.target.files);
-                                          handleVariationFile(
+                                          handleVariationFileS3(
                                             e,
                                             `variations.${finx}.variation_image`,
                                             "image",

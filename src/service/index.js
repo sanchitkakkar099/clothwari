@@ -528,7 +528,15 @@ export const fileApi = createApi({
               }
         }
       }
-    })
+    }),
+    newTiffUpload: builder.mutation({
+      query: (payload) => ({
+        url: 'uploads/save',
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["file"],
+    }),
   }),
 });
 
@@ -537,7 +545,8 @@ export const {
   useMultipleFileUploadMutation,
   useMultipleThumbnailUploadMutation,
   useUploadMarketingPDFFileMutation,
-  useUploadDesignImageFileMutation
+  useUploadDesignImageFileMutation,
+  useNewTiffUploadMutation
 } = fileApi;
 
 

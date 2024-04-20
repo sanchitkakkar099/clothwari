@@ -45,6 +45,9 @@ function SalesPersonViewDesign() {
   useEffect(() => {
     if(location?.state?.currentPage){
       setCurrentPage(location?.state?.currentPage)
+      setTagSearch(location?.state?.tagsSearch)
+      setSearch(location?.state?.search)
+      setStartDate(location?.state?.startDate)
     }
   },[location])
 
@@ -132,7 +135,10 @@ function SalesPersonViewDesign() {
       state:{
         data:el,
         currentPage:currentPage,
-        tag:"sales"
+        tag:"sales",
+        tagsSearch:tagsSearch,
+        startDate:startDate,
+        search:search
       }
     })
   }
@@ -210,6 +216,7 @@ function SalesPersonViewDesign() {
                               onChange={(e) => handleSearch(e.target.value)}
                               className="form-control "
                               placeholder="Search..."
+                              value={search}
                             />
                             <i className="bx bx-search search-icon"></i>
                           </div>
@@ -226,8 +233,7 @@ function SalesPersonViewDesign() {
                               selected={startDate} 
                               onChange={(date) => handleDateFilter(date)}
                               placeholderText="Select Date"
-                              className="form-control "
-
+                              className="form-control"
                         />
                         </div>
                         </div>
@@ -244,6 +250,7 @@ function SalesPersonViewDesign() {
                                   options={(tagList && Array.isArray(tagList) && tagList?.length > 0) ? tagList?.map(el => el?.label) : []}
                                   placeholder="Search tags..."
                                   onChange={handleTagSelection}
+                                  selected={tagsSearch}
                                 />
                                 </div>
                                 </div>

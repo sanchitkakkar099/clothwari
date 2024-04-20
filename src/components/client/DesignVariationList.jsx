@@ -72,14 +72,20 @@ function DesignVariationList() {
     if(location?.state?.tag === "sales"){
       navigate('/sales-view-design',{
         state:{
-          currentPage:location?.state?.currentPage
+          currentPage:location?.state?.currentPage,
+          tagsSearch:location?.state?.tagsSearch,
+          startDate:location?.state?.startDate,
+          search:location?.state?.search,
         }
       })
     }
     if(location?.state?.tag === "client"){
       navigate('/client-view-design',{
         state:{
-          currentPage:location?.state?.currentPage
+          currentPage:location?.state?.currentPage,
+          tagsSearch:location?.state?.tagsSearch,
+          startDate:location?.state?.startDate,
+          search:location?.state?.search,
         }
       })
     }

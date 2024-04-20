@@ -46,6 +46,9 @@ function ClientViewDesign() {
   useEffect(() => {
     if(location?.state?.currentPage){
       setCurrentPage(location?.state?.currentPage)
+      setTagSearch(location?.state?.tagsSearch)
+      setSearch(location?.state?.search)
+      setStartDate(location?.state?.startDate)
     }
   },[location])
 
@@ -132,7 +135,10 @@ function ClientViewDesign() {
       state:{
         data:el,
         currentPage:currentPage,
-        tag:"client"
+        tag:"client",
+        tagsSearch:tagsSearch,
+        startDate:startDate,
+        search:search
       }
     })
   }
@@ -210,6 +216,7 @@ function ClientViewDesign() {
                               onChange={(e) => handleSearch(e.target.value)}
                               className="form-control "
                               placeholder="Search..."
+                              value={search}
                             />
                             <i className="bx bx-search search-icon"></i>
                           </div>
@@ -244,6 +251,8 @@ function ClientViewDesign() {
                                   options={(tagList && Array.isArray(tagList) && tagList?.length > 0) ? tagList?.map(el => el?.label) : []}
                                   placeholder="Search tags..."
                                   onChange={handleTagSelection}
+                                  selected={tagsSearch}
+                                
                                 />
                                 </div>
                                 </div>
