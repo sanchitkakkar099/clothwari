@@ -16,7 +16,6 @@ function AppendVariationForm() {
   const resColorVariationById = useColorVariationByIdQuery(locationState?.variationID, {
     skip: !locationState?.variationID,
   });
-  console.log('resColorVariationById',resColorVariationById);
   const [mainFile, setMainFile] = useState(null)
   const [thumbnailFile, setThumbnailFile] = useState(null)
 
@@ -39,7 +38,6 @@ function AppendVariationForm() {
   }, [resColorVariationById]);
 
   const onNext = (state) => {
-    console.log("state", state);
     reqColorVariation({
       ...state,
       image: mainFile ?  mainFile?._id : null,
@@ -51,7 +49,6 @@ function AppendVariationForm() {
  
 
   const handleFile  = (e,name) => {
-    console.log('eeeee',name);
     if(name === 'image' && e.target.files){
       const formData = new FormData();
       formData.append("file", e.target.files[0]);

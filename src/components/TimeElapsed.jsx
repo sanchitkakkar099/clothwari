@@ -4,13 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 function TimeElapsedApp() {
   const allowTime = useSelector((state) => state?.authState.allowTime)
   const loginTime = useSelector((state) => state?.authState.loginTime)
-  console.log('allowTime',allowTime,'loginTime',loginTime,new Date(loginTime));
   const [leftTime, setLeftTime] = useState(null);
 
   const handleUserInteraction = () => {
       const now = new Date();
       const elapsedSeconds = Math.floor((now - new Date(loginTime)) / 1000); // Convert milliseconds to seconds
-      console.log('elapsedSeconds',elapsedSeconds);
       const remainingTime =  allowTime - elapsedSeconds
       setLeftTime(remainingTime)
   };

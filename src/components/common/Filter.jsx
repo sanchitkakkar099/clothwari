@@ -7,7 +7,6 @@ import ReactSelect from "react-select";
 export function TextSearchFilter({
   column: { filterValue, preFilteredRows, setFilter }
 }) {
-  console.log('filterValue',filterValue);
   return (
     <input
       value={filterValue || ""}
@@ -22,7 +21,6 @@ export function TextSearchFilter({
 export function DateSearchFilter({
     column: { filterValue, preFilteredRows, setFilter }
   }) {
-    console.log('filterValue',filterValue);
     return (
       <ReactDatePicker selected={filterValue} onChange={(date) => setFilter(date || '')} placeholderText="Date" />
     );
@@ -31,7 +29,6 @@ export function DateSearchFilter({
 export function SessionDropDown({
   column: { filterValue, preFilteredRows, setFilter }
 }) {
-  console.log('filterValue',filterValue);
   return (
     <select onChange={(e) => setFilter(e.target.value)}
     >
@@ -46,7 +43,6 @@ export function SessionDropDown({
 export function DropdownFilter({
   column: { filterValue, setFilter, preFilteredRows, id }
 }) {
-  console.log('preFilteredRows',preFilteredRows);
   // Calculate the options for filtering
   // using the preFilteredRows
   const options = React.useMemo(() => {

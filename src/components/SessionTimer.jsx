@@ -14,13 +14,9 @@ const SessionTimer = () => {
     const isLoggedIn = useSelector((state) => state?.authState.isLoggedIn)
     const timer = useSelector((state) => state?.authState.timer)
     const userInfo = useSelector((state) => state?.authState.userInfo)
-    console.log('lastActiveRes',lastActiveRes);
 
 
-    console.log('isLoggedIn',isLoggedIn);
 
-    // const [timer, setTimer] = useState(0);
-    console.log('timer',timer);
 
     useEffect(() => {
       const storedRemainingTime = cookies.get('remainingTime');
@@ -36,7 +32,6 @@ const SessionTimer = () => {
       const clientAllowTime = cookies.get('client_allow_time');
 
 
-      console.log('loggedInStatus',loggedInStatus,'lastActiveTime',lastActiveTime);
   
       if (loggedInStatus && lastActiveTime) {
         const currentTime = new Date().getTime();
@@ -46,7 +41,6 @@ const SessionTimer = () => {
             dispatch(setIsLoggedIn(true))
             const remainingTime = savedTimerValue ?
             parseInt(savedTimerValue, 10) : clientAllowTime * 60 * 1000 - timeDifference;
-            console.log('remainingTime',remainingTime);
             dispatch(setTimer(remainingTime));
         }
       }
@@ -58,7 +52,6 @@ const SessionTimer = () => {
       if (isLoggedIn) {
         interval = setInterval(() => {
             const newTimer = timer - 1000;
-            console.log('newTimer',newTimer);
             dispatch(setTimer(timer - 1000))  
             if (newTimer <= 0) {
                clearInterval(interval);

@@ -40,9 +40,7 @@ function Login() {
     };
     loginReq(reqData);
   };
-  console.log('loginRes',loginRes);
 
-  console.log('lastInActiveTime',Date.now() - parseInt(cookies.get('lastInActiveTime'),10));
 
   useEffect(() => {
     if(loginRes?.isSuccess){
@@ -55,7 +53,6 @@ function Login() {
           // const lastInActiveTime = cookies.get('lastInActiveTime');
           const lastInActiveTime = loginRes?.data?.data?.lastInActiveTime
           const remainingTime = (lastInActiveTime && parseInt(lastInActiveTime, 10) < client_allow_time * 60 * 1000) ? lastInActiveTime : client_allow_time * 60 * 1000; // Resume remaining time or set full duration          
-          console.log('remainingTime',remainingTime);
           dispatch(setTimer(remainingTime))
           cookies.set("client_allow_time", client_allow_time, { path: "/" });
           cookies.set('isLoggedIn', true, { maxAge: client_allow_time * 60 }); // Set the combined session duration in seconds

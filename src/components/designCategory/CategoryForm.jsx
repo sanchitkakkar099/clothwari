@@ -15,7 +15,6 @@ function CategoryForm() {
   const resCategoryById = useCategoryByIdQuery(locationState?.categoryID, {
     skip: !locationState?.categoryID,
   });
-  console.log('resCategoryById',resCategoryById);
   const [reqUniqueCategoryCheck,resUniqueCategoryCheck] = useUniqueCategoryCheckMutation();
 
 
@@ -57,7 +56,6 @@ function CategoryForm() {
   }, [resCategoryById]);
 
   const onNext = (state) => {
-    console.log("state", state);
     reqCategory({
       ...state,
       name:state?.name?.toUpperCase()

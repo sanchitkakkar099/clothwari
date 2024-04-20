@@ -19,7 +19,6 @@ function ClientCart() {
   const selectedBagItems = useSelector(
     (state) => state?.clientState.selectedBagItems
   );
-  console.log("selectedBagItems", selectedBagItems);
   const {
     handleSubmit,
     formState: { errors },
@@ -40,7 +39,6 @@ function ClientCart() {
     control,
     name: "cartItem"
   });
-  console.log('fields',fields);
   const [clientDropDown,setClientDropDown] = useState([])
   const [salesPersonDropDown,setSalesPersonDropDown] = useState([])
 
@@ -65,7 +63,6 @@ function ClientCart() {
 
   const handleRemoveFromCart = (e, el,removeIndex) => {
     e.preventDefault();
-    console.log("el", el,selectedBagItems);
     const res = selectedBagItems?.filter((sb) => sb?._id !== el?._id);
     dispatch(removeBagItems(res));
     remove(removeIndex)
@@ -88,7 +85,6 @@ function ClientCart() {
       })))
     }
     reqSaveCartItem(payload)
-    console.log("onSubmit data",payload);
   };
 
   useEffect(() => {

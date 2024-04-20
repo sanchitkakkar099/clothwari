@@ -37,7 +37,6 @@ function ClientForm() {
   }, [resClientById]);
 
   const onNext = (state) => {
-    console.log("state", state);
     reqClient({...state});
   };
 

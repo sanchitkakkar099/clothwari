@@ -24,12 +24,6 @@ function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCl
   const [categoryDropdown,setCategoryDropdown] = useState([])
   const [confirmOpen,setConfirmOpen] = useState(false)
 
-  console.log('mergeFrom',mergeFrom,'mergeTo',mergeTo);
-
-
-
-  //   const [reqChangesPwd,resChangesPwd] = useChangePasswordBySuperAdminMutation()
-
   useEffect(() => {
     if(categoryDropdownRes?.isSuccess && Array.isArray(categoryDropdownRes?.data?.data) && categoryDropdownRes?.data?.data){
       setCategoryDropdown(categoryDropdownRes?.data?.data?.filter(el => el?._id !== mergeTo?._id))

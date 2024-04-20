@@ -34,7 +34,6 @@ function ChangePassword() {
     };
     changeReq(reqData);
   };
-  console.log('changeRes',changeRes);
 
   useEffect(() => {
     if(changeRes?.isSuccess){

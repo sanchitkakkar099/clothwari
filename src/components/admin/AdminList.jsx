@@ -38,7 +38,6 @@ function AdmintList() {
   const [reqAdmin, resAdmin] = useAdminListMutation();
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const adminList = useSelector((state) => state?.adminState.adminList);
-  console.log("adminList", adminList);
   const [reqManageSession, resManageSession] = useManageStaffSessionByAdminMutation();
 
   const [loginAsAdminReq, loginAsAdminRes] = useSuperAdminLoginAsLoginMutation();
@@ -104,7 +103,6 @@ function AdmintList() {
 
   useEffect(() => {
     if(loginAsAdminRes?.isSuccess && loginAsAdminRes?.data?.data){
-      console.log('loginAs',loginAsAdminRes?.data);
       cookies.set("clothwari", loginAsAdminRes?.data?.data?.token, { path: "/" });
       cookies.set("clothwari_user", {...loginAsAdminRes?.data?.data,adminId:adminId,asAdminFlag:true}, { path: "/" });
       dispatch(setUserToken(loginAsAdminRes?.data?.data?.token))
@@ -126,7 +124,6 @@ function AdmintList() {
 
   const handleActiveInactive = (e, st) => {
     e.preventDefault();
-    console.log("st?.row?.original", st?.row?.original);
     if (sessionsArr?.some((el) => el?.userId === st?.row?.original?._id)) {
       const sessionsFilter = sessionsArr?.map((el) =>
         el?.userId === st?.row?.original?._id

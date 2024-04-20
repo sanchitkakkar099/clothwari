@@ -23,7 +23,6 @@ function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseCl
   const [tagDropdown,setTagDropdown] = useState([])
   const [confirmOpen,setConfirmOpen] = useState(false)
 
-  console.log('mergeFrom',mergeFrom,'mergeTo',mergeTo);
 
   useEffect(() => {
     if(tagDropdownRes?.isSuccess && Array.isArray(tagDropdownRes?.data?.data) && tagDropdownRes?.data?.data){

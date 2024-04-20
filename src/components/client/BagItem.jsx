@@ -16,7 +16,6 @@ function ClientBagItem() {
     (state) => state?.clientState.selectedBagItems
   );
 
-  console.log("selectedBagItems", selectedBagItems);
 
   const {
     handleSubmit,
@@ -28,7 +27,6 @@ function ClientBagItem() {
     control,
     name: "design",
   });
-  console.log("fields", fields, errors);
 
   useEffect(() => {
     // Set default values when component mounts
@@ -45,7 +43,6 @@ function ClientBagItem() {
   }, []);
 
   const saveBagItems = (state) => {
-    console.log("state", state);
     reqAdd({
       design: state?.design?.map((el) => ({
         designId: el?._id,

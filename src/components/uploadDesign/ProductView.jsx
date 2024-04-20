@@ -7,7 +7,6 @@ function ProductView() {
     const resDesignById = useDesignUploadByIdQuery(params?.id, {
         skip: !params?.id,
       });
-      console.log('resDesignById',resDesignById);
       const [productView,setProductView] = useState(null)
       useEffect(() => {
         if (resDesignById?.isSuccess && resDesignById?.data?.data) {
@@ -24,7 +23,6 @@ function ProductView() {
         setVariationImg(variationObj?.variation_thumbnail[0]?.pdf_extract_img)
       }
     }
-    console.log('variation',variation);
   }
 
   const handleChangePrimary = (e) => {

@@ -24,7 +24,6 @@ function ClientList() {
   const [reqClient,resClient] = useClientListMutation()
   const [reqDelete, resDelete] = useDeleteClientMutation();
   const designerList = useSelector((state) => state?.clientState.clientList)
-  console.log('designerList',designerList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [modal, setModal] = useState(false);
@@ -82,7 +81,6 @@ function ClientList() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st?.row?.original);
     setModalDetails({
       title: st?.row?.original?.name,
       id: st?.row?.original?._id,
@@ -115,7 +113,6 @@ function ClientList() {
 
   useEffect(() => {
     if(loginAsAdminRes?.isSuccess && loginAsAdminRes?.data?.data){
-      console.log('loginAs',loginAsAdminRes?.data);
       cookies.set("clothwari", loginAsAdminRes?.data?.data?.token, { path: "/" });
       cookies.set("clothwari_user", {...loginAsAdminRes?.data?.data,adminId:adminId,asAdminFlag:true}, { path: "/" });
       dispatch(setUserToken(loginAsAdminRes?.data?.data?.token))
@@ -137,7 +134,6 @@ function ClientList() {
 
   const handleActiveInactive = (e, st) => {
     e.preventDefault();
-    console.log("st?.row?.original", st?.row?.original);
     if (sessionsArr?.some((el) => el?.userId === st?.row?.original?._id)) {
       const sessionsFilter = sessionsArr?.map((el) =>
         el?.userId === st?.row?.original?._id

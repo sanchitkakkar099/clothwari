@@ -14,12 +14,10 @@ function AdminForm() {
   const { state: locationState } = location;
   const [reqAdmin, resAdmin] = useSubmitAdminMutation();
   const permissionList = useGetAdminPermissionListQuery()
-  console.log('permissionList',permissionList?.data?.data);
   const resAdminById = useAdminByIdQuery(locationState?.adminID, {
     skip: !locationState?.adminID,
   });
   const [permissionDropdown,setPermissionDropDown] = useState([])
-  console.log('permissionDropdown',permissionDropdown);
 
 
   const {
@@ -49,7 +47,6 @@ function AdminForm() {
   },[permissionList])
 
   const onNext = (state) => {
-    console.log("state", state);
     reqAdmin({...state,
       permissions:state?.permissions?.map(el => el?._id)
     });

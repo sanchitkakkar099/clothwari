@@ -23,7 +23,6 @@ function CategoryList() {
   const [reqCategory,resCategory] = useCategoryListV2Mutation()
   const [reqDelete, resDelete] = useDeleteCategoryMutation();
   const categoryList = useSelector((state) => state?.categoryState.categoryList)
-  console.log('categoryList',categoryList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
 
@@ -108,7 +107,6 @@ function CategoryList() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st);
     setModalDetails({
       title: st?.name,
       id: st?._id,
@@ -118,7 +116,6 @@ function CategoryList() {
 
   const handleMerge = (e, st) => {
     e.preventDefault();
-    console.log("Merge", st);
     setMergeTo(st)
   }
 

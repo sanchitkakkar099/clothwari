@@ -44,7 +44,6 @@ function StaffList() {
   const designerList = useSelector(
     (state) => state?.designerState.designerList
   );
-  console.log("designerList", designerList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [adminId, setAdminId] = useState(null);
@@ -52,7 +51,6 @@ function StaffList() {
   const [viewData, setViewData] = useState(null);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [sessionsArr, setSessionsArr] = useState([]);
-  console.log("sessionsArr", sessionsArr);
 
   const [pwdUser, setPwdUser] = useState(null);
   const [pwdText,setPwdText] = useState(null)
@@ -110,7 +108,6 @@ function StaffList() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st?.row?.original);
     setModalDetails({
       title: st?.row?.original?.name,
       id: st?.row?.original?._id,
@@ -135,7 +132,6 @@ function StaffList() {
 
   const loginAsStaff = (e, staffId, aId) => {
     e.preventDefault();
-    console.log("staffId", staffId);
     setAdminId(aId);
     loginAsAdminReq({
       designerById: staffId,
@@ -144,7 +140,6 @@ function StaffList() {
 
   useEffect(() => {
     if (loginAsAdminRes?.isSuccess && loginAsAdminRes?.data?.data) {
-      console.log("loginAs", loginAsAdminRes?.data);
       cookies.set("clothwari", loginAsAdminRes?.data?.data?.token, {
         path: "/",
       });
@@ -167,7 +162,6 @@ function StaffList() {
 
   const handleActiveInactive = (e, st) => {
     e.preventDefault();
-    console.log("st?.row?.original", st?.row?.original);
     if (sessionsArr?.some((el) => el?.userId === st?.row?.original?._id)) {
       const sessionsFilter = sessionsArr?.map((el) =>
         el?.userId === st?.row?.original?._id

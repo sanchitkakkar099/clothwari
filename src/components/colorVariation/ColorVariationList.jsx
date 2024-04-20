@@ -19,7 +19,6 @@ function ColorVariationList() {
   const [reqColorVariation,resColorVariation] = useColorVariationListMutation()
   const [reqDelete, resDelete] = useDeleteColorVariationMutation();
   const colorVariationList = useSelector((state) => state?.colorVariationState.colorVariationList)
-  console.log('colorVariationList',colorVariationList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
 
@@ -50,7 +49,6 @@ function ColorVariationList() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st?.row?.original);
     setModalDetails({
       title: st?.row?.original?.name,
       id: st?.row?.original?._id,

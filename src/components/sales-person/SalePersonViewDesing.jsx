@@ -26,9 +26,7 @@ function SalesPersonViewDesign() {
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
-  console.log("designUploadList", designUploadList);
   const selectedBagItems = useSelector((state) => state?.clientState.selectedBagItems)
-  console.log('selectedBagItems', selectedBagItems);
   const [designID, setDesignId] = useState(null);
   const [variationImg, setVariationImg] = useState(null);
 
@@ -107,7 +105,6 @@ function SalesPersonViewDesign() {
         setDesignId(designObj?._id);
       }
     }
-    console.log("variation", variation);
   };
 
   const handleAddToBag = (el) => {

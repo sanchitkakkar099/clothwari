@@ -13,7 +13,6 @@ function TagForm() {
   const resTagById = useTagByIdQuery(locationState?.tagID, {
     skip: !locationState?.tagID,
   });
-  console.log('resTagById',resTagById);
 
   const {
     control,
@@ -33,7 +32,6 @@ function TagForm() {
   }, [resTagById]);
 
   const onNext = (state) => {
-    console.log("state", state);
     reqTag({
        label: state?.label?.toUpperCase(),
        id: state?.id,

@@ -23,7 +23,6 @@ function DriveForm() {
   // const resDriveById = useDriveByIdQuery(locationState?.driveID, {
   //   skip: !locationState?.driveID,
   // });
-  console.log('locationState',locationState);
   const [reqUploadDrive, resDriveUpload] = useUploadCreateDriveMutation();
   const [reqEditDrive, resEditDrive] = useEditDriveMutation();
 
@@ -33,10 +32,8 @@ function DriveForm() {
   const uploadTag= useSelector(
     (state) => state?.designUploadState.uploadTag
   );
-  console.log('uploadProgress',uploadProgress);
   const [mainFile, setMainFile] = useState(null);
   const [reqFile,resFile] = useUploadMarketingPDFFileMutation();
-  console.log('mainFile',mainFile);
 
   const {
     control,
@@ -120,7 +117,6 @@ function DriveForm() {
         type: 99,
       };
       const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/drive/pdf/?type=${reqData?.type}`, data:reqData?.file });
-      console.log('fileResponse',fileResponse);
       if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
       if (fileResponse?.data?.data) {
               setValue(name, fileResponse?.data?.data);

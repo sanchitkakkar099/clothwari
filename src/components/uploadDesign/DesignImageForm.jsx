@@ -25,13 +25,11 @@ function DesignImageForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: locationState } = location;
-  console.log("locationState", locationState);
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const uploadProgress = useSelector(
     (state) => state?.designUploadState.uploadProgress
   );
   const uploadTag = useSelector((state) => state?.designUploadState.uploadTag);
-  console.log("uploadProgress", uploadProgress, "uploadTag", uploadTag);
   const resDesignById = useDesignUploadByIdQuery(locationState?.designID, {
     skip: !locationState?.designID,
     refetchOnMountOrArgChange: true,
@@ -40,10 +38,8 @@ function DesignImageForm() {
   const [reqDesignImage, resDesignImage] = useSubmitDesigneImageMutation();
   const [reqFile] = useUploadDesignImageFileMutation();
   const [mainFile, setMainFile] = useState(null);
-  console.log('mainFile',mainFile);
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
-  console.log("options", options, selectedOption);
 
   const {
     control,
@@ -93,7 +89,6 @@ function DesignImageForm() {
         url: `${baseUrl}/uploads/design/image/?type=${reqData?.type}`,
         data: reqData?.file,
       });
-      console.log("fileResponse", fileResponse);
       if (fileResponse?.data?.code === 200 && fileResponse?.data?.data) {
         if (fileResponse?.data?.data) {
           setValue(name, fileResponse?.data?.data);
@@ -119,7 +114,6 @@ function DesignImageForm() {
   };
 
   const onNext = (state) => {
-    console.log("state", state);
     reqDesignImage({
         thumbnailId:state?.selected_design?.value,
         pdf_extract_img:state?.image
@@ -127,7 +121,6 @@ function DesignImageForm() {
   };
 
   const handleSelectDesign = (val) => {
-    console.log("selected", val);
     // setSelectedOption(val)
   };
 

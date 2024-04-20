@@ -24,12 +24,7 @@ function App({children}) {
     document.body.setAttribute('data-sidebar', 'light')
   },[])
 
-  useEffect(() => {
-    const now = new Date()
-    console.log("time is",now.getSeconds());
-  },[])
 
-  console.log("Hi Im APP")
   return (
     <Fragment>
     <div id='layout-wrapper'>

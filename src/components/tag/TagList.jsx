@@ -22,7 +22,6 @@ function TagList() {
   const [reqTag,resTag] = useTagListV2Mutation()
   const [reqDelete, resDelete] = useDeleteTagMutation();
   const tagList = useSelector((state) => state?.tagState.tagList)
-  console.log('tagList',tagList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [mergeFrom, setMergeFrom] = useState(null);
@@ -31,7 +30,6 @@ function TagList() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [sortingBy,setSortingBy] = useState('asc')
-  console.log('sortingBy',sortingBy);
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
@@ -98,7 +96,6 @@ function TagList() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st);
     setModalDetails({
       title: st?.label,
       id: st?._id,
@@ -123,7 +120,6 @@ function TagList() {
 
   const handleMerge = (e, st) => {
     e.preventDefault();
-    console.log("Merge", st);
     setMergeTo(st)
   }
 

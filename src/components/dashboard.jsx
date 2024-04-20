@@ -12,7 +12,6 @@ function DashboardComponent() {
     const resDashboard = useDashboardCountQuery(undefined,{refetchOnMountOrArgChange:true});
     const designerList = useSelector((state) => state?.designerState.designerList)
     const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
-    console.log('dashData',dashData);
 
     useEffect(() => {
         if(resDashboard?.isSuccess && resDashboard?.data?.data){

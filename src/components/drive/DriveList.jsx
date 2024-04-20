@@ -42,7 +42,6 @@ function DriveList() {
   const driveList = useSelector(
     (state) => state?.driveState.driveList
   );
-  console.log("driveList", driveList,location);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [adminId, setAdminId] = useState(null);
@@ -50,7 +49,6 @@ function DriveList() {
   const [viewData, setViewData] = useState(null);
   const [selectedSalesPerson, setSelectedSalesPerson] = useState(null);
   const [sessionsArr, setSessionsArr] = useState([]);
-  console.log("sessionsArr", sessionsArr);
 
   const [pwdUser, setPwdUser] = useState(null);
   const [pwdText,setPwdText] = useState(null)
@@ -60,7 +58,6 @@ function DriveList() {
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
   const [totalCount, setTotalCount] = useState(0)
-  console.log('TBLData',TBLData,totalCount);
 
 
   const [filterName, setFilterName] = useState('');
@@ -132,7 +129,6 @@ function DriveList() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st);
     setModalDetails({
       title: st?.pdfName,
       id: st?._id,

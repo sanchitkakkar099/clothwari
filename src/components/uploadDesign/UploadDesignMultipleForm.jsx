@@ -30,14 +30,12 @@ function UploadDesignMultipleForm() {
     setValue,
     setError,
   } = useForm();
-  console.log('errors',errors);
 
   const { fields, append, update } = useFieldArray({
     control,
     name: "multiple_design",
   });
 
-  console.log("fields", fields);
 
   useEffect(() => {
     if (
@@ -59,7 +57,6 @@ function UploadDesignMultipleForm() {
     }
   }, [locationState]);
 
-  console.log("locationState", locationState);
 
    useEffect(() => {
     if(resCategoryListDropdown?.isSuccess && resCategoryListDropdown?.data?.data){
@@ -74,7 +71,6 @@ function UploadDesignMultipleForm() {
   },[resColorListDropdown])
 
   const onNext = (state) => {
-    console.log("state", state);
     const res1 = state?.multiple_design?.map(el => ({
       ...el, 
       category: el?.category?.value,
@@ -82,12 +78,10 @@ function UploadDesignMultipleForm() {
       image: el?.image ?  el?.image?._id : null,
       thumbnail: el?.thumbnail ?  el?.thumbnail?._id  : null,
     }))
-    console.log('res1',res1);
     reqDesignUpload(res1)
   };
 
   const handleFile = (e, fld,index) => {
-    console.log('index',index);
     const formData = new FormData();
     formData.append("file", e.target.files[0]);
     const reqData = {
@@ -98,7 +92,6 @@ function UploadDesignMultipleForm() {
     reqFile(reqData)
       .then((res) => {
         if (res?.data?.data) {
-          console.log("res?.data?.data", res?.data?.data, index);
           update(index, {...fld,thumbnail: res?.data?.data});
           setError(`multiple_design.${index}.thumbnail`, "");
         }
@@ -209,7 +202,6 @@ function UploadDesignMultipleForm() {
                     />
                   </td>
                   <td>
-                  {console.log('ssss',`multiple_design.${index}.thumbnail`)}
                   {fld?.thumbnail ? <img
                       src={fld?.thumbnail?.filepath}
                       alt="img"

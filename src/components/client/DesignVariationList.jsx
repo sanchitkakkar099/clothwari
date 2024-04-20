@@ -11,9 +11,7 @@ function DesignVariationList() {
   const selectedBagItems = useSelector((state) => state?.clientState.selectedBagItems)
   const selectedPDFItems = useSelector((state) => state?.clientState.selectedPDFItems)
 
-  console.log("location?.state?.data", location?.state);
   const { data } = location?.state;
-  console.log('selectedPDFItems',selectedPDFItems);
 
   const handleAddToBag = (el) => {
     dispatch(addedBagItems({

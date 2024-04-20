@@ -19,7 +19,6 @@ function StaffForm() {
     skip: !locationState?.designerID,
   });
   const [permissionDropdown,setPermissionDropDown] = useState([])
-  console.log('permissionDropdown',permissionDropdown);
   const userInfo = useSelector((state) => state?.authState.userInfo)
 
 
@@ -30,7 +29,6 @@ function StaffForm() {
     reset,
     setError
   } = useForm();
-  console.log('errors',errors);
 
   useEffect(() => {
     if (resDesignerById?.isSuccess && resDesignerById?.data?.data) {
@@ -51,12 +49,10 @@ function StaffForm() {
   },[permissionList])
 
   const onNext = (state) => {
-    console.log("state", state);
     reqDesigner({...state,
       permissions:state?.permissions?.map(el => el?._id)
     });
   };
-  console.log('resDesigner',resDesigner);
 
   useEffect(() => {
     if (resDesigner?.isSuccess) {

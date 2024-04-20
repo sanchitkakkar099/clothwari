@@ -10,7 +10,6 @@ import Pagination from "../common/Pagination";
 function ViewMyOrders() {
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
-  console.log('location?.state?.data',location?.state?.data);
 
   const [reqOrders, resOrders] = useMyAllOrdersMutation();
 
@@ -27,7 +26,6 @@ function ViewMyOrders() {
   const [searchSalesOrder, setSearchSalesOrder] = useState('');
 
 
-  console.log('TBLData',TBLData);
 
   useEffect(() => {
       reqOrders({

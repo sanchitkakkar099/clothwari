@@ -7,7 +7,6 @@ function VerifyDeleteModal({
   modalDetails,
   confirmAction,
 }) {
-  console.log("modalDetails", modalDetails);
   const closeModal = () => {
     setShowModal(false);
   };

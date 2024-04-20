@@ -43,7 +43,6 @@ function SalesPersonList() {
   const salesPersonList = useSelector(
     (state) => state?.salesPersonState.salesPersonList
   );
-  console.log("salesPersonList", salesPersonList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [adminId, setAdminId] = useState(null);
@@ -51,7 +50,6 @@ function SalesPersonList() {
   const [viewData, setViewData] = useState(null);
   const [selectedSalesPerson, setSelectedSalesPerson] = useState(null);
   const [sessionsArr, setSessionsArr] = useState([]);
-  console.log("sessionsArr", sessionsArr);
 
   const [pwdUser, setPwdUser] = useState(null);
   const [pwdText,setPwdText] = useState(null)
@@ -109,7 +107,6 @@ function SalesPersonList() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st?.row?.original);
     setModalDetails({
       title: st?.row?.original?.name,
       id: st?.row?.original?._id,
@@ -142,7 +139,6 @@ function SalesPersonList() {
 
   useEffect(() => {
     if (loginAsAdminRes?.isSuccess && loginAsAdminRes?.data?.data) {
-      console.log("loginAs", loginAsAdminRes?.data);
       cookies.set("clothwari", loginAsAdminRes?.data?.data?.token, {
         path: "/",
       });
@@ -165,7 +161,6 @@ function SalesPersonList() {
 
   const handleActiveInactive = (e, st) => {
     e.preventDefault();
-    console.log("st?.row?.original", st?.row?.original);
     if (sessionsArr?.some((el) => el?.userId === st?.row?.original?._id)) {
       const sessionsFilter = sessionsArr?.map((el) =>
         el?.userId === st?.row?.original?._id

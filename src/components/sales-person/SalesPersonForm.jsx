@@ -20,7 +20,6 @@ function SalesPersonForm() {
   const permissionList = useGetSalesPermissionListQuery()
 
   const [permissionDropdown,setPermissionDropDown] = useState([])
-  console.log('permissionDropdown',permissionDropdown);
   const userInfo = useSelector((state) => state?.authState.userInfo)
 
 
@@ -31,7 +30,6 @@ function SalesPersonForm() {
     reset,
     setError
   } = useForm();
-  console.log('errors',errors);
 
   useEffect(() => {
     if (resSalesPersonById?.isSuccess && resSalesPersonById?.data?.data) {
@@ -53,13 +51,11 @@ function SalesPersonForm() {
 
 
   const onNext = (state) => {
-    console.log("state", state);
     reqSalesPerson({
       ...state,
       permissions:state?.permissions?.map(el => el?.value)
     });
   };
-  console.log('resSalesPerson',resSalesPerson);
 
   useEffect(() => {
     if (resSalesPerson?.isSuccess) {

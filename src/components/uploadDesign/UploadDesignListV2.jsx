@@ -30,13 +30,11 @@ function UploadDesignListV2() {
   const [reqDelete, resDelete] = useDeleteDesignUploadMutation();
   const [reqFile] = useMultipleFileUploadMutation();
   const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
-  console.log('designUploadList',designUploadList);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [modalView, setModalView] = useState(false);
   const [viewData, setViewData] = useState(null);
   const [mainFiles, setMainFiles] = useState([])
-  console.log('mainFiless',mainFiles);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
@@ -51,19 +49,12 @@ function UploadDesignListV2() {
   const [filterName, setFilterName] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterUploadedBy, setFilterUploadedBy] = useState('');
-  // const [sortOrder, setSortOrder] = useState('');
-  // const [sortColumn, setSortColumn] = useState(null);
-  // console.log('sortColumn',sortColumn,'sortOrder',sortOrder);
 
   const [sortConfig, setSortConfig] = useState(null);
-  console.log('sortConfig',sortConfig);
   
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  console.log('isOpen',isOpen);
-
   
-
   useEffect(() => {
     if(filterName || filterCategory || filterUploadedBy || (startDate && endDate)){
       reqDesign({
@@ -162,7 +153,6 @@ function UploadDesignListV2() {
   };
   useEffect(() => {
     const sortedTableData = sortedData();
-    console.log('sortedTableData',sortedTableData);
     setTBLData(sortedTableData)
 
   },[sortConfig])
@@ -170,7 +160,6 @@ function UploadDesignListV2() {
 
   const handleDownload = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st.row.original);
   };
 
   const onEditAction = (e, ID) => {
@@ -192,7 +181,6 @@ function UploadDesignListV2() {
 
   const handleDelete = (e, st) => {
     e.preventDefault();
-    console.log("sssss", st);
     setModalDetails({
       title: st?.name,
       id: st?._id,
@@ -221,7 +209,6 @@ function UploadDesignListV2() {
   };
 
   const handleChangeBulkUpload = (e) => {
-    console.log('fooooo',e.target.files);
     const formData = new FormData();
     for (let i = 0; i < e.target.files.length; i++) {
       formData.append('file', e.target.files[i])

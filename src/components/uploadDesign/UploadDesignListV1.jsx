@@ -35,18 +35,13 @@ function UploadDesignListV1() {
   const categoryDropdownRes = useCategoryDropdownListQuery();
   const colorListDropdown = useColorVariationDropdownListQuery();
 
-  console.log('staffDropDownRes',staffDropDownRes);
   const tagList = useSelector((state) => state?.tagState.tagList)
-  console.log('tagList',tagList);
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
-  console.log("designUploadList", designUploadList);
   const [staffDropdown,setStaffDropdown] = useState([])
   const [categoryDropdown,setCategoryDropdown] = useState([])
-    console.log('categoryDropdown',categoryDropdown);
   const [colorDropdown, setColorDropdown] = useState([]);
-  console.log('colorDropdown',colorDropdown);
 
 
   const [designID,setDesignId] = useState(null)
@@ -68,7 +63,6 @@ function UploadDesignListV1() {
 
 
   const [selectedStaff, setSelectedStaff] = useState(null);
-  console.log('selectedStaff',selectedStaff);
   
 
   useEffect(() => {
@@ -152,7 +146,6 @@ function UploadDesignListV1() {
       }
       
     }
-    console.log('variation',variation);
   }
 
   
@@ -184,39 +177,19 @@ function UploadDesignListV1() {
   }, [resTag]);
 
   const handleTagSelection = (selected) => {
-    console.log('selected',selected);
     setTagSearch(selected)
-    // reqDesign({
-    //   page:currentPage,
-    //   limit:pageSize,
-    //   search:search,
-    //   date_filter:startDate ? dayjs(startDate).format() : "",
-    //   tags:selected,
-    //   uploadedBy:selectedStaff ? selectedStaff : ''
-    // })
   }
 
   const handleCategorySelection = (selected) => {
-    console.log('selected',selected);
     setCategorySearch(selected)
   }
 
   const handleColorSelection = (selected) => {
-    console.log('selected',selected);
     setColorSearch(selected)
   }
 
   const handleStaffSelection = (selected) => {
-    console.log('selected',selected);
     setSelectedStaff(selected[0]?.value)
-    // reqDesign({
-    //   page:currentPage,
-    //   limit:pageSize,
-    //   search:search,
-    //   date_filter:startDate ? dayjs(startDate).format() : "",
-    //   tags:tagsSearch,
-    //   uploadedBy:selected[0]?.value
-    // })
   }
 
   return (

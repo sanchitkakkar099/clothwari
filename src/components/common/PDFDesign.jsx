@@ -14,7 +14,6 @@ function PDFDesign() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const selectedPDFItems = useSelector((state) => state?.clientState.selectedPDFItems)
-  console.log('selectedPDFItems',selectedPDFItems);
   const [reqDrive, resDrive] = useCreateDriveMutation();
   const { isLoading, showLoader, hideLoader } = useLoader();
   const [pdfName,setPDFName] = useState('')
@@ -26,15 +25,6 @@ function PDFDesign() {
     setIsSubmit(true)
     if(selectedPDFItems && Array.isArray(selectedPDFItems) && selectedPDFItems?.length > 0){
       if(pdfName){
-      // console.log('ddddd',{
-      //   data:selectedPDFItems?.map(el => ({
-      //     id:el?.id,
-      //     designNo:el?.designNo,
-      //     imgUrl: el?.image && Array.isArray(el?.image) && el?.image?.length > 0 && el?.image?.some(im => im?.tif_extract_img) ? el?.image[0]?.tif_extract_img : null,
-      //     variation:el?.variation,
-      //     pdfName:pdfName
-      //   }))
-      // });
       reqDrive({
         data:selectedPDFItems?.map(el => ({
           id:el?.id,

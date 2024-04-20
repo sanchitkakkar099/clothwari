@@ -122,7 +122,6 @@ const DataTable = (props) => {
     //   ]);
     // }
   );
-  console.log('selectedFlatRows',selectedFlatRows?.map(el => el?.original));
 
   // RENDERING
   return (

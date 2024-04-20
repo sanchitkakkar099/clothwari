@@ -48,7 +48,6 @@ function StaffApprovalList() {
 
   const onApproveAction = (e, fld) => {
     e.preventDefault();
-    console.log('fld',fld);
     // status 0:Pending 1:Approved 2:Rejected
     reqStaffApproved({
       staffId: fld?._id,

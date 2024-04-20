@@ -40,8 +40,6 @@ function HeaderComponent() {
     });
   }, []);
 
-  console.log('resBagListByAdmin',resBagListByAdmin?.data);
-  console.log('notication',notication);
 
   const handleLogout = () => {
     if (userInfo?.role === "Client") {
@@ -56,25 +54,6 @@ function HeaderComponent() {
         userId: userInfo?._id,
       });
     }
-    // cookies.remove("clothwari", { path: "/" });
-    // cookies.remove("clothwari_user", { path: "/" });
-    // if(userInfo?.role === 'Client'){
-    //   cookies.remove("client_allow_time", { path: "/" });
-    //   clearInterval(timer);
-    //   const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
-    //   console.log('remainingTime',remainingTime);
-    //   cookies.set('lastInActiveTime', remainingTime.toString());
-    //   cookies.remove('isLoggedIn');
-    //   cookies.remove('lastActiveTime');
-    //   cookies.remove('savedTimerValue');
-    //   dispatch(setTimer(0))
-    //   dispatch(setUserInfo({}))
-    //   dispatch(setUserToken(''))
-    // }
-    // dispatch(setUserInfo({}))
-    // dispatch(setUserToken(''))
-    // setOpenMenu(false)
-    // navigate('/')
   };
 
   useEffect(() => {
@@ -105,7 +84,6 @@ function HeaderComponent() {
 
   useEffect(() => {
     if (loginBackAdminRes?.isSuccess && loginBackAdminRes?.data?.data) {
-      console.log("loginAs", loginBackAdminRes?.data);
       cookies.set("clothwari", loginBackAdminRes?.data?.data?.token, {
         path: "/",
       });

@@ -11,8 +11,6 @@ function SidebarComponent() {
 
   const userInfo = useSelector((state) => state?.authState.userInfo)
 
-  console.log('userInfo',userInfo);
-  console.log('sidebarEnable',sidebarEnable);
   const toggleSidebar = (e,sde) => {
     e.preventDefault()
     if(sidebarEnable){

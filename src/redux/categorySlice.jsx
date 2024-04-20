@@ -12,7 +12,6 @@ export const categorySlice = createSlice({
       state.categoryList = payload;
     },
     setCategoryList: (state, { payload }) => {
-      console.log('payload',[...state?.categoryList,payload],payload);
       state.categoryList = [...state?.categoryList,payload];
     },
   },

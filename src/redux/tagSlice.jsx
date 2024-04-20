@@ -12,7 +12,6 @@ export const tagSlice = createSlice({
       state.tagList = payload;
     },
     setTagList: (state, { payload }) => {
-      console.log('payload',[...state?.tagList,payload],payload);
       state.tagList = [...state?.tagList,payload];
     },
   },
