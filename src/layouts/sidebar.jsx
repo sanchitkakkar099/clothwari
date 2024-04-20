@@ -88,7 +88,7 @@ function SidebarComponent() {
                 </li>
                 }
 
-                {(userInfo?.role === 'Super Admin' ||
+                {(userInfo?.role === 'Super Admin' || (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Upload Design View")) ||
                 (userInfo?.role === 'Designer' && userInfo?.permissions?.some(el  => el === "Upload Design View")))    
                 &&
                 <li>

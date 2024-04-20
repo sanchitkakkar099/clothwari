@@ -113,7 +113,7 @@ function UploadDesignListV1() {
   useEffect(() => {
     if(staffDropDownRes?.isSuccess && Array.isArray(staffDropDownRes?.data?.data) && staffDropDownRes?.data?.data){
       const filterRes =  staffDropDownRes?.data?.data?.map((el) => ({label:el?.name,value:el?._id}))
-      const filterRes2 = userInfo?.role !== "Super Admin" ? filterRes?.filter(el => el?.value === userInfo?._id) : filterRes
+      const filterRes2 = (userInfo?.role !== "Super Admin" && userInfo?.role !== "Admin") ? filterRes?.filter(el => el?.value === userInfo?._id) : filterRes
       setStaffDropdown(filterRes2)
     }
   },[staffDropDownRes?.isSuccess])
