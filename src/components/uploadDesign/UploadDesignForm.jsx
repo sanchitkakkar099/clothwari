@@ -36,7 +36,7 @@ import {
 import { ArrowDownCircle, Download, X } from "react-feather";
 import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
 import { useDebounce } from "../../hook/useDebpunce";
-import AWS from 'aws-sdk';
+// import AWS from 'aws-sdk';
 const baseUrl =
   import.meta.env.MODE === "development"
     ? import.meta.env.VITE_APP_DEV_URL
@@ -237,72 +237,72 @@ function AddDesign() {
     }
   };
 
-  const handleS3Upload = async (e,name) => {
-    const selectedFiles = Array.from(e.target.files);
-    dispatch(setUploadTag({ image: true }));
-    try {
-        AWS.config.update({
-            accessKeyId: import.meta.env.VITE_APP_ACCESS_KEY_ID,
-            secretAccessKey: import.meta.env.VITE_APP_SECRET_ACCESS_KEY,
-            correctClockSkew: true,
-        });
-        const s3 = new AWS.S3({
-            params: { Bucket: import.meta.env.VITE_APP_BUCKET },
-            region: import.meta.env.VITE_APP_REGION,
-        });
-        const responses = [];
-        for (const file of selectedFiles) {
-            const params = {
-                Bucket: import.meta.env.VITE_APP_BUCKET,
-                Key: `design/${file.name}`,
-                Body: file,
-            };
-            try {
-                const res = await s3.putObject(params).on("httpUploadProgress", (evt) => {
-                  dispatch(setUploadProgress(parseInt((evt.loaded * 100) / evt.total)))
-                }).promise();
-                if (res && res.$response.httpResponse.statusCode === 200) {
-                    const location = `https://${import.meta.env.VITE_APP_BUCKET}.s3.${import.meta.env.VITE_APP_REGION}.amazonaws.com/${params.Key}`;
-                    responses.push({
-                        filename: file.name,
-                        originalname: file.name,
-                        mimetype: file.type,
-                        size: file.size,
-                        filepath: location,
-                    });
-                }
-            } catch (error) {
-                toast.error(error, {
-                    position: 'top-center'
-                });
-            }
-        }
-        if (responses.length > 0) {
-            try {
-                const res = await reqNewTiffFile({ file: responses });
-                if (res?.data?.code === 200 && res?.data?.data) {
-                    setValue(name, res?.data?.data);
-                    setError(name, "");
-                    setMainFile([...mainFile, ...res?.data?.data]);
-                    dispatch(setUploadProgress(null));
-                    dispatch(setUploadTag(null));
-                }
-            } catch (err) {
-                toast.error("Something went wrong while processing uploaded files", {
-                    position: 'top-center'
-                });
-                dispatch(setUploadProgress(null));
-                dispatch(setUploadTag(null));
-            }
-        }
-    } catch (error) {
-        toast.error("An error occurred while uploading files. Please try again later.", {
-            position: 'top-center'
-        });
-        dispatch(setUploadProgress(null));
-        dispatch(setUploadTag(null));
-    }
-  };
+  // const handleS3Upload = async (e,name) => {
+  //   const selectedFiles = Array.from(e.target.files);
+  //   dispatch(setUploadTag({ image: true }));
+  //   try {
+  //       AWS.config.update({
+  //           accessKeyId: import.meta.env.VITE_APP_ACCESS_KEY_ID,
+  //           secretAccessKey: import.meta.env.VITE_APP_SECRET_ACCESS_KEY,
+  //           correctClockSkew: true,
+  //       });
+  //       const s3 = new AWS.S3({
+  //           params: { Bucket: import.meta.env.VITE_APP_BUCKET },
+  //           region: import.meta.env.VITE_APP_REGION,
+  //       });
+  //       const responses = [];
+  //       for (const file of selectedFiles) {
+  //           const params = {
+  //               Bucket: import.meta.env.VITE_APP_BUCKET,
+  //               Key: `design/${file.name}`,
+  //               Body: file,
+  //           };
+  //           try {
+  //               const res = await s3.putObject(params).on("httpUploadProgress", (evt) => {
+  //                 dispatch(setUploadProgress(parseInt((evt.loaded * 100) / evt.total)))
+  //               }).promise();
+  //               if (res && res.$response.httpResponse.statusCode === 200) {
+  //                   const location = `https://${import.meta.env.VITE_APP_BUCKET}.s3.${import.meta.env.VITE_APP_REGION}.amazonaws.com/${params.Key}`;
+  //                   responses.push({
+  //                       filename: file.name,
+  //                       originalname: file.name,
+  //                       mimetype: file.type,
+  //                       size: file.size,
+  //                       filepath: location,
+  //                   });
+  //               }
+  //           } catch (error) {
+  //               toast.error(error, {
+  //                   position: 'top-center'
+  //               });
+  //           }
+  //       }
+  //       if (responses.length > 0) {
+  //           try {
+  //               const res = await reqNewTiffFile({ file: responses });
+  //               if (res?.data?.code === 200 && res?.data?.data) {
+  //                   setValue(name, res?.data?.data);
+  //                   setError(name, "");
+  //                   setMainFile([...mainFile, ...res?.data?.data]);
+  //                   dispatch(setUploadProgress(null));
+  //                   dispatch(setUploadTag(null));
+  //               }
+  //           } catch (err) {
+  //               toast.error("Something went wrong while processing uploaded files", {
+  //                   position: 'top-center'
+  //               });
+  //               dispatch(setUploadProgress(null));
+  //               dispatch(setUploadTag(null));
+  //           }
+  //       }
+  //   } catch (error) {
+  //       toast.error("An error occurred while uploading files. Please try again later.", {
+  //           position: 'top-center'
+  //       });
+  //       dispatch(setUploadProgress(null));
+  //       dispatch(setUploadTag(null));
+  //   }
+  // };
 
   const onNext = (state) => {
     console.log("state", {
@@ -470,84 +470,84 @@ function AddDesign() {
     }
   };
 
-  const handleVariationFileS3 = async (e, name, tag, inx, fld) => {
-    e.preventDefault();
-    const selectedFiles = Array.from(e.target.files);
-    const existingVal = getValues("variations")[inx];
-    const variationCopys = getValues("variations");
-    dispatch(setUploadTag({variation_image:true,color:fld?.color}))
-    try {
-      AWS.config.update({
-          accessKeyId: import.meta.env.VITE_APP_ACCESS_KEY_ID,
-          secretAccessKey: import.meta.env.VITE_APP_SECRET_ACCESS_KEY,
-          correctClockSkew: true,
-      });
-      const s3 = new AWS.S3({
-          params: { Bucket: import.meta.env.VITE_APP_BUCKET },
-          region: import.meta.env.VITE_APP_REGION,
-      });
-      const responses = [];
-      for (const file of selectedFiles) {
-          const params = {
-              Bucket: import.meta.env.VITE_APP_BUCKET,
-              Key: `design/${file.name}`,
-              Body: file,
-          };
-          try {
-              const res = await s3.putObject(params).on("httpUploadProgress", (evt) => {
-                dispatch(setUploadProgress(parseInt((evt.loaded * 100) / evt.total)))
-              }).promise();
-              if (res && res.$response.httpResponse.statusCode === 200) {
-                  const location = `https://${import.meta.env.VITE_APP_BUCKET}.s3.${import.meta.env.VITE_APP_REGION}.amazonaws.com/${params.Key}`;
-                  responses.push({
-                      filename: file.name,
-                      originalname: file.name,
-                      mimetype: file.type,
-                      size: file.size,
-                      filepath: location,
-                  });
-              }
-          } catch (error) {
-              toast.error(error, {
-                  position: 'top-center'
-              });
-          }
-      }
-      if (responses.length > 0) {
-          try {
-              const res = await reqNewTiffFile({ file: responses });
-              if (res?.data?.code === 200 && res?.data?.data) {
-                const updatedFields = [...variationCopys]; // Create a copy of fields array
-                if (existingVal) {
-                  updatedFields[inx] = {
-                    ...existingVal,
-                    variation_image: !fld?.variation_image
-                      ? res?.data?.data
-                      : [...fld?.variation_image, ...res?.data?.data], // Add a new property to the field object
-                  };
+  // const handleVariationFileS3 = async (e, name, tag, inx, fld) => {
+  //   e.preventDefault();
+  //   const selectedFiles = Array.from(e.target.files);
+  //   const existingVal = getValues("variations")[inx];
+  //   const variationCopys = getValues("variations");
+  //   dispatch(setUploadTag({variation_image:true,color:fld?.color}))
+  //   try {
+  //     AWS.config.update({
+  //         accessKeyId: import.meta.env.VITE_APP_ACCESS_KEY_ID,
+  //         secretAccessKey: import.meta.env.VITE_APP_SECRET_ACCESS_KEY,
+  //         correctClockSkew: true,
+  //     });
+  //     const s3 = new AWS.S3({
+  //         params: { Bucket: import.meta.env.VITE_APP_BUCKET },
+  //         region: import.meta.env.VITE_APP_REGION,
+  //     });
+  //     const responses = [];
+  //     for (const file of selectedFiles) {
+  //         const params = {
+  //             Bucket: import.meta.env.VITE_APP_BUCKET,
+  //             Key: `design/${file.name}`,
+  //             Body: file,
+  //         };
+  //         try {
+  //             const res = await s3.putObject(params).on("httpUploadProgress", (evt) => {
+  //               dispatch(setUploadProgress(parseInt((evt.loaded * 100) / evt.total)))
+  //             }).promise();
+  //             if (res && res.$response.httpResponse.statusCode === 200) {
+  //                 const location = `https://${import.meta.env.VITE_APP_BUCKET}.s3.${import.meta.env.VITE_APP_REGION}.amazonaws.com/${params.Key}`;
+  //                 responses.push({
+  //                     filename: file.name,
+  //                     originalname: file.name,
+  //                     mimetype: file.type,
+  //                     size: file.size,
+  //                     filepath: location,
+  //                 });
+  //             }
+  //         } catch (error) {
+  //             toast.error(error, {
+  //                 position: 'top-center'
+  //             });
+  //         }
+  //     }
+  //     if (responses.length > 0) {
+  //         try {
+  //             const res = await reqNewTiffFile({ file: responses });
+  //             if (res?.data?.code === 200 && res?.data?.data) {
+  //               const updatedFields = [...variationCopys]; // Create a copy of fields array
+  //               if (existingVal) {
+  //                 updatedFields[inx] = {
+  //                   ...existingVal,
+  //                   variation_image: !fld?.variation_image
+  //                     ? res?.data?.data
+  //                     : [...fld?.variation_image, ...res?.data?.data], // Add a new property to the field object
+  //                 };
                   
-                  setValue(`variations`, updatedFields);
-                  setError(name, "");
-                  dispatch(setUploadProgress(null))
-                  dispatch(setUploadTag(null))
-              }
-            }
-          } catch (err) {
-              toast.error("Something went wrong while processing uploaded files", {
-                  position: 'top-center'
-              });
-              dispatch(setUploadProgress(null))
-              dispatch(setUploadTag(null))
-          }
-      }
-    } catch (error) {
-        toast.error("An error occurred while uploading files. Please try again later.", {
-            position: 'top-center'
-        });
-        dispatch(setUploadProgress(null))
-        dispatch(setUploadTag(null))
-    }
-  };
+  //                 setValue(`variations`, updatedFields);
+  //                 setError(name, "");
+  //                 dispatch(setUploadProgress(null))
+  //                 dispatch(setUploadTag(null))
+  //             }
+  //           }
+  //         } catch (err) {
+  //             toast.error("Something went wrong while processing uploaded files", {
+  //                 position: 'top-center'
+  //             });
+  //             dispatch(setUploadProgress(null))
+  //             dispatch(setUploadTag(null))
+  //         }
+  //     }
+  //   } catch (error) {
+  //       toast.error("An error occurred while uploading files. Please try again later.", {
+  //           position: 'top-center'
+  //       });
+  //       dispatch(setUploadProgress(null))
+  //       dispatch(setUploadTag(null))
+  //   }
+  // };
 
   const appendVariation = (element, context) => {
     if (context?.action === "select-option") {
@@ -840,8 +840,8 @@ function AddDesign() {
                                 accept="image/tiff,.tif"
                                 onChange={(e) => {
                                   onChange(e.target.files);
-                                  // handleFile(e, "image");
-                                  handleS3Upload(e, "image");
+                                  handleFile(e, "image");
+                                  // handleS3Upload(e, "image");
 
                                 }}
                                 disabled={
@@ -1181,13 +1181,20 @@ function AddDesign() {
                                         accept="image/tiff,image/tif"
                                         onChange={(e) => {
                                           onChange(e.target.files);
-                                          handleVariationFileS3(
+                                           handleVariationFile(
                                             e,
                                             `variations.${finx}.variation_image`,
                                             "image",
                                             finx,
                                             fld
                                           );
+                                          // handleVariationFileS3(
+                                          //   e,
+                                          //   `variations.${finx}.variation_image`,
+                                          //   "image",
+                                          //   finx,
+                                          //   fld
+                                          // );
                                         }}
                                         disabled={uploadProgress}
                                       />
