@@ -631,7 +631,8 @@ function AddDesign() {
           setTagOptions(tagOptions?.filter(el => !selected?.some(ts => ts?.label === el?.label)))
         }
         if(tagOptions && Array.isArray(tagOptions) && !tagOptions?.some(el => selected?.some(ts => ts?.label === el?.label))){
-          reqCreateTag(selected[selected.length - 1])
+          const newTag = {...selected[selected.length - 1],label:selected[selected.length - 1]?.label?.trim().toUpperCase()}
+          reqCreateTag(newTag)
         }
         setTagInput('');
     }else{

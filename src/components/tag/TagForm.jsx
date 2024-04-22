@@ -33,7 +33,7 @@ function TagForm() {
 
   const onNext = (state) => {
     reqTag({
-       label: state?.label?.toUpperCase(),
+       label: state?.label?.trim().toUpperCase(),
        id: state?.id,
        customOption: state?.customOption,
        createdAt: state?.createdAt,

@@ -58,7 +58,7 @@ function CategoryForm() {
   const onNext = (state) => {
     reqCategory({
       ...state,
-      name:state?.name?.toUpperCase()
+      name:state?.name?.trim().toUpperCase()
     });
   };
 
