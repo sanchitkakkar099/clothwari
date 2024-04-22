@@ -698,11 +698,18 @@ export const clientApi = createApi({
     }),
     saveCartItem: builder.mutation({
       query: (payload) => ({
-        url: "clilent/cart/save",
+        url: "client/cart/save",
         method: "POST",
         body: payload,
       }),
       invalidatesTags: ["client"],
+    }),
+    clientOrderById: builder.query({
+      query: (id) => ({
+        url: `client/my/design/byId/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["client"],
     }),
   }),
 });
@@ -712,7 +719,8 @@ export const {
  useClientByIdQuery,
  useDeleteClientMutation,
  useClientDropDownListQuery,
- useSaveCartItemMutation
+ useSaveCartItemMutation,
+ useClientOrderByIdQuery
 } = clientApi;
 
 

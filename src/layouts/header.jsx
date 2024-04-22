@@ -12,6 +12,7 @@ import TimeElapsedApp from "../components/TimeElapsed";
 import SessionTimer from "../components/SessionTimer";
 import { Bell, FilePlus, ShoppingCart } from "react-feather";
 import SimpleBar from "simplebar-react";
+import { addedBagItems, clearBagItems } from "../redux/clientSlice";
 const cookies = new Cookies();
 
 function HeaderComponent() {
@@ -70,6 +71,7 @@ function HeaderComponent() {
       dispatch(setTimer(0));
       dispatch(setUserInfo({}));
       dispatch(setUserToken(""));
+      dispatch(clearBagItems([]))
       navigate("/");
     }
   }, [logoutRes?.isSuccess]);
@@ -80,6 +82,7 @@ function HeaderComponent() {
       designerById: adminId,
     });
     setOpenMenu(false);
+    dispatch(clearBagItems([]))
   };
 
   useEffect(() => {
@@ -479,7 +482,7 @@ function HeaderComponent() {
                   onClick={(e) => handleBackToAdmin(e, userInfo?.adminId)}
                 >
                   <i className="bx bx-log-out text-muted font-size-18 align-middle me-1"></i>{" "}
-                  <span className="align-middle">Bact To Super Admin</span>
+                  <span className="align-middle">Back To Super Admin</span>
                 </Link>
               ) : (
                 <Link className="dropdown-item" to="" onClick={handleLogout}>

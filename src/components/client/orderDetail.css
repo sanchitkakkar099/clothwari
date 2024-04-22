@@ -1,0 +1,41 @@
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Allow horizontal scrolling */
+  }
+  
+  .design-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .design-table th,
+  .design-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .design-table th {
+    background-color: #f2f2f2;
+    position: sticky;
+    top: 0;
+ 
+  }
+
+  
+ 
+  
+  .striped {
+    background-color: #f9f9f9; /* Stripe style for even rows */
+  }
+  
+  /* .design-table tr:hover {
+    background-color: #ddd; 
+  } */
+  
+  .search-row input {
+    width: 90%;
+    padding: 6px;
+    border: 1px solid #ccc;
+  }
+  

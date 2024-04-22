@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { clearBagItems, removeBagItems } from "../../redux/clientSlice";
+import { addedBagItems, clearBagItems, removeBagItems } from "../../redux/clientSlice";
 import { useAddToBagByClientMutation, useClientDropDownListQuery, useSalesPersonDropDownQuery, useSaveCartItemMutation } from "../../service";
 import toast from "react-hot-toast";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -24,6 +24,7 @@ function ClientCart() {
     formState: { errors },
     control,
     watch,
+    reset
   } = useForm({
     defaultValues:{
       marketingPersonName:userInfo?.role === "SalesPerson" ? userInfo?.name : "",
@@ -35,6 +36,7 @@ function ClientCart() {
       cartItem:selectedBagItems
     }
   });
+  console.log('selectedBagItems',selectedBagItems);
   const { fields,remove } = useFieldArray({
     control,
     name: "cartItem"
@@ -94,11 +96,12 @@ function ClientCart() {
       });
       reset()
       if(userInfo?.role === 'SalesPerson'){
-        navigate("/sales-view-design");
+        navigate("/view-my-orders");
       }
       if(userInfo?.role === 'Client'){
-        navigate("/client-view-design");
+        navigate("/view-my-orders");
       }
+      dispatch(clearBagItems([]))
     }
     if (resSaveCartItem?.isError) {
       toast.error("Something went wrong", {

@@ -15,27 +15,27 @@ function DesignVariationList() {
 
   const handleAddToBag = (el) => {
     dispatch(addedBagItems({
-      _id:el?._id,
+      designId:el?._id,
       name:el?.name,
       designNo:el?.designNo,
       thumbnail:el?.thumbnail,
-      designId:el?.designId,
+      // designId:el?.designId,
       variation:false
     }))
   }
 
   const handleRemoveFromBag = (el) => {
-    const res = selectedBagItems?.filter(sb => sb?._id !== el?._id)
+    const res = selectedBagItems?.filter(sb => sb?.designId !== el?._id)
     dispatch(removeBagItems(res))
   }
 
   const handleAddToBagVariation = (el) => {
     dispatch(addedBagItems({
-      _id:el?._id,
+      designId:el?._id,
       name:el?.variation_name,
       designNo:el?.variation_designNo,
       thumbnail:el?.variation_thumbnail,
-      designId:el?.designId,
+      // designId:el?.designId,
       variation:true
     }))
   }
@@ -168,7 +168,7 @@ function DesignVariationList() {
                       Array.isArray(selectedBagItems) &&
                       selectedBagItems?.length > 0 &&
                       selectedBagItems?.some(
-                        (sb) => sb?._id === data?._id
+                        (sb) => sb?.designId === data?._id
                       ) ? (
                         <div className="d-flex justify-content-center  m-3">
                           <button
@@ -255,7 +255,7 @@ function DesignVariationList() {
                       Array.isArray(selectedBagItems) &&
                       selectedBagItems?.length > 0 &&
                       selectedBagItems?.some(
-                        (sb) => sb?._id === ver?._id
+                        (sb) => sb?.designId === ver?._id
                       ) ? (
                         <div className="d-flex justify-content-center  m-3">
                           <button

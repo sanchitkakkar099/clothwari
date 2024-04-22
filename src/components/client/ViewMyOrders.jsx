@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {  Link, useLocation } from "react-router-dom";
+import {  Link, useLocation, useNavigate } from "react-router-dom";
 import { useMyAllOrdersMutation } from "../../service";
-import { Eye } from "react-feather";
+import { Eye, MoreVertical } from "react-feather";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import Pagination from "../common/Pagination";
 
 
 function ViewMyOrders() {
+  const navigate = useNavigate()
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
 
@@ -18,6 +19,7 @@ function ViewMyOrders() {
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 9
   const [totalCount, setTotalCount] = useState(0)
+  console.log('TBLData',TBLData,totalCount);
 
   // filter
   const [searchCustomerName, setSearchCustomerName] = useState('');
@@ -28,20 +30,37 @@ function ViewMyOrders() {
 
 
   useEffect(() => {
+    if(searchCustomerName || searchMarketerName || searchSalesOrder || searchCustomerCode){
       reqOrders({
         page: currentPage,
         limit: pageSize,
-        search: "",
+        user_id:userInfo?.role !== 'Super Admin' ? userInfo?._id : "",
+        customerName:searchCustomerName,
+        marketingPersonName:searchMarketerName,
+        salesOrderNumber:searchSalesOrder,
+        customerCode:searchCustomerCode,
       });
-    
-  }, [currentPage]);
+    }else{
+      reqOrders({
+        page: currentPage,
+        limit: pageSize,
+        user_id:userInfo?.role !== 'Super Admin' ? userInfo?._id : "",
+      });
+    }
+  }, [currentPage,searchCustomerName,searchMarketerName,searchSalesOrder,searchCustomerCode]);
 
   useEffect(() => {
     if (resOrders?.isSuccess) {
-      // setTBLData(resOrders?.data?.data?.docs)
-      // setTotalCount(resOrders?.data?.data?.totalDocs)
+      setTBLData(resOrders?.data?.data?.docs)
+      setTotalCount(resOrders?.data?.data?.total)
     }
   }, [resOrders]);
+
+  const onViewAction = (e,el) => {
+    e.preventDefault()
+    console.log('el',el);
+    navigate(`/order-details/${el?._id}`)
+  }
 
 
   return (
@@ -119,7 +138,7 @@ function ViewMyOrders() {
                                 <DropdownMenu>
                                 <DropdownItem
                                     href="#!"
-                                    // onClick={(e) => onViewAction(e,row)}
+                                    onClick={(e) => onViewAction(e,ele)}
                                   >
                                     <Eye className="me-50" size={15} />{" "}
                                     <span className="align-middle">View</span>

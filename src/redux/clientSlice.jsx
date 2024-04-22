@@ -43,7 +43,7 @@ export const {
   clearBagItems,
   addedPDFItems,
   removePDFItems,
-  clearPDFItems
+  clearPDFItems,
 } = clientSlice.actions;
 
 export default clientSlice.reducer;
