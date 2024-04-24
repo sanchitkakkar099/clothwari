@@ -68,6 +68,19 @@ function Login() {
     }
   },[loginRes]) 
 
+  // const isTimeWithinWindow = () => {
+  //   const currentTime = new Date();
+  //   const currentHour = currentTime.getHours();
+  //   return currentHour === 13;
+  // };
+
+  // // Effect to automatically log in the user if the current time is between 1pm and 2pm
+  // useEffect(() => {
+  //   if (isTimeWithinWindow()) {
+  //       alert('You have been logged in automatically.');
+  //   }
+  // }, []);
+
 
   return (
     <div className="authentication-bg min-vh-100">

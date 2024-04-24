@@ -1,84 +1,77 @@
 import React, { useEffect, useState } from "react";
 import { useClientOrderByIdQuery } from "../../service";
-import { useParams } from "react-router-dom";
-import './orderDetail.css'
-import dayjs from 'dayjs'; // For date formatting
-import DatePicker from 'react-datepicker'; // For date selection in search
-
-import 'react-datepicker/dist/react-datepicker.css'; // Include datepicker CSS
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import "./orderDetail.css";
+import dayjs from "dayjs"; // For date formatting
+import DatePicker from "react-datepicker"; // For date selection in search
+import "react-datepicker/dist/react-datepicker.css"; // Include datepicker CSS
+import { useSelector } from "react-redux";
 
 
 function OrderDetials() {
+  const navigate = useNavigate()
   const params = useParams();
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const resClientOrderById = useClientOrderByIdQuery(params?.id);
+  const [data,setData] = useState([])
 
-  // // Define the columns for the table
+  const formatDate = (date) => {
+    return dayjs(date).format("DD-MM-YYYY");
+  };
+
+  useEffect(() => {
+    if(resClientOrderById?.isSuccess && resClientOrderById?.data){
+      setData(resClientOrderById?.data?.data?.docs?.map(el => el?.cartItem))
+    }
+  },[resClientOrderById?.isSuccess])
+
+
+  // Define the columns for the table
   const headers = [
-    { header: 'Name', accessorKey: 'name' },
-    { header: 'Design No.', accessorKey: 'designNo' },
-    { header: 'Thumbnail', accessorKey: 'thumbnail' },
-    { header: 'Quantity/Combo', accessorKey: 'quantityPerCombo' },
-    { header: 'Yardage', accessorKey: 'yardage' },
-    { header: 'Fabric Details', accessorKey: 'fabricDetails' },
-    { header: 'Strike Required', accessorKey: 'strikeRequired' },
-    { header: 'Sample Delivery Date', accessorKey: 'sampleDeliveryDate' },
-    { header: 'Price Per Meter', accessorKey: 'pricePerMeter' },
-    { header: 'Bulk Order Delivery Date', accessorKey: 'bulkOrderDeliveryDate' },
-    { header: 'Shipment Sample Date', accessorKey: 'shipmentSampleDate' },
-  ]
+    { header: "Name", accessorKey: "name" },
+    { header: "Design No.", accessorKey: "designNo" },
+    { header: "Thumbnail", accessorKey: "thumbnail" },
+    { header: "Quantity/Combo", accessorKey: "quantityPerCombo" },
+    { header: "Yardage", accessorKey: "yardage" },
+    { header: "Fabric Details", accessorKey: "fabricDetails" },
+    { header: "Strike Required", accessorKey: "strikeRequired" },
+    { header: "Sample Delivery Date", accessorKey: "sampleDeliveryDate" },
+    { header: "Price Per Meter", accessorKey: "pricePerMeter" },
+    {
+      header: "Bulk Order Delivery Date",
+      accessorKey: "bulkOrderDeliveryDate",
+    },
+    { header: "Shipment Sample Date", accessorKey: "shipmentSampleDate" },
+  ];
 
-const data = [
-  {
-    name: "DLNKD3037GE12144PC",
-    designNo: "DLNKD3037GE12144APC",
-    thumbnail: "6626106efc6037de95fbb477",
-    quantityPerCombo: "10",
-    yardage: "10",
-    fabricDetails: "test 1",
-    strikeRequired: "yes",
-    sampleDeliveryDate: "2024-04-22T00:00:00+05:30",
-    pricePerMeter: "10",
-    bulkOrderDeliveryDate: "2024-04-23T00:00:00+05:30",
-    shipmentSampleDate: "2024-04-24T00:00:00+05:30"
-  },
-  {
-    name: "DLNKD3037GE12144PC",
-    designNo: "DLNKD3037GE12144BPC",
-    thumbnail: "66261065fc6037de95fbb465",
-    quantityPerCombo: "20",
-    yardage: "20",
-    fabricDetails: "test 2",
-    strikeRequired: "no",
-    sampleDeliveryDate: "2024-04-25T00:00:00+05:30",
-    pricePerMeter: "20",
-    bulkOrderDeliveryDate: "2024-04-26T00:00:00+05:30",
-    shipmentSampleDate: "2024-04-27T00:00:00+05:30"
-  }
-]
-
-const [searchTerms, setSearchTerms] = useState(Array(headers.length).fill(''));
-const [formattedData, setFormattedData] = useState([]);
+  const [searchTerms, setSearchTerms] = useState(
+    Array(headers.length).fill("")
+  );
+  console.log('searchTerms',searchTerms);
+  const [formattedData, setFormattedData] = useState([]);
   const [totalWidth, setTotalWidth] = useState(0);
 
   const calculateTotalWidth = () => {
     const defaultWidth = 300; // Default width for each column
     const minimumTableWidth = 800; // Minimum width for the table
     const calculatedWidth = headers.length * defaultWidth;
-    return calculatedWidth < minimumTableWidth ? minimumTableWidth : calculatedWidth;
+    return calculatedWidth < minimumTableWidth
+      ? minimumTableWidth
+      : calculatedWidth;
   };
 
   // Set the total width once when the component is mounted
   useEffect(() => {
     setTotalWidth(calculateTotalWidth());
-  }, [headers]);
+  }, []);
 
   useEffect(() => {
     // Format date columns using dayjs
     const newFormattedData = data.map((item) => ({
       ...item,
-      bulkOrderDeliveryDate: dayjs(item.bulkOrderDeliveryDate).format('DD-MM-YYYY'),
-      shipmentSampleDate: dayjs(item.shipmentSampleDate).format('DD-MM-YYYY'),
-      sampleDeliveryDate: dayjs(item.sampleDeliveryDate).format('DD-MM-YYYY'),
+      bulkOrderDeliveryDate: formatDate(item.bulkOrderDeliveryDate),
+      shipmentSampleDate: formatDate(item.shipmentSampleDate),
+      sampleDeliveryDate: formatDate(item.sampleDeliveryDate),
     }));
     setFormattedData(newFormattedData);
   }, [data]);
@@ -91,7 +84,7 @@ const [formattedData, setFormattedData] = useState([]);
 
   const handleDateChange = (index, date) => {
     const newSearchTerms = [...searchTerms];
-    newSearchTerms[index] = date ? dayjs(date).format('DD-MM-YYYY') : null;
+    newSearchTerms[index] = date ? formatDate(date) : ""; // Format the date input
     setSearchTerms(newSearchTerms);
   };
 
@@ -100,15 +93,22 @@ const [formattedData, setFormattedData] = useState([]);
       if (!term) return true; // If search term is null or empty, ignore it
       const key = headers[index]?.accessorKey;
       const value = row[key]?.toLowerCase() || '';
+      console.log('ssssss', value, term);
       return value.includes(term);
     });
   };
 
+  const backToViewOrder = (e) => {
+    e.preventDefault()
+    navigate("/view-my-orders")
+  }
+  
   
 
 
   return (
     <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'SalesPerson' || userInfo?.role === 'Client') ?
       <div className="page-content">
         <div className="container-fluid">
           <div className="row">
@@ -128,66 +128,97 @@ const [formattedData, setFormattedData] = useState([]);
             </div>
           </div>
 
+         
+
           <div className="row">
             <div className="col-12">
               <div className="card">
                 <div className="card-body">
-                <div className="table-container">
-      <table className="design-table" style={{ width: `${totalWidth}px` }}>
-        <thead>
-          <tr className="search-row">
-            {headers.map((header, index) => {
-              if (header.accessorKey.toLowerCase().includes('date')) {
-                return (
-                  <th key={index}>
-                    <DatePicker
-                      selected={
-                        searchTerms[index] ? dayjs(searchTerms[index], 'DD-MM-YYYY').toDate() : null
-                      }
-                      onChange={(date) => handleDateChange(index, date)}
-                      dateFormat="dd-MM-yyyy"
-                      placeholderText={`Search ${header.header}...`}
-                      isClearable
-                    />
-                  </th>
-                );
-              } else {
-                return (
-                  <th key={index}>
-                    <input
-                      type="text"
-                      placeholder={`Search ${header.header}...`}
-                      value={searchTerms[index]}
-                      onChange={(e) => handleSearchChange(index, e)}
-                    />
-                  </th>
-                );
-              }
-            })}
-          </tr>
-          <tr>
-            {headers.map((header, index) => (
-              <th key={index}>{header.header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {formattedData.filter((row) => filterRow(row, searchTerms)).map((row, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'striped' : ''}>
-              {headers.map((header, idx) => (
-                <td key={idx}>{row[header.accessorKey]}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                <div className="d-flex justify-content-end mb-4">
+            <button className="btn btn-primary" onClick={(e) => backToViewOrder(e)}>Back To View Order</button>
+            </div>
+                <div className="table-wrapper">
+                  <div className="table-container">
+                    <table
+                      className="design-table"
+                      style={{ width: `${totalWidth}px` }}
+                    >
+                      <thead>
+                        <tr className="search-row">
+                          {headers.map((header, index) => {
+                            if (
+                              header.accessorKey.toLowerCase().includes("date")
+                            ) {
+                              return (
+                                <th key={index}>
+                                  <DatePicker
+                                    selected={
+                                      searchTerms[index]
+                                        ? dayjs(searchTerms[index], "DD-MM-YYYY").toDate()
+                                        : null
+                                    }
+                                    onChange={(date) =>
+                                      handleDateChange(index, date)
+                                    }
+                                    dateFormat="dd-MM-yyyy"
+                                    placeholderText={`Search ${header.header}...`}
+                                    isClearable
+                                    popperClassName="datepicker-popper"
+                                  />
+                                </th>
+                              );
+                            } else {
+                              return (
+                                (header.accessorKey === "thumbnail") ? <th key={index}/> :
+                                <th key={index}>
+                                  <input
+                                    type="text"
+                                    placeholder={`Search ${header.header}...`}
+                                    value={searchTerms[index]}
+                                    onChange={(e) =>
+                                      handleSearchChange(index, e)
+                                    }
+                                  />
+                                </th>
+                              );
+                            }
+                          })}
+                        </tr>
+                        <tr>
+                          {headers.map((header, index) => (
+                            <th key={index}>{header.header}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {formattedData
+                          .filter((row) => filterRow(row, searchTerms,headers))
+                          .map((row, index) => (
+                            <tr
+                              key={index}
+                              className={index % 2 === 0 ? "striped" : ""}
+                            >
+                              {headers.map((header, idx) => (
+                                header.accessorKey === "thumbnail" ?
+                                <td key={idx}>{row[header.accessorKey] ? <img src={row[header.accessorKey]} height={50} width={50} alt="design" /> : ""}</td>
+                                :
+                                <td key={idx}>{row[header.accessorKey]}</td>
+                              ))}
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      :
+      <Navigate to={"/dashboard"}/>
+    }
     </>
   );
 }

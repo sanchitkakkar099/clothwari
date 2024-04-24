@@ -265,7 +265,7 @@ function CategoryList() {
                                     onClick={(e) => handleMerge(e,ele)}
                                   >
                                     <GitMerge className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Merge Category</span>
+                                    <span className="align-middle">Replace Category</span>
                                   </DropdownItem>
                                 </DropdownMenu>
                               </UncontrolledDropdown>

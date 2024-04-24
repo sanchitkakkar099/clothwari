@@ -56,7 +56,7 @@ function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseCl
 
     useEffect(() => {
       if(resMergeTag?.isSuccess){
-          toast.success('Tag Merge Successfully',{
+          toast.success('Tag Replace Successfully',{
               position:'top-center'
           })
           setMergeFrom(null)
@@ -87,10 +87,10 @@ function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseCl
   return (
     <>
     <Modal isOpen={mergeTo ? true : false} centered toggle={onMergeCloseClick}>
-      <ModalHeader className="text-center">Merge Tag</ModalHeader>
+      <ModalHeader className="text-center">Replace Tag</ModalHeader>
       <ModalBody>
         <Label for="permissions" className="form-label">
-          Merge From
+          Replace From
         </Label>
         <Select
           className="react-select"
@@ -99,7 +99,7 @@ function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseCl
           onChange={(val) => setMergeFrom(val)}
         />
         <Label for="permissions" className="form-label mt-2">
-          Merge To
+          Replace To
         </Label>
         <Input
           className="react-select"
@@ -114,7 +114,7 @@ function TagMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCloseCl
       </ModalFooter>
     </Modal>
     <Modal isOpen={confirmOpen} centered toggle={onCloseConfirm}>
-    <ModalHeader className="text-center">Are you sure to merge tag?</ModalHeader>
+    <ModalHeader className="text-center">Are you sure to replace tag?</ModalHeader>
     <ModalFooter>
         <Button color="secondary" onClick={onCloseConfirm}>No</Button>
         <Button color="primary" onClick={(e) => handleSubmit(e)}>Yes</Button>

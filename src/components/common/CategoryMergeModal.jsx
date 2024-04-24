@@ -48,7 +48,7 @@ function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCl
 
     useEffect(() => {
       if(resMergeCategory?.isSuccess){
-          toast.success('Category Merge Successfully',{
+          toast.success('Category Replace Successfully',{
               position:'top-center'
           })
           setMergeFrom(null)
@@ -79,10 +79,10 @@ function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCl
   return (
     <>
     <Modal isOpen={mergeTo ? true : false} centered toggle={onMergeCloseClick}>
-      <ModalHeader className="text-center">Merge Category</ModalHeader>
+      <ModalHeader className="text-center">Replace Category</ModalHeader>
       <ModalBody>
         <Label for="permissions" className="form-label">
-          Merge From
+          Replace From
         </Label>
         <Select
           className="react-select"
@@ -91,7 +91,7 @@ function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCl
           onChange={(val) => setMergeFrom(val)}
         />
         <Label for="permissions" className="form-label mt-2">
-          Merge To
+          Replace To
         </Label>
         <Input
           className="react-select"
@@ -106,7 +106,7 @@ function CategoryMergeModal({mergeFrom,setMergeFrom,mergeTo,setMergeTo,onMergeCl
       </ModalFooter>
     </Modal>
     <Modal isOpen={confirmOpen} centered toggle={onCloseConfirm}>
-    <ModalHeader className="text-center">Are you sure to merge category?</ModalHeader>
+    <ModalHeader className="text-center">Are you sure to replace category?</ModalHeader>
     <ModalFooter>
         <Button color="secondary" onClick={onCloseConfirm}>No</Button>
         <Button color="primary" onClick={(e) => handleSubmit(e)}>Yes</Button>

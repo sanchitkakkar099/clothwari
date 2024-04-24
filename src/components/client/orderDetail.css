@@ -1,6 +1,11 @@
+.page-content {
+  overflow: visible; /* Allow the DatePicker to extend beyond the table */
+  position: relative; /* Positioning context for z-index */
+}
 .table-container {
     width: 100%;
     overflow-x: auto; /* Allow horizontal scrolling */
+    height: 70vh;
   }
   
   .design-table {
@@ -16,10 +21,24 @@
   }
   
   .design-table th {
-    background-color: #f2f2f2;
-    position: sticky;
+    background-color: #8e8e8e;
+    /* position: sticky; */
     top: 0;
- 
+    color: white;
+    z-index: 10; /* Ensure headers are on top */
+  }
+
+  .datepicker-popper {
+    z-index: 100; /* Ensure the DatePicker appears above other elements */
+    position: absolute; /* This should prevent it from being hidden */
+  }
+
+  .datepicker-popper .react-datepicker {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Adds a subtle shadow for better visibility */
+  }
+  
+  .datepicker-popper .react-datepicker__triangle {
+    display: none; /* Hides the triangle on the date picker to avoid overlap */
   }
 
   
@@ -37,5 +56,8 @@
     width: 90%;
     padding: 6px;
     border: 1px solid #ccc;
+  }
+  .react-datepicker__tab-loop{
+    position: relative;
   }
   

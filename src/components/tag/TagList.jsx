@@ -249,7 +249,7 @@ function TagList() {
                                     onClick={(e) => handleMerge(e,ele)}
                                   >
                                     <GitMerge className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Merge Tag</span>
+                                    <span className="align-middle">Replace Tag</span>
                                   </DropdownItem>
                                 </DropdownMenu>
                               </UncontrolledDropdown>

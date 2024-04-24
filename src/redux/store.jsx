@@ -1,4 +1,4 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { configureStore, combineReducers, createAction } from "@reduxjs/toolkit";
 import designUploadSlice from "./designUploadSlice";
 import designerSlice from "./designerSlice";
 import categorySlice from "./categorySlice";
@@ -11,6 +11,9 @@ import authSlice from "./authSlice";
 import adminSlice from "./adminSlice";
 import { adminApi, authApi, categoryApi, clientApi, clientBagApi, colorVariationApi, dashboardApi, designTagApi, designUploadApi, designerApi, driveApi, fileApi, salesPersonApi } from "../service";
 import driveSlice from "./driveSlice";
+import Cookies from "universal-cookie";
+const cookies = new Cookies()
+
 
 
 const appReducer = combineReducers({
@@ -40,8 +43,35 @@ const appReducer = combineReducers({
   [driveApi.reducerPath]: driveApi.reducer,
 });
 
+const rootReducer = (state, action) => {
+  console.log('action',action.type);
+  if (action.type === 'RESET_STATE') {
+    // Reset the entire state to undefined, which should trigger default initial states
+    state = {};
+  }
+
+  return appReducer(state, action);
+};
+
+// Custom middleware to handle unauthorized responses
+const unauthorizedMiddleware = (store) => (next) => (action) => {
+  if (
+    action?.payload?.status === 401
+  ) {
+    cookies.remove("clothwari", { path: "/" });
+    cookies.remove("clothwari_user", { path: "/" });
+    cookies.remove("client_allow_time", { path: "/" });
+    cookies.remove("isLoggedIn");
+    cookies.remove("lastActiveTime");
+    cookies.remove("savedTimerValue");
+    store.dispatch({type:'RESET_STATE'});
+  }
+
+  return next(action);
+};
+
 export const store = configureStore({
-  reducer: appReducer,
+  reducer: rootReducer,
   middleware: (getDefaltMiddleware) =>
     getDefaltMiddleware({ serializableCheck: false }).concat([
       authApi.middleware,
@@ -57,5 +87,7 @@ export const store = configureStore({
       clientBagApi.middleware,
       salesPersonApi.middleware,
       driveApi.middleware,
+    ]).concat([
+      unauthorizedMiddleware, // Add custom middleware
     ]),
 });
