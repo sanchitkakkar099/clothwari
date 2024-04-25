@@ -17,6 +17,7 @@ import ReactDatePicker from "react-datepicker";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 import './dropdown-filter.css';
+import UpdateDesignerModal from "./UpdateDesignerModal";
 
 // Extend dayjs with the utc plugin
 dayjs.extend(utc);
@@ -258,6 +259,26 @@ function UploadDesignListV2() {
     });
   };
 
+  const [selectedDesign,setSelectedDesign] = useState([])
+  const [openUploadedByChange,setOpenUploadedByChange] = useState(false)
+
+  console.log('selectedDesign',selectedDesign);
+
+  const handleSelectDesign = (e, id) => {
+    if (e.target.checked) {
+      setSelectedDesign((prevSelected) => [...prevSelected, id]);
+    } else {
+      setSelectedDesign((prevSelected) =>
+        prevSelected.filter((designId) => designId !== id)
+      );
+    }
+  };
+
+  const onCloseClick = () => {
+    setOpenUploadedByChange(false)
+    setSelectedDesign([])
+  }
+
 
   
 
@@ -317,6 +338,20 @@ function UploadDesignListV2() {
                     </button>
                   </div>
                   }
+                  {(selectedDesign && Array.isArray(selectedDesign) && selectedDesign?.length > 0) &&
+                  <div className="modal-button modal-button-s mt-1">
+                  
+                    <button
+                      type="button"
+                      className="btn btn-primary waves-effect waves-light mb-4 me-1"
+                      data-bs-toggle="modal"
+                      data-bs-target=".add-new-order"
+                      onClick={() => setOpenUploadedByChange(true)}
+                    >
+                      Change Uploaded By
+                    </button>
+                  </div>
+                  }
                   </div>
                   {/* <div className="position-relative">
                     <div className="filter-dropdown" ref={dropdownRef}>
@@ -357,6 +392,7 @@ function UploadDesignListV2() {
                   <table className="filter-table">
                     <thead>
                       <tr>
+                      {userInfo?.role === 'Super Admin' &&  <th/>}
                         <th onClick={() => handleSort('name')}>Design Name
                         {sortConfig?.key === 'name' && (
                           sortConfig?.direction === 'asc' ? <ChevronDown /> : <ChevronUp />
@@ -368,6 +404,7 @@ function UploadDesignListV2() {
                         <th>Action</th>
                       </tr>
                       <tr>
+                        {userInfo?.role === 'Super Admin' && <td></td>}
                         <td><input type="text" value={filterName} onChange={(e) => handleNameFilter(e)}/></td>
                         <td><input type="text" value={filterCategory} onChange={(e) => handleCategoryFilter(e)}/></td>
                         <td><input type="text" value={filterUploadedBy} onChange={(e) => handleUploadedByFilter(e)}/></td>
@@ -396,6 +433,7 @@ function UploadDesignListV2() {
                       TBLData?.map((ele) => {
                         return(
                           <tr key={ele?._id}>
+                          {userInfo?.role === 'Super Admin' && <td><input type='checkbox' style={{width:'auto'}} checked={Array.isArray(selectedDesign) && selectedDesign?.some(sc => sc === ele?._id)}  onChange={(e) => handleSelectDesign(e,ele?._id)}/></td>}
                           <td>{(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
@@ -403,64 +441,64 @@ function UploadDesignListV2() {
 
                           <td>
                           {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?
-        <UncontrolledDropdown>
-                                <DropdownToggle
-                                  className="icon-btn hide-arrow moreOption"
-                                  color="transparent"
-                                  size="sm"
-                                  caret
-                                >
-                                  <MoreVertical size={15} />
-                                </DropdownToggle>
-                                <DropdownMenu>
-                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design View")) &&
-                                  <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => onViewAction(e,ele?._id)}
-                                  >
-                                    <Eye className="me-50" size={15} />{" "}
-                                    <span className="align-middle">View</span>
-                                  </DropdownItem>
-                                }
-                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
+                          <UncontrolledDropdown>
+                            <DropdownToggle
+                              className="icon-btn hide-arrow moreOption"
+                              color="transparent"
+                              size="sm"
+                              caret
+                            >
+                              <MoreVertical size={15} />
+                            </DropdownToggle>
+                            <DropdownMenu>
+                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design View")) &&
+                              <DropdownItem
+                                href="#!"
+                                onClick={(e) => onViewAction(e,ele?._id)}
+                              >
+                                <Eye className="me-50" size={15} />{" "}
+                                <span className="align-middle">View</span>
+                              </DropdownItem>
+                            }
+                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
 
-                                  <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => onEditAction(e,ele?._id)}
-                                  >
-                                    <Edit className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Edit</span>
-                                  </DropdownItem>
-                                }
-                                {(userInfo?.role === 'Super Admin' && userInfo?.permissions?.includes("Upload Design Download")) &&
+                              <DropdownItem
+                                href="#!"
+                                onClick={(e) => onEditAction(e,ele?._id)}
+                              >
+                                <Edit className="me-50" size={15} />{" "}
+                                <span className="align-middle">Edit</span>
+                              </DropdownItem>
+                            }
+                            {(userInfo?.role === 'Super Admin' && userInfo?.permissions?.includes("Upload Design Download")) &&
+                            <DropdownItem
+                                href="#!"
+                              >
+                                <Download className="me-50" size={15} />{" "}
+                                <span className="align-middle">Download</span>
+                              </DropdownItem>
+                            }
+                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Delete")) &&
                                 <DropdownItem
-                                    href="#!"
-                                  >
-                                    <Download className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Download</span>
-                                  </DropdownItem>
-                                }
-                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Delete")) &&
-                                   <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => handleDelete(e,ele)}
-                                  >
-                                    <Trash className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Delete</span>
-                                  </DropdownItem>
-                                }
-                                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
-                                   <DropdownItem
-                                    href="#!"
-                                    onClick={(e) => handleDesignImage(e,ele?._id)}
-                                  >
-                                    <Image className="me-50" size={15} />{" "}
-                                    <span className="align-middle">Design Image</span>
-                                  </DropdownItem>
-                                }
-                                </DropdownMenu>
-                              </UncontrolledDropdown>
-                              :'No Permission'}
+                                href="#!"
+                                onClick={(e) => handleDelete(e,ele)}
+                              >
+                                <Trash className="me-50" size={15} />{" "}
+                                <span className="align-middle">Delete</span>
+                              </DropdownItem>
+                            }
+                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
+                                <DropdownItem
+                                href="#!"
+                                onClick={(e) => handleDesignImage(e,ele?._id)}
+                              >
+                                <Image className="me-50" size={15} />{" "}
+                                <span className="align-middle">Design Image</span>
+                              </DropdownItem>
+                            }
+                            </DropdownMenu>
+                          </UncontrolledDropdown>
+                          :'No Permission'}
                           </td>
                           </tr>
                         )
@@ -495,6 +533,11 @@ function UploadDesignListV2() {
         setShowModal={setShowModal}
         modalDetails={modalDetails}
         confirmAction={reqDelete}
+      />
+      <UpdateDesignerModal
+        openUploadedByChange={openUploadedByChange}
+        onCloseClick={onCloseClick}
+        selectedDesign={selectedDesign}
       />
       </>
       :

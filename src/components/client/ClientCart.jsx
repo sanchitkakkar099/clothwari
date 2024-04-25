@@ -73,6 +73,7 @@ function ClientCart() {
   const onSubmit = (data) => {
     const payload = { 
       ...data,
+      byClient:userInfo?.role === "Client" ? true : false,
       customerName:userInfo?.role === "SalesPerson" ? data?.customerName?.label : data?.customerName,
       clientId:userInfo?.role === "SalesPerson" ? data?.customerName?.value : data?.clientId,
       marketerId: userInfo?.role === "Client" ? data?.marketingPersonName?.value : data?.marketerId,
@@ -261,10 +262,10 @@ function ClientCart() {
                               id={"marketingPersonName"}
                               name={"marketingPersonName"}
                               control={control}
-                              rules={{
+                              rules={userInfo?.role === 'SalesPerson' ? {
                                 required:
                                   "Please Select Marketing Person",
-                              }}
+                              } : {}}
                               render={({ field }) => (
                                 <ReactSelect 
                                   {...field} 

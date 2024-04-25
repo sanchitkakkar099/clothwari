@@ -7,9 +7,24 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
 import { useClientByIdQuery, useSubmitClientMutation } from "../../service";
 import toast from "react-hot-toast";
+import ReactDatePicker from "react-datepicker";
+import dayjs from "dayjs";
+import "react-datepicker/dist/react-datepicker.css";
+
+// Ensure proper method chaining to set hour, minute, and second
+const MIN_TIME = dayjs()
+  .set("hour", 9)
+  .set("minute", 0)
+  .set("second", 0)
+  .toDate(); // 09:00 AM
+const MAX_TIME = dayjs()
+  .set("hour", 18)
+  .set("minute", 0)
+  .set("second", 0)
+  .toDate(); // 06:00 PM
 
 function ClientForm() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const location = useLocation();
   const { state: locationState } = location;
   const [reqClient, resClient] = useSubmitClientMutation();
@@ -17,12 +32,17 @@ function ClientForm() {
     skip: !locationState?.clientID,
   });
 
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+  console.log("startTime", startTime, "endTime", endTime);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
-    setError
+    setError,
+    setValue,
   } = useForm();
 
   useEffect(() => {
@@ -37,7 +57,8 @@ function ClientForm() {
   }, [resClientById]);
 
   const onNext = (state) => {
-    reqClient({...state});
+    console.log('state',state);
+    reqClient({ ...state });
   };
 
   useEffect(() => {
@@ -45,19 +66,26 @@ function ClientForm() {
       toast.success(resClient?.data?.message, {
         position: "top-center",
       });
-      reset()
+      reset();
       navigate("/client-list");
     }
     if (resClient?.isError) {
       setError("email", {
         type: "manual",
         message: resClient?.error?.data?.message,
-      })
+      });
     }
-  }, [resClient?.isSuccess,resClient?.isError]);
-  
+  }, [resClient?.isSuccess, resClient?.isError]);
 
-   return (
+  const handleStartTimeChange = (date) => {
+    setStartTime(date);
+    if (endTime && dayjs(endTime).isBefore(date)) {
+      setEndTime(null);
+      setValue("to_time", "");
+    }
+  };
+
+  return (
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -107,32 +135,33 @@ function ClientForm() {
                 >
                   <div className="p-4 border-top">
                     <Form onSubmit={handleSubmit(onNext)}>
-                      
                       <div className="row">
-                      <div className="col-md-6">
-                      <div className="mb-3">
-                        <Label className="form-label" for="name">
-                            Name
-                        </Label>
-                        <Controller
-                          id="name"
-                          name="name"
-                          control={control}
-                          rules={{ required: "Name is required" }}
-                          render={({ field }) => (
-                            <Input
-                              placeholder="Enter Name"
-                              className="form-control"
-                              {...field}
-                              type="text"
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label className="form-label" for="name">
+                              Name
+                            </Label>
+                            <Controller
+                              id="name"
+                              name="name"
+                              control={control}
+                              rules={{ required: "Name is required" }}
+                              render={({ field }) => (
+                                <Input
+                                  placeholder="Enter Name"
+                                  className="form-control"
+                                  {...field}
+                                  type="text"
+                                />
+                              )}
                             />
-                          )}
-                        />
-                        {errors.name && (
-                          <FormFeedback>{errors?.name?.message}</FormFeedback>
-                        )}
-                      </div>
-                      </div>
+                            {errors.name && (
+                              <FormFeedback>
+                                {errors?.name?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
                         <div className="col-md-6">
                           <div className="mb-3">
                             <Label className="form-label" for="email">
@@ -143,13 +172,15 @@ function ClientForm() {
                               name="email"
                               control={control}
                               rules={{
-                                  required: "Email is required",
-                                  validate: {
-                                    matchPattern: (v) =>
-                                      /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(v) ||
-                                      "Email address must be a valid address",
-                                  },
-                                }}
+                                required: "Email is required",
+                                validate: {
+                                  matchPattern: (v) =>
+                                    /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(
+                                      v
+                                    ) ||
+                                    "Email address must be a valid address",
+                                },
+                              }}
                               render={({ field }) => (
                                 <Input
                                   placeholder="Enter Email"
@@ -166,81 +197,116 @@ function ClientForm() {
                             )}
                           </div>
                         </div>
-                        {!locationState?.isEdit &&
+
                         <div className="col-md-6">
                           <div className="mb-3">
-                            <Label className="form-label" for="password">
-                              Password
+                            <Label className="form-label" htmlFor="from_time">
+                              From:
                             </Label>
+
                             <Controller
-                              id="password"
-                              name="password"
+                              id="from_time"
+                              name="from_time"
                               control={control}
-                              rules={{ required: "Password is required" }}
-                              render={({ field }) => (
-                                <Input
-                                  placeholder="Enter Password"
-                                  className="form-control"
-                                  {...field}
-                                  type="text"
-                                />
-                              )}
-                            />
-                            {errors.password && (
-                              <FormFeedback>
-                                {errors?.password?.message}
-                              </FormFeedback>
-                            )}
-                          </div>
-                        </div>
-                        }
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <Label for="category" className="form-label">
-                              Allow Time
-                            </Label>
-                            <Controller
-                              id="client_allow_time"
-                              name="client_allow_time"
-                              control={control}
-                              rules={{ required: "Allow Time is required" }}
+                              rules={{ required: "From Time is required" }}
                               render={({ field: { onChange, value } }) => (
-                                <Select
-                                  isClearable
-                                  options={
-                                    [{
-                                      label:'5 min',value:5,
-                                    },{
-                                      label:'30 min',value:30,
-                                    },
-                                    {
-                                      label:'1 hrs',value:60,
-                                    },
-                                    {
-                                      label:'2 hrs',value:120,
-                                    },
-                                    {
-                                      label:'3 hrs',value:180,
-                                    }] || []
-                                  }
-                                  className="react-select"
-                                  classNamePrefix="select"
-                                  onChange={onChange}
-                                  value={value ? value : null}
+                                <ReactDatePicker
+                                  selected={value}
+                                  onChange={(val) => {
+                                    onChange(val);
+                                    handleStartTimeChange(val);
+                                  }}
+                                  showTimeSelect
+                                  showTimeSelectOnly
+                                  timeIntervals={30} // Interval for time picker (15 min in this case)
+                                  timeCaption="Time"
+                                  dateFormat="h:mm aa"
+                                  placeholderText="Select time"
+                                  minTime={MIN_TIME} // Min time in Date format
+                                  maxTime={MAX_TIME} // Max time in Date format
+                                  className="form-control"
                                 />
                               )}
                             />
-                            {errors.client_allow_time && (
+                            {errors.from_time && (
                               <FormFeedback>
-                                {errors?.client_allow_time?.message}
+                                {errors?.from_time?.message}
                               </FormFeedback>
                             )}
                           </div>
                         </div>
-                      </div>                      
+                        <div className="col-md-6">
+                          <div className="mv-3">
+                            <Label className="form-label" for="to_time">
+                              To:
+                            </Label>
+                            <Controller
+                              id="to_time"
+                              name="to_time"
+                              control={control}
+                              rules={{ required: "To Time is required" }}
+                              render={({ field: { onChange, value } }) => (
+                                <ReactDatePicker
+                                  selected={value}
+                                  onChange={(val) => {
+                                    onChange(val);
+                                    setEndTime(val);
+                                  }}
+                                  showTimeSelect
+                                  showTimeSelectOnly
+                                  timeIntervals={30} // Interval for time picker (15 min in this case)
+                                  timeCaption="Time"
+                                  dateFormat="h:mm aa"
+                                  placeholderText="Select time"
+                                  minTime={startTime ? startTime : MIN_TIME} // Min time in Date format
+                                  maxTime={MAX_TIME} // Max time in Date format
+                                  disabled={!startTime}
+                                  className="form-control"
+                                />
+                              )}
+                            />
+                            {errors.to_time && (
+                              <FormFeedback>
+                                {errors?.to_time?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                        {!locationState?.isEdit && (
+                          <div className="col-md-6">
+                            <div className="mb-3">
+                              <Label className="form-label" for="password">
+                                Password
+                              </Label>
+                              <Controller
+                                id="password"
+                                name="password"
+                                control={control}
+                                rules={{ required: "Password is required" }}
+                                render={({ field }) => (
+                                  <Input
+                                    placeholder="Enter Password"
+                                    className="form-control"
+                                    {...field}
+                                    type="text"
+                                  />
+                                )}
+                              />
+                              {errors.password && (
+                                <FormFeedback>
+                                  {errors?.password?.message}
+                                </FormFeedback>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                       <div className="row">
                         <div className="col text-end">
-                          <Link to="/client-list" className="btn btn-danger m-1">
+                          <Link
+                            to="/client-list"
+                            className="btn btn-danger m-1"
+                          >
                             {" "}
                             <i className="bx bx-x mr-1"></i> Cancel{" "}
                           </Link>

@@ -14,8 +14,6 @@ import driveSlice from "./driveSlice";
 import Cookies from "universal-cookie";
 const cookies = new Cookies()
 
-
-
 const appReducer = combineReducers({
   authState: authSlice,
   adminState: adminSlice,
@@ -44,7 +42,6 @@ const appReducer = combineReducers({
 });
 
 const rootReducer = (state, action) => {
-  console.log('action',action.type);
   if (action.type === 'RESET_STATE') {
     // Reset the entire state to undefined, which should trigger default initial states
     state = {};
@@ -58,9 +55,9 @@ const unauthorizedMiddleware = (store) => (next) => (action) => {
   if (
     action?.payload?.status === 401
   ) {
-    cookies.remove("clothwari", { path: "/" });
-    cookies.remove("clothwari_user", { path: "/" });
-    cookies.remove("client_allow_time", { path: "/" });
+    cookies.remove("clothwari");
+    cookies.remove("clothwari_user");
+    cookies.remove("client_allow_time");
     cookies.remove("isLoggedIn");
     cookies.remove("lastActiveTime");
     cookies.remove("savedTimerValue");
