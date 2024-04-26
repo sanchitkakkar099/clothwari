@@ -63,8 +63,6 @@ function HeaderComponent() {
       cookies.remove("clothwari_user", { path: "/" });
       cookies.remove("client_allow_time", { path: "/" });
       clearInterval(timer);
-      // const remainingTime = timer <= 0 ? 0 : timer; // Get remaining time or 0 upon logout
-      // cookies.set('lastInActiveTime', remainingTime.toString());
       cookies.remove("isLoggedIn");
       cookies.remove("lastActiveTime");
       cookies.remove("savedTimerValue");
@@ -109,6 +107,7 @@ function HeaderComponent() {
   };
 
   const [isDropdownVisible, setDropdownVisible] = useState(false);
+  console.log('isDropdownVisible',isDropdownVisible);
   const dropdownRef = useRef(null);
   const settingRef = useRef(null);
 
@@ -119,21 +118,21 @@ function HeaderComponent() {
     setDropdownVisible(!isDropdownVisible);
   };
 
-  const handleOutsideClick = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setDropdownVisible(false);
-    }
-    if (settingRef.current && !settingRef.current.contains(event.target)) {
-      setOpenMenu(false);
-    }
-  };
+  // const handleOutsideClick = (event) => {
+  //   if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  //     setDropdownVisible(false);
+  //   }
+  //   if (settingRef.current && !settingRef.current.contains(event.target)) {
+  //     setOpenMenu(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    document.addEventListener("click", handleOutsideClick);
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, []);
+  // useEffect(() => {
+  //   document.addEventListener("click", handleOutsideClick);
+  //   return () => {
+  //     document.removeEventListener("click", handleOutsideClick);
+  //   };
+  // }, []);
 
   const handleViewOder = (e,dt) => {
     e.preventDefault()
@@ -280,13 +279,13 @@ function HeaderComponent() {
                           />
                         </div> */}
                         <div className="flex-grow-1">
-                          <h6 className="mb-1">{el?.userId?.name}</h6>
+                          <h6 className="mb-1">{(el?.byClient && el?.customerName) ? el?.customerName : (!el?.byClientel && el?.marketingPersonName) ? el?.marketingPersonName : ""}</h6>
                           <div className="text-muted">
                             <p className="mb-1 font-size-13">
-                              {`${el?.userId?.name} orders ${el?.design?.length} designs`}
-                              {/* <span className="badge badge-soft-success">
+                              {(el?.byClient && el?.customerName) ? `${el?.customerName} orders ${el?.cartItem?.length} designs`  : (!el?.byClient && el?.marketingPersonName) ? `${el?.marketingPersonName} orders for ${el?.customerName} ${el?.cartItem?.length} designs`  : ""}
+                              <span className="badge badge-soft-success">
                                 Review
-                              </span> */}
+                              </span>
                             </p>
                             {/* <p className="mb-0 font-size-10 text-uppercase fw-bold">
                               <i className="mdi mdi-clock-outline"></i> 1 hour

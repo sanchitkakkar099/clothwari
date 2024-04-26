@@ -70,7 +70,7 @@ function StaffApprovalList() {
       staffId: fld?._id,
       status: 2,
       permissions: [
-        ""
+        "654a8a479bb8a67119c30a37"
       ]
     })
   };

@@ -308,6 +308,7 @@ function StaffForm() {
                             className="btn btn-success m-1"
                             data-bs-toggle="modal"
                             data-bs-target="#success-btn"
+                            disabled={resDesigner?.isLoading}
                           >
                             <i className=" bx bx-file me-1"></i> Save{" "}
                           </button>
