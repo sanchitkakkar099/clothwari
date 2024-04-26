@@ -10,7 +10,7 @@ import {
   } from "reactstrap";
 import toast from "react-hot-toast";
 import Select from "react-select";
-import { useAdminListMutation, useDesignerDropDownListQuery } from '../../service';
+import { useAdminListMutation, useDesignerDropDownListQuery, useUpdateUploadedByMutation } from '../../service';
 function UpdateDesignerModal({openUploadedByChange,onCloseClick,selectedDesign}) {
     const [staffDropdown,setStaffDropdown] = useState([])
     const [adminDropdown,setAdminDropdown] = useState([])
@@ -18,6 +18,8 @@ function UpdateDesignerModal({openUploadedByChange,onCloseClick,selectedDesign})
     const [confirmOpen,setConfirmOpen] = useState(false)
     const staffDropDownRes = useDesignerDropDownListQuery()
     const [reqAdmin, resAdmin] = useAdminListMutation();
+    const [reqUpdate, resUpdate] = useUpdateUploadedByMutation();
+
     console.log('adminDropdown',adminDropdown);
 
 
@@ -58,7 +60,28 @@ function UpdateDesignerModal({openUploadedByChange,onCloseClick,selectedDesign})
             designs:selectedDesign,
             designerId:selectedStaff?.value
         });
+        reqUpdate({
+            designs:selectedDesign,
+            designerId:selectedStaff?.value
+        })
     }
+
+    useEffect(() => {
+        if (resUpdate?.isSuccess) {
+          toast.success("Design Uploaded By Updated Successfully",{
+            position:'top-center'
+          })
+          onCloseClick()
+          onCloseConfirm()
+        }
+        if (resUpdate?.isError) {
+            toast.error("Failed to update",{
+              position:'top-center'
+            })
+            onCloseClick()
+            onCloseConfirm()
+        }
+    },[resUpdate?.isSuccess,resUpdate?.isError])
 
     return (
         <>
