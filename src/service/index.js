@@ -413,7 +413,7 @@ export const designUploadApi = createApi({
     }),
     updateUploadedBy: builder.mutation({
       query: (payload) => ({
-        url: "design/uploadedBy/update",
+        url: "designupload/uploadedBy/update",
         method: "POST",
         body: payload,
       }),

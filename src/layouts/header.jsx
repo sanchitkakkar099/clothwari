@@ -283,9 +283,9 @@ function HeaderComponent() {
                           <div className="text-muted">
                             <p className="mb-1 font-size-13">
                               {(el?.byClient && el?.customerName) ? `${el?.customerName} orders ${el?.cartItem?.length} designs`  : (!el?.byClient && el?.marketingPersonName) ? `${el?.marketingPersonName} orders for ${el?.customerName} ${el?.cartItem?.length} designs`  : ""}
-                              <span className="badge badge-soft-success">
+                              {/* <span className="badge badge-soft-success">
                                 Review
-                              </span>
+                              </span> */}
                             </p>
                             {/* <p className="mb-0 font-size-10 text-uppercase fw-bold">
                               <i className="mdi mdi-clock-outline"></i> 1 hour

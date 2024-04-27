@@ -11,7 +11,16 @@ import {
 import toast from "react-hot-toast";
 import Select from "react-select";
 import { useAdminListMutation, useDesignerDropDownListQuery, useUpdateUploadedByMutation } from '../../service';
-function UpdateDesignerModal({openUploadedByChange,onCloseClick,selectedDesign}) {
+function UpdateDesignerModal({
+    openUploadedByChange,
+    onCloseClick,
+    selectedDesign,
+    reqDesign,
+    currentPage,
+    pageSize,
+    uploadedBy,
+    name
+}) {
     const [staffDropdown,setStaffDropdown] = useState([])
     const [adminDropdown,setAdminDropdown] = useState([])
     const [selectedStaff,setSelectedStaff] = useState(null)
@@ -71,6 +80,12 @@ function UpdateDesignerModal({openUploadedByChange,onCloseClick,selectedDesign})
           toast.success("Design Uploaded By Updated Successfully",{
             position:'top-center'
           })
+          reqDesign({
+            page: currentPage,
+            limit: pageSize,
+            name:name,
+            uploadedBy:uploadedBy
+          });
           onCloseClick()
           onCloseConfirm()
         }

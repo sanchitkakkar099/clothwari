@@ -64,7 +64,6 @@ function UploadDesignListV2() {
         name:filterName,
         category:filterCategory,
         uploadedBy:filterUploadedBy,
-        // date_filter:startDate ? dayjs(startDate).format() : "",
         start_date:(startDate && endDate) ? dayjs(startDate).format() : "",
         end_date:(startDate && endDate) ? dayjs(endDate).format() : ""
       })
@@ -538,6 +537,11 @@ function UploadDesignListV2() {
         openUploadedByChange={openUploadedByChange}
         onCloseClick={onCloseClick}
         selectedDesign={selectedDesign}
+        reqDesign={reqDesign}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        uploadedBy={filterUploadedBy}
+        name={filterName}
       />
       </>
       :

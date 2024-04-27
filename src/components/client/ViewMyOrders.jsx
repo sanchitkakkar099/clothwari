@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {  Link, useLocation, useNavigate } from "react-router-dom";
 import { useMyAllOrdersMutation } from "../../service";
-import { Eye, MoreVertical } from "react-feather";
+import { Edit, Eye, MoreVertical } from "react-feather";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import Pagination from "../common/Pagination";
 
@@ -34,7 +34,7 @@ function ViewMyOrders() {
       reqOrders({
         page: currentPage,
         limit: pageSize,
-        user_id:userInfo?.role !== 'Super Admin' ? userInfo?._id : "",
+        // user_id:userInfo?.role !== 'Super Admin' ? userInfo?._id : "",
         customerName:searchCustomerName,
         marketingPersonName:searchMarketerName,
         salesOrderNumber:searchSalesOrder,
@@ -44,7 +44,7 @@ function ViewMyOrders() {
       reqOrders({
         page: currentPage,
         limit: pageSize,
-        user_id:userInfo?.role !== 'Super Admin' ? userInfo?._id : "",
+        // user_id:userInfo?.role !== 'Super Admin' ? userInfo?._id : "",
       });
     }
   }, [currentPage,searchCustomerName,searchMarketerName,searchSalesOrder,searchCustomerCode]);
@@ -61,6 +61,16 @@ function ViewMyOrders() {
     console.log('el',el);
     navigate(`/order-details/${el?._id}`)
   }
+
+  const onEditAction = (e, el) => {
+    e.preventDefault();
+    navigate("/cart-item", {
+      state: {
+        cartID: el?._id,
+        isEdit:true
+      },
+    });
+  };
 
 
   return (
@@ -143,6 +153,16 @@ function ViewMyOrders() {
                                     <Eye className="me-50" size={15} />{" "}
                                     <span className="align-middle">View</span>
                                   </DropdownItem>
+                                  {(userInfo?.role === 'SalesPerson') &&
+
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onEditAction(e,ele)}
+                                  >
+                                    <Edit className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Edit</span>
+                                  </DropdownItem>
+                                }
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                           </td>
