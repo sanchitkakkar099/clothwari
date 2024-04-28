@@ -714,11 +714,26 @@ export const clientApi = createApi({
       invalidatesTags: ["client"],
     }),
     clientOrderById: builder.query({
-      query: (id) => ({
-        url: `client/my/design/byId/${id}`,
+      query: (payload) => ({
+        url: (payload?.role === 'Super Admin' || payload?.role === 'SalesPerson' || payload?.role === 'Admin') ? `client/design/edit/byId/${payload?.id}` : `client/my/design/byId/${payload?.id}`,
         method: "GET",
       }),
       providesTags: ["client"],
+    }),
+    clientOrderByIdV2: builder.query({
+      query: (id) => ({
+        url: `client/order/detail/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["client"],
+    }),
+    approveOrder: builder.mutation({
+      query: (payload) => ({
+        url: "client/edit/status",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["client"],
     }),
   }),
 });
@@ -729,7 +744,9 @@ export const {
  useDeleteClientMutation,
  useClientDropDownListQuery,
  useSaveCartItemMutation,
- useClientOrderByIdQuery
+ useClientOrderByIdQuery,
+ useClientOrderByIdV2Query,
+ useApproveOrderMutation
 } = clientApi;
 
 
@@ -887,6 +904,29 @@ export const clientBagApi = createApi({
       }),
       providesTags: ["clientBag"],
     }),
+    clientEditById: builder.query({
+      query: (id) => ({
+        url: `client/design/edit/byId/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["clientBag"],
+    }),
+    orderUpdateByMarketer: builder.mutation({
+      query: (payload) => ({
+        url: "client/order/update/marketer",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["clientBag"],
+    }),
+    requestOrderList: builder.mutation({
+      query: (payload) => ({
+        url: "client/order/edit/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["clientBag"],
+    }),
   }),
 });
 export const {
@@ -897,6 +937,9 @@ export const {
  useMyBagCountingQuery,
  useMyAllOrdersMutation,
  useNotificationReadMutation,
+ useClientEditByIdQuery,
+ useOrderUpdateByMarketerMutation,
+ useRequestOrderListMutation
 } = clientBagApi;
 
 

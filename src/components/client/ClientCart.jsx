@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { addedBagItems, clearBagItems, removeBagItems } from "../../redux/clientSlice";
-import { useAddToBagByClientMutation, useClientDropDownListQuery, useSalesPersonDropDownQuery, useSaveCartItemMutation } from "../../service";
+import {  useClientDropDownListQuery, useClientOrderByIdV2Query, useOrderUpdateByMarketerMutation, useSalesPersonDropDownQuery, useSaveCartItemMutation } from "../../service";
 import toast from "react-hot-toast";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FormFeedback, Input } from "reactstrap";
@@ -15,6 +15,12 @@ import dayjs from "dayjs";
 function ClientCart() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation()
+  const resCartById = useClientOrderByIdV2Query(location?.state?.cartID, {
+    skip: !location?.state?.cartID,
+    refetchOnMountOrArgChange: true,
+    refetchOnReconnect: true,
+  });
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const selectedBagItems = useSelector(
     (state) => state?.clientState.selectedBagItems
@@ -41,13 +47,33 @@ function ClientCart() {
     control,
     name: "cartItem"
   });
+  console.log('fields',fields);
   const [clientDropDown,setClientDropDown] = useState([])
   const [salesPersonDropDown,setSalesPersonDropDown] = useState([])
 
   const [reqSaveCartItem,resSaveCartItem] = useSaveCartItemMutation()
+  const [reqUpdateCartItem,resUpdateCartItem] = useOrderUpdateByMarketerMutation()
+
   const resClientDropDown = useClientDropDownListQuery()
   const resSalesPersonDropDown = useSalesPersonDropDownQuery()
 
+  useEffect(() => {
+    if (resCartById?.isSuccess && resCartById?.data?.data) {
+      reset({
+        ...resCartById?.data?.data,
+        marketingPersonName:userInfo?.role === "SalesPerson" ? userInfo?.name : {label:resCartById?.data?.data?.marketingPersonName,value:resCartById?.data?.data?.marketerId},
+        marketerId:userInfo?.role === "SalesPerson" ? userInfo?._id : "",
+        customerName:userInfo?.role === "Client" ? userInfo?.name : {label:resCartById?.data?.data?.customerName,value:resCartById?.data?.data?.clientId},
+        clientId:userInfo?.role === "Client" ? userInfo?._id : resCartById?.data?.data?.clientId,
+        cartItem:resCartById?.data?.data?.cartItem?.map(el => ({
+          ...el,
+          strikeRequired:{label:el?.strikeRequired === 'yes' ? "Yes" : 'No',value:el?.strikeRequired},
+          thumbnail:[el?.thumbnail]
+        }))
+      })
+      console.log('resCartById?.data?.data',resCartById?.data?.data);
+    }
+  },[resCartById?.isSuccess])
   useEffect(() => {
     if(resClientDropDown?.isSuccess && resClientDropDown?.data){
       const clientList = resClientDropDown?.data?.data?.map(el => ({label:el?.name,value:el?._id}))
@@ -71,23 +97,43 @@ function ClientCart() {
   };
 
   const onSubmit = (data) => {
-    const payload = { 
-      ...data,
-      byClient:userInfo?.role === "Client" ? true : false,
-      customerName:userInfo?.role === "SalesPerson" ? data?.customerName?.label : data?.customerName,
-      clientId:userInfo?.role === "SalesPerson" ? data?.customerName?.value : data?.clientId,
-      marketerId: userInfo?.role === "Client" ? data?.marketingPersonName?.value : data?.marketerId,
-      marketingPersonName: userInfo?.role === "Client" ? data?.marketingPersonName?.label : data?.marketingPersonName,
-      cartItem:data?.cartItem?.map((el => ({
-        ...el,
-        bulkOrderDeliveryDate:dayjs(el?.bulkOrderDeliveryDate).format(),
-        sampleDeliveryDate:dayjs(el?.sampleDeliveryDate).format(),
-        shipmentSampleDate:dayjs(el?.shipmentSampleDate).format(),
-        strikeRequired:el?.strikeRequired?.value,
-        thumbnail:el?.thumbnail[0]?._id
-      })))
+    if(location?.state?.isEdit){
+      const payload = { 
+        ...data,
+        customerName:userInfo?.role === "SalesPerson" ? data?.customerName?.label : data?.customerName,
+        clientId:userInfo?.role === "SalesPerson" ? data?.customerName?.value : data?.clientId,
+        marketerId: userInfo?.role === "Client" ? data?.marketingPersonName?.value : data?.marketerId,
+        marketingPersonName: userInfo?.role === "Client" ? data?.marketingPersonName?.label : data?.marketingPersonName,
+        cartItem:data?.cartItem?.map((el => ({
+          ...el,
+          bulkOrderDeliveryDate:dayjs(el?.bulkOrderDeliveryDate).format(),
+          sampleDeliveryDate:dayjs(el?.sampleDeliveryDate).format(),
+          shipmentSampleDate:dayjs(el?.shipmentSampleDate).format(),
+          strikeRequired:el?.strikeRequired?.value,
+          thumbnail:el?.thumbnail[0]?._id
+        })))
+      }
+      reqUpdateCartItem(payload)
+      console.log('payload',payload);
+    }else{
+      const payload = { 
+        ...data,
+        byClient:userInfo?.role === "Client" ? true : false,
+        customerName:userInfo?.role === "SalesPerson" ? data?.customerName?.label : data?.customerName,
+        clientId:userInfo?.role === "SalesPerson" ? data?.customerName?.value : data?.clientId,
+        marketerId: userInfo?.role === "Client" ? data?.marketingPersonName?.value : data?.marketerId,
+        marketingPersonName: userInfo?.role === "Client" ? data?.marketingPersonName?.label : data?.marketingPersonName,
+        cartItem:data?.cartItem?.map((el => ({
+          ...el,
+          bulkOrderDeliveryDate:dayjs(el?.bulkOrderDeliveryDate).format(),
+          sampleDeliveryDate:dayjs(el?.sampleDeliveryDate).format(),
+          shipmentSampleDate:dayjs(el?.shipmentSampleDate).format(),
+          strikeRequired:el?.strikeRequired?.value,
+          thumbnail:el?.thumbnail[0]?._id
+        })))
+      }
+      reqSaveCartItem(payload)
     }
-    reqSaveCartItem(payload)
   };
 
   useEffect(() => {
@@ -111,9 +157,30 @@ function ClientCart() {
     }
   }, [resSaveCartItem?.isSuccess,resSaveCartItem?.isError]);
 
+  useEffect(() => {
+    if (resUpdateCartItem?.isSuccess) {
+      toast.success("Order Update Success", {
+        position: "top-center",
+      });
+      reset()
+      if(userInfo?.role === 'SalesPerson'){
+        navigate("/view-my-orders");
+      }
+      if(userInfo?.role === 'Client'){
+        navigate("/view-my-orders");
+      }
+      dispatch(clearBagItems([]))
+    }
+    if (resUpdateCartItem?.isError) {
+      toast.error("Something went wrong", {
+        position: "top-center",
+      });
+    }
+  }, [resUpdateCartItem?.isSuccess,resUpdateCartItem?.isError]);
+
   return (
     <>
-    {(selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0) ?            
+    {location?.state?.isEdit || (selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0) ?            
 
     <div className="page-content">
       <div className="container-fluid">
@@ -175,6 +242,7 @@ function ClientCart() {
                                   {...field} 
                                   onChange={(val) => field.onChange(val)}
                                   options={clientDropDown || []}
+                                  isDisabled={location?.state?.isEdit}
                                 />
                               )}
                             />
@@ -219,6 +287,7 @@ function ClientCart() {
                                   type="text"
                                   className="form-control"
                                   placeholder="Enter Customer Code"
+                                  disabled
                                 />
                               )}
                             />
@@ -271,6 +340,7 @@ function ClientCart() {
                                   {...field} 
                                   onChange={(val) => field.onChange(val)}
                                   options={salesPersonDropDown || []}
+                                  
                                 />
                               )}
                             />
@@ -307,6 +377,7 @@ function ClientCart() {
                                   type="text"
                                   className="form-control"
                                   placeholder="Enter Sales Order Number"
+                                  disabled
                                 />
                               )}
                             />
@@ -368,17 +439,17 @@ function ClientCart() {
                               id={`cartItem.${index}.yardage`}
                               name={`cartItem.${index}.yardage`}
                               control={control}
-                              rules={{
-                                required: "Yardage is required",
-                                min: {
-                                  value: 1,
-                                  message: "Yardage must be at least 1",
-                                },
-                                max: {
-                                  value: 100,
-                                  message: "Yardage must be at most 100",
-                                },
-                              }}
+                              // rules={{
+                              //   required: "Yardage is required",
+                              //   min: {
+                              //     value: 1,
+                              //     message: "Yardage must be at least 1",
+                              //   },
+                              //   max: {
+                              //     value: 100,
+                              //     message: "Yardage must be at most 100",
+                              //   },
+                              // }}
                               render={({ field }) => (
                                 <input
                                   {...field}
@@ -417,6 +488,7 @@ function ClientCart() {
                                               height="100"
                                               style={{ display: "block" }} // Ensure the image is displayed as a block element
                                           />
+                                          {!location?.state?.isEdit &&
                                           <div style={{ position: "absolute", top: "-10px", right: "-10px" }}>
                                               <XCircle
                                                   size={21}
@@ -424,6 +496,7 @@ function ClientCart() {
                                                   onClick={(e) => handleRemoveFromCart(e, design,index)}
                                               />
                                           </div>
+                                          }
                                       </div>
                                   )}
                               </div>
@@ -469,7 +542,7 @@ function ClientCart() {
                               className="form-label"
                               htmlFor="strikeRequired"
                             >
-                              Strike Required
+                              Strike Off
                             </label>
                             <Controller
                               id={`cartItem.${index}.strikeRequired`}
@@ -508,14 +581,14 @@ function ClientCart() {
                               className="form-label"
                               htmlFor="sampleDeliveryDate"
                             >
-                              Sample Delivery Date
+                              {userInfo?.role === 'SalesPerson' ? "Final Sample Date" : "Expected Sample Date"}
                             </label>
                             <Controller
                               id={`cartItem.${index}.sampleDeliveryDate`}
                               name={`cartItem.${index}.sampleDeliveryDate`}
                               control={control}
                               rules={{
-                                required: "Sample Delivery Date is required",
+                                required: `${userInfo?.role === 'SalesPerson' ? 'Final Sample Date' : 'Expected Sample Date'} is required`,
                               }}
                               render={({ field }) => (
                                 <ReactDatePicker
@@ -588,7 +661,7 @@ function ClientCart() {
                               className="form-label"
                               htmlFor="bulkOrderDeliveryDate"
                             >
-                              Bulk Order Delivery Date
+                            {userInfo?.role === 'SalesPerson' ? "Final Bulk Order Delivery Date" : "Expected Bulk Order Delivery Date"}
                             </label>
 
                             <Controller
@@ -597,7 +670,7 @@ function ClientCart() {
                               control={control}
                               rules={{
                                 required:
-                                  "Bulk Order Delivery Date is required",
+                                  `${userInfo?.role === 'SalesPerson' ? "Final Bulk Order Delivery Date" : "Expected Bulk Order Delivery Date"} is required`,
                               }}
                               render={({ field }) => (
                                 <ReactDatePicker

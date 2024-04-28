@@ -58,7 +58,11 @@ function ClientForm() {
 
   const onNext = (state) => {
     console.log('state',state);
-    reqClient({ ...state });
+    reqClient({ 
+      ...state,
+      to_time:endTime,
+      from_time:startTime
+     });
   };
 
   useEffect(() => {

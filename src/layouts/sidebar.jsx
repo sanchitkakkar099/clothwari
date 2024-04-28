@@ -236,6 +236,14 @@ function SidebarComponent() {
                 </li>
                 }
 
+                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Order Approved/Rejected")) &&
+                 <li>
+                    <Link to="/view-orders-request">
+                        <span className="menu-item" data-key="t-dashboards">Orders Request</span>
+                    </Link>
+                </li>
+                }
+
 
             </ul>
         </div>

@@ -104,6 +104,7 @@ function AddDesign() {
     control,
     name: "variations",
   });
+  console.log('fields',fields);
 
   useEffect(() => {
     if(debounceValue1 && !locationState?.designID ){

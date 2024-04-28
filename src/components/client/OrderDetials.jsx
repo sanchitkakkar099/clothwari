@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useClientOrderByIdQuery } from "../../service";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import "./orderDetail.css";
 import dayjs from "dayjs"; // For date formatting
 import DatePicker from "react-datepicker"; // For date selection in search
@@ -11,8 +11,9 @@ import { useSelector } from "react-redux";
 function OrderDetials() {
   const navigate = useNavigate()
   const params = useParams();
+  const location = useLocation()
   const userInfo = useSelector((state) => state?.authState.userInfo)
-  const resClientOrderById = useClientOrderByIdQuery(params?.id);
+  const resClientOrderById = useClientOrderByIdQuery({id:params?.id,role:userInfo?.role});
   const [data,setData] = useState([])
 
   const formatDate = (date) => {
@@ -100,7 +101,11 @@ function OrderDetials() {
 
   const backToViewOrder = (e) => {
     e.preventDefault()
-    navigate("/view-my-orders")
+    if(location?.state?.from  === 'view-orders-request'){
+      navigate('/view-orders-request')
+    }else{
+      navigate("/view-my-orders")
+    }
   }
   
   

@@ -32,6 +32,7 @@ const ClientBagItem = lazy(() => import("../components/client/BagItem"));
 const ClientCart = lazy(() => import("../components/client/ClientCart"));
 const ViewOrders = lazy(() => import("../components/client/ViewOrders"));
 const ViewMyOrders = lazy(() => import("../components/client/ViewMyOrders"));
+const OrdersApprovalList = lazy(() => import("../components/admin/OrderApprovalList"));
 const DesignVariationList = lazy(() => import("../components/client/DesignVariationList"));
 const PDFDesign = lazy(() => import("../components/common/PDFDesign"));
 const SalesPersonList = lazy(() => import("../components/sales-person/SalesPersonList"));
@@ -76,6 +77,7 @@ export const privateRoutes = [
   { path: "/cart-item", Component: ClientCart },
   { path: "/view-orders", Component: ViewOrders },
   { path: "/view-my-orders", Component: ViewMyOrders },
+  { path: "/view-orders-request", Component: OrdersApprovalList },
   { path: "/design-selection", Component: DesignVariationList },
 
   { path: "/color-variation-list", Component: ColorVariationList },
