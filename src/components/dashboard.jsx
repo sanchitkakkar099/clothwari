@@ -141,7 +141,7 @@ function DashboardComponent() {
                         </div>
                     </div>
                     }
-                    {(userInfo?.role === 'Client') &&
+                    {/* {(userInfo?.role === 'Client') &&
                     <div className="col-lg-3 col-md-6">
                         <div className="card" style={{cursor: 'pointer'}} onClick={() => navigate("/view-my-orders")}>
                             <div className="card-body">
@@ -155,16 +155,12 @@ function DashboardComponent() {
                             </div>
                         </div>
                     </div>
-                    }
+                    } */}
 
-                    {(userInfo?.role === 'Super Admin') &&
+                    {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Order Approved/Rejected") || userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson') &&
                     <div className="col-lg-3 col-md-6">
                         <div className="card" style={{cursor: 'pointer'}} 
-                        // onClick={() => navigate("/view-orders",{
-                        //     state:{
-                        //         from:location.pathname
-                        //     }
-                        // })}
+                        onClick={() => navigate("/view-my-orders")}
                         >
                             <div className="card-body">
                                 <div className="avatar">
@@ -172,7 +168,7 @@ function DashboardComponent() {
                                         <i className="mdi mdi-eye-outline text-success font-size-24"></i>
                                     </span>
                                 </div>
-                                <p className="text-muted mt-4 mb-0">Client Orders</p>
+                                <p className="text-muted mt-4 mb-0">{(userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson') ? "My Orders" : "Client Orders"}</p>
                                 <h4 className="mt-1 mb-0">{dashData?.clientBagCount ? dashData?.clientBagCount : 0}</h4> 
                             </div>
                         </div>
