@@ -114,6 +114,7 @@ function ViewMyOrders() {
                         <th>Customer Code</th>
                         <th>Marketing Person Name</th>
                         <th>Sales Order Number</th>
+                        {userInfo?.role === "Super Admin" && <th>Approve By</th>}
                         <th>Status</th>
                         <th>Action</th>
                       </tr>
@@ -122,6 +123,7 @@ function ViewMyOrders() {
                         <td><input type="text" value={searchCustomerCode} onChange={(e) => setSearchCustomerCode(e.target.value)}/></td>
                         <td><input type="text" value={searchMarketerName} onChange={(e) => setSearchMarketerName(e.target.value)}/></td>
                         <td><input type="text" value={searchSalesOrder} onChange={(e) => setSearchSalesOrder(e.target.value)}/></td>
+                        {userInfo?.role === "Super Admin" && <td/>}
                         <td/>
                         <td/>
 
@@ -136,6 +138,7 @@ function ViewMyOrders() {
                           <td>{ele?.customerCode}</td>
                           <td>{ele?.marketingPersonName}</td>
                           <td>{ele?.salesOrderNumber}</td>
+                          {userInfo?.role === "Super Admin" && <td>{ele?.reviewedBy?.name}</td>}
                           <td>{ele?.status !== "" ? ele?.status : "In Review"}</td>
                           <td>
                           <UncontrolledDropdown>

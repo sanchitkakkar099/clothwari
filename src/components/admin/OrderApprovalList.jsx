@@ -51,7 +51,7 @@ function OrdersApprovalList() {
 
   useEffect(() => {
     if (resOrders?.isSuccess) {
-      setTBLData(resOrders?.data?.data?.docs?.map(el => el?.cartId))
+      setTBLData(resOrders?.data?.data?.docs?.map(el => ({...el?.cartId,status:el?.status})))
       setTotalCount(resOrders?.data?.data?.totalDocs)
     }
   }, [resOrders]);
@@ -127,6 +127,7 @@ function OrdersApprovalList() {
                         <th>Customer Code</th>
                         <th>Marketing Person Name</th>
                         <th>Sales Order Number</th>
+                        <th>Status</th>
                         <th>Action</th>
                       </tr>
                       <tr>
@@ -134,6 +135,7 @@ function OrdersApprovalList() {
                         <td><input type="text" value={searchCustomerCode} onChange={(e) => setSearchCustomerCode(e.target.value)}/></td>
                         <td><input type="text" value={searchMarketerName} onChange={(e) => setSearchMarketerName(e.target.value)}/></td>
                         <td><input type="text" value={searchSalesOrder} onChange={(e) => setSearchSalesOrder(e.target.value)}/></td>
+                        <td/>
                         <td/>
                         </tr>
                     </thead>
@@ -146,6 +148,7 @@ function OrdersApprovalList() {
                           <td>{ele?.customerCode}</td>
                           <td>{ele?.marketingPersonName}</td>
                           <td>{ele?.salesOrderNumber}</td>
+                          <td>{ele?.status !== "" ? ele?.status : "In Review"}</td>
                           <td>
                           <UncontrolledDropdown>
                                 <DropdownToggle

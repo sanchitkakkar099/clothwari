@@ -144,7 +144,7 @@ function HeaderComponent() {
       limit: '',
       search: "",
     });
-    navigate(`/view-orders`,{
+    navigate(`/view-my-orders`,{
       state:{
         data:dt?.design
       }
@@ -222,10 +222,12 @@ function HeaderComponent() {
               <i data-feather="sun" className="icon-sm layout-mode-light"></i>
             </button>
           </div>
-          {/* <TimeElapsedApp/> */}
+          {(userInfo?.role === 'Client' && userInfo?.to_time)&&
+            <TimeElapsedApp expiredTime={userInfo?.to_time}/>
+          }
           {/* {userInfo?.role === 'Client' &&
           <SessionTimer/>
-          } */}
+          }  */}
           {userInfo?.role === 'Super Admin' &&
           <div className="dropdown d-inline-block">
             <button

@@ -47,17 +47,17 @@ function Login() {
         cookies.set("clothwari", loginRes?.data?.data?.token, { path: "/" });
         cookies.set("clothwari_user", loginRes?.data?.data, { path: "/" });
         if(loginRes?.data?.data?.role === 'Client'){
-          dispatch(setIsLoggedIn(true))
-          const client_allow_time = loginRes?.data?.data?.client_allow_time !== 0 ? loginRes?.data?.data?.client_allow_time : 30
-          const currentTime = Date.now();
-          // const lastInActiveTime = cookies.get('lastInActiveTime');
-          const lastInActiveTime = loginRes?.data?.data?.lastInActiveTime
-          const remainingTime = (lastInActiveTime && parseInt(lastInActiveTime, 10) < client_allow_time * 60 * 1000) ? lastInActiveTime : client_allow_time * 60 * 1000; // Resume remaining time or set full duration          
-          dispatch(setTimer(remainingTime))
-          cookies.set("client_allow_time", client_allow_time, { path: "/" });
-          cookies.set('isLoggedIn', true, { maxAge: client_allow_time * 60 }); // Set the combined session duration in seconds
-          cookies.set('lastActiveTime', currentTime.toString());
-          cookies.set('savedTimerValue', remainingTime.toString());
+          // dispatch(setIsLoggedIn(true))
+          // const client_allow_time = loginRes?.data?.data?.client_allow_time !== 0 ? loginRes?.data?.data?.client_allow_time : 30
+          // const currentTime = Date.now();
+          // // const lastInActiveTime = cookies.get('lastInActiveTime');
+          // const lastInActiveTime = loginRes?.data?.data?.lastInActiveTime
+          // const remainingTime = (lastInActiveTime && parseInt(lastInActiveTime, 10) < client_allow_time * 60 * 1000) ? lastInActiveTime : client_allow_time * 60 * 1000; // Resume remaining time or set full duration          
+          // dispatch(setTimer(remainingTime))
+          // cookies.set("client_allow_time", client_allow_time, { path: "/" });
+          // cookies.set('isLoggedIn', true, { maxAge: client_allow_time * 60 }); // Set the combined session duration in seconds
+          // cookies.set('lastActiveTime', currentTime.toString());
+          // cookies.set('savedTimerValue', remainingTime.toString());
         }
         dispatch(setUserToken(loginRes?.data?.data?.token))
         dispatch(setUserInfo(loginRes?.data?.data))

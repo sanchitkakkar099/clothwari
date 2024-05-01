@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import ReactDatePicker from "react-datepicker";
 import dayjs from "dayjs";
 import "react-datepicker/dist/react-datepicker.css";
-
 // Ensure proper method chaining to set hour, minute, and second
 const MIN_TIME = dayjs()
   .set("hour", 9)
@@ -18,10 +17,10 @@ const MIN_TIME = dayjs()
   .set("second", 0)
   .toDate(); // 09:00 AM
 const MAX_TIME = dayjs()
-  .set("hour", 18)
+  .set("hour", 24)
   .set("minute", 0)
   .set("second", 0)
-  .toDate(); // 06:00 PM
+  .toDate(); // 12:00 PM
 
 function ClientForm() {
   const navigate = useNavigate();
@@ -51,17 +50,22 @@ function ClientForm() {
         _id: resClientById?.data?.data?._id,
         name: resClientById?.data?.data?.name,
         email: resClientById?.data?.data?.email,
-        client_allow_time: resClientById?.data?.data?.client_allow_time,
+        to_time:resClientById?.data?.data?.to_time ? new Date(resClientById?.data?.data?.to_time) : null,
+        from_time:resClientById?.data?.data?.from_time ? new Date(resClientById?.data?.data?.from_time) : null
       });
+      setStartTime(resClientById?.data?.data?.from_time ? new Date(resClientById?.data?.data?.from_time) : null)
+      setEndTime(resClientById?.data?.data?.to_time ? new Date(resClientById?.data?.data?.to_time) : null)
     }
   }, [resClientById]);
 
   const onNext = (state) => {
-    console.log('state',state);
+    console.log('state',{...state,
+        to_time:endTime,
+        from_time:startTime});
     reqClient({ 
       ...state,
-      to_time:endTime,
-      from_time:startTime
+      to_time:dayjs(endTime).format(),
+      from_time:dayjs(startTime).format()
      });
   };
 
@@ -216,20 +220,20 @@ function ClientForm() {
                               render={({ field: { onChange, value } }) => (
                                 <ReactDatePicker
                                   selected={value}
-                                  onChange={(val) => {
-                                    onChange(val);
-                                    handleStartTimeChange(val);
-                                  }}
+                                  onChange={(date) => {
+                                    onChange(date)
+                                    handleStartTimeChange(date)
+                                    }
+                                  }
                                   showTimeSelect
-                                  showTimeSelectOnly
-                                  timeIntervals={30} // Interval for time picker (15 min in this case)
-                                  timeCaption="Time"
-                                  dateFormat="h:mm aa"
-                                  placeholderText="Select time"
-                                  minTime={MIN_TIME} // Min time in Date format
-                                  maxTime={MAX_TIME} // Max time in Date format
+                                  timeIntervals={30}
                                   className="form-control"
+                                  minDate={new Date()}
+                                  minTime={MIN_TIME}
+                                  maxTime={MAX_TIME}
+                                  dateFormat="MMMM d, yyyy h:mm aa"
                                 />
+
                               )}
                             />
                             {errors.from_time && (
@@ -252,20 +256,20 @@ function ClientForm() {
                               render={({ field: { onChange, value } }) => (
                                 <ReactDatePicker
                                   selected={value}
-                                  onChange={(val) => {
-                                    onChange(val);
-                                    setEndTime(val);
-                                  }}
+                                  onChange={(date) => {
+                                    onChange(date)
+                                    setEndTime(date)
+                                    }
+                                  }
                                   showTimeSelect
-                                  showTimeSelectOnly
-                                  timeIntervals={30} // Interval for time picker (15 min in this case)
-                                  timeCaption="Time"
-                                  dateFormat="h:mm aa"
-                                  placeholderText="Select time"
-                                  minTime={startTime ? startTime : MIN_TIME} // Min time in Date format
-                                  maxTime={MAX_TIME} // Max time in Date format
-                                  disabled={!startTime}
+                                  timeIntervals={30}
                                   className="form-control"
+                                  minDate={startTime ? startTime : new Date()}
+                                  maxDate={startTime ? startTime : new Date()}
+                                  minTime={startTime ? startTime : MIN_TIME}
+                                  maxTime={MAX_TIME}
+                                  dateFormat="MMMM d, yyyy h:mm aa"
+                                  disabled={!startTime}
                                 />
                               )}
                             />
