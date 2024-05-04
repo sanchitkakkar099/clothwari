@@ -194,8 +194,16 @@ function SidebarComponent() {
 
                 {userInfo?.role === 'SalesPerson' &&
                 <li>
-                    <Link to="/sales-view-design">
+                    <Link to="/pdf-maker-view-design">
                         <span className="menu-item" data-key="t-dashboards">View Design</span>
+                    </Link>
+                </li>
+                }
+
+                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el  => el === "Drive")) &&
+                <li>
+                    <Link to="/pdf-maker-view-design">
+                        <span className="menu-item" data-key="t-dashboards">PDF Maker</span>
                     </Link>
                 </li>
                 }

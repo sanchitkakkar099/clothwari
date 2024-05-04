@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {  Link, useLocation, useNavigate } from "react-router-dom";
-import { useMyAllOrdersMutation } from "../../service";
-import { Edit, Eye, MoreVertical } from "react-feather";
+import { useApproveClientMutation, useMyAllOrdersMutation } from "../../service";
+import { CheckCircle, Edit, Eye, MoreVertical, XCircle } from "react-feather";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import Pagination from "../common/Pagination";
+import toast from "react-hot-toast";
 
 
 function ViewMyOrders() {
@@ -13,6 +14,7 @@ function ViewMyOrders() {
   const userInfo = useSelector((state) => state?.authState.userInfo);
 
   const [reqOrders, resOrders] = useMyAllOrdersMutation();
+  const [reqApproveClient, resApproveClient] = useApproveClientMutation();
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
@@ -70,6 +72,45 @@ function ViewMyOrders() {
     });
   };
 
+  const onApproveAction = (e, el) => {
+    e.preventDefault();
+    console.log('el',el);
+    reqApproveClient({
+      cartId:el?._id,
+      isClientApproved:"Approved"
+    })
+  };
+
+  const onRejectAction = (e, el) => {
+    e.preventDefault();
+    reqApproveClient({
+      cartId:el?._id,
+      isClientApproved:"Rejected"
+    })
+  };
+
+
+  useEffect(() => {
+    if(resApproveClient?.isSuccess){
+      toast.success("Order SuccessFully Updated",{
+        position:'top-center'
+      })
+      reqOrders({
+        page: currentPage,
+        limit: pageSize,
+      });
+    }
+    if(resApproveClient?.isError){
+      toast.error("Something went wrong",{
+        position:'top-center'
+      })
+      reqOrders({
+        page: currentPage,
+        limit: pageSize,
+      });
+    }
+  },[resApproveClient?.isSuccess,resApproveClient?.isError])
+
 
   return (
     <>
@@ -114,8 +155,10 @@ function ViewMyOrders() {
                         <th>Customer Code</th>
                         <th>Marketing Person Name</th>
                         <th>Sales Order Number</th>
-                        {userInfo?.role === "Super Admin" && <th>Approve By</th>}
-                        <th>Status</th>
+                        {userInfo?.role === "Super Admin" && <th>Approved By</th>}                        
+                        {userInfo?.role === "Client" && <th>My Status</th>}
+                        {(userInfo?.role === "Super Admin" || userInfo?.role === "SalesPerson") && <th>Client Status</th>}
+                        <th>Review Status</th>
                         <th>Action</th>
                       </tr>
                       <tr>
@@ -124,6 +167,7 @@ function ViewMyOrders() {
                         <td><input type="text" value={searchMarketerName} onChange={(e) => setSearchMarketerName(e.target.value)}/></td>
                         <td><input type="text" value={searchSalesOrder} onChange={(e) => setSearchSalesOrder(e.target.value)}/></td>
                         {userInfo?.role === "Super Admin" && <td/>}
+                        {(userInfo?.role === "Client" || userInfo?.role === "SalesPerson") && <td/>}
                         <td/>
                         <td/>
 
@@ -139,6 +183,7 @@ function ViewMyOrders() {
                           <td>{ele?.marketingPersonName}</td>
                           <td>{ele?.salesOrderNumber}</td>
                           {userInfo?.role === "Super Admin" && <td>{ele?.reviewedBy?.name}</td>}
+                          {(userInfo?.role === "Super Admin" || userInfo?.role === "Admin" || userInfo?.role === "Client" || userInfo?.role === "SalesPerson") && <td>{ele?.isClientApproved || "In Review"}</td>}
                           <td>{ele?.status !== "" ? ele?.status : "In Review"}</td>
                           <td>
                           <UncontrolledDropdown>
@@ -158,7 +203,7 @@ function ViewMyOrders() {
                                     <Eye className="me-50" size={15} />{" "}
                                     <span className="align-middle">View</span>
                                   </DropdownItem>
-                                  {(userInfo?.role === 'SalesPerson') &&
+                                  {(userInfo?.role === 'SalesPerson') && ele?.isClientApproved !== "Approved" && ele?.isClientApproved !== "Rejected" &&
 
                                   <DropdownItem
                                     href="#!"
@@ -167,7 +212,25 @@ function ViewMyOrders() {
                                     <Edit className="me-50" size={15} />{" "}
                                     <span className="align-middle">Edit</span>
                                   </DropdownItem>
-                                }
+                                  }
+                                  {((userInfo?.role === 'Client') && ele?.status === "Approved" && ele?.isClientApproved !== "Approved" && ele?.isClientApproved !== "Rejected") &&
+                                  <>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onApproveAction(e,ele)}
+                                  >
+                                    <CheckCircle className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Approve</span>
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onRejectAction(e,ele)}
+                                  >
+                                    <XCircle className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Reject</span>
+                                  </DropdownItem>
+                                  </>
+                                  }
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                           </td>

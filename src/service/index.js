@@ -735,6 +735,14 @@ export const clientApi = createApi({
       }),
       invalidatesTags: ["client"],
     }),
+    approveClient: builder.mutation({
+      query: (payload) => ({
+        url: "client/order/approved/reject",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["client"],
+    }),
   }),
 });
 export const {
@@ -746,7 +754,8 @@ export const {
  useSaveCartItemMutation,
  useClientOrderByIdQuery,
  useClientOrderByIdV2Query,
- useApproveOrderMutation
+ useApproveOrderMutation,
+ useApproveClientMutation
 } = clientApi;
 
 

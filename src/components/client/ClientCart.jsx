@@ -742,7 +742,7 @@ function ClientCart() {
                         <div className="col text-end">
                         <Link
                             className="btn btn-danger m-1"
-                            to={userInfo?.role === "Client" ? "/client-view-design" : "/sales-view-design"}
+                            to={userInfo?.role === "Client" ? "/client-view-design" : "/pdf-maker-view-design"}
                            
                           >
                             <i className="bx bx-x mr-1"></i> Cancel
@@ -752,7 +752,7 @@ function ClientCart() {
                             className="btn btn-success m-1"
                             data-bs-toggle="modal"
                             data-bs-target="#success-btn"
-                            disabled={resSaveCartItem?.isLoading}
+                            disabled={resSaveCartItem?.isLoading || resUpdateCartItem?.isLoading}
                           >
                             <i className="bx bx-file me-1"></i> Save
                           </button>

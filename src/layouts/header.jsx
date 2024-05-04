@@ -410,7 +410,7 @@ function HeaderComponent() {
             </button>
             </div>
           }
-          {(userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson') &&
+          {(userInfo?.role === 'Client' || userInfo?.role === 'SalesPerson' || (userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el  => el === "Drive"))) &&
           <div className="dropdown d-inline-block">
             <button
               type="button"

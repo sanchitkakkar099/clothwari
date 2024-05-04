@@ -62,7 +62,7 @@ export const privateRoutes = [
 
   { path: "/sales-person-form", Component: SalesPersonForm },
   { path: "/sales-person-list", Component: SalesPersonList },
-  { path: "/sales-view-design", Component: SalesPersonViewDesign },
+  { path: "/pdf-maker-view-design", Component: SalesPersonViewDesign },
 
 
   { path: "/category-list", Component: CategoryList },

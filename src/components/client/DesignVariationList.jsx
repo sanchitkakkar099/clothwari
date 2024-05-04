@@ -68,7 +68,7 @@ function DesignVariationList() {
   const backToDesign = (e) => {
     e.preventDefault()
     if(location?.state?.tag === "sales"){
-      navigate('/sales-view-design',{
+      navigate('/pdf-maker-view-design',{
         state:{
           currentPage:location?.state?.currentPage,
           tagsSearch:location?.state?.tagsSearch,
@@ -91,7 +91,7 @@ function DesignVariationList() {
   }
   return (
     <>
-      {userInfo?.role === "Client" || userInfo?.role === "SalesPerson" ? (
+      {(userInfo?.role === "Client" || userInfo?.role === "SalesPerson" || (userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el  => el === "Drive"))) ? (
         <div className="page-content">
           <div className="container-fluid">
             <div className="row">
@@ -179,6 +179,7 @@ function DesignVariationList() {
                           </button>
                         </div>
                       ) : (
+                        (userInfo?.role === "Client" || userInfo?.role === "SalesPerson") &&
                         <div className="d-flex justify-content-center  m-3">
                           <button
                             className="btn btn-primary"
@@ -266,6 +267,7 @@ function DesignVariationList() {
                           </button>
                         </div>
                       ) : (
+                        (userInfo?.role === "Client" || userInfo?.role === "SalesPerson") &&
                         <div className="d-flex justify-content-center  m-3">
                           <button
                             className="btn btn-primary"

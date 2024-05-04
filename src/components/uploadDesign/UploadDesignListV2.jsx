@@ -486,7 +486,7 @@ function UploadDesignListV2() {
                                 <span className="align-middle">Delete</span>
                               </DropdownItem>
                             }
-                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
+                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Design Image")) &&
                                 <DropdownItem
                                 href="#!"
                                 onClick={(e) => handleDesignImage(e,ele?._id)}
