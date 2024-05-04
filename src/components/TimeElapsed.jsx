@@ -5,7 +5,7 @@ function TimeElapsedApp({ expiredTime }) {
   return (
     <div className="timer">
       <div className="time_left_txt">
-        Session Expired At :{" "}
+        Session Will Expire At :{" "}
         {expiredTime ? dayjs(expiredTime).format("hh:mm A") : null}
       </div>
     </div>
