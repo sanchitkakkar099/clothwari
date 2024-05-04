@@ -91,7 +91,7 @@ function ClientCart() {
 
   const handleRemoveFromCart = (e, el,removeIndex) => {
     e.preventDefault();
-    const res = selectedBagItems?.filter((sb) => sb?._id !== el?._id);
+    const res = selectedBagItems?.filter((sb) => sb?.designId !== el?.designId);
     dispatch(removeBagItems(res));
     remove(removeIndex)
   };

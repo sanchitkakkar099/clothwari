@@ -113,7 +113,7 @@ function OrderDetials() {
 
   return (
     <>
-    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'SalesPerson' || userInfo?.role === 'Client') ?
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'SalesPerson' || userInfo?.role === 'Client' || userInfo?.permissions?.some(el => el === "Order Approved/Rejected")) ?
       <div className="page-content">
         <div className="container-fluid">
           <div className="row">
