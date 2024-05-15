@@ -61,7 +61,8 @@ function OrdersApprovalList() {
     console.log('el',el);
     navigate(`/order-details/${el?._id}`,{
       state:{
-        from:'view-orders-request'
+        from:'view-orders-request',
+        isClientApproved:el?.isClientApproved
       }
     })
   }

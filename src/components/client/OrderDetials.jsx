@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useClientOrderByIdQuery } from "../../service";
+import { useApproveOrderMutation, useClientOrderByIdQuery } from "../../service";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import "./orderDetail.css";
 import dayjs from "dayjs"; // For date formatting
 import DatePicker from "react-datepicker"; // For date selection in search
 import "react-datepicker/dist/react-datepicker.css"; // Include datepicker CSS
 import { useSelector } from "react-redux";
+import { Button } from 'reactstrap';
+import toast from "react-hot-toast";
 
 
 function OrderDetials() {
@@ -15,6 +17,8 @@ function OrderDetials() {
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const resClientOrderById = useClientOrderByIdQuery({id:params?.id,role:userInfo?.role});
   const [data,setData] = useState([])
+
+  const [reqApproveOrder, resApproveOrder] = useApproveOrderMutation();
 
   const formatDate = (date) => {
     return dayjs(date).format("DD-MM-YYYY");
@@ -107,6 +111,41 @@ function OrderDetials() {
       navigate("/view-my-orders")
     }
   }
+
+  const onApproveAction = (e) => {
+    e.preventDefault();
+    reqApproveOrder({
+      cartId:params?.id,
+      status:"Approved"
+    })
+  };
+
+  const onRejectAction = (e) => {
+    e.preventDefault();
+    reqApproveOrder({
+      cartId:params?.id,
+      status:"Rejected"
+    })
+  };
+
+  useEffect(() => {
+    if(resApproveOrder?.isSuccess){
+      toast.success("Order Request SuccessFully Updated",{
+        position:'top-center'
+      })
+      if(location?.state?.from  === 'view-orders-request'){
+        navigate('/view-orders-request')
+      }
+    }
+    if(resApproveOrder?.isError){
+      toast.error("Something went wrong",{
+        position:'top-center'
+      })
+      if(location?.state?.from  === 'view-orders-request'){
+        navigate('/view-orders-request')
+      }
+    }
+  },[resApproveOrder?.isSuccess,resApproveOrder?.isError])
   
   
 
@@ -142,6 +181,13 @@ function OrderDetials() {
                 <div className="d-flex justify-content-end mb-4">
             <button className="btn btn-primary" onClick={(e) => backToViewOrder(e)}>Back To View Order</button>
             </div>
+                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Order Approved/Rejected")) && (location?.state?.isClientApproved !== "Approved" && location?.state?.isClientApproved !== "Rejected") && 
+                 location?.state?.from === "view-orders-request" &&
+                  <>
+                    <Button className="m-1" color="primary" onClick={(e) => onApproveAction(e)}>Approve</Button>
+                    <Button className="ms-2 m-1" color="danger" onClick={(e) => onRejectAction(e)}>Reject</Button>
+                  </>
+                }
                 <div className="table-wrapper">
                   <div className="table-container">
                     <table

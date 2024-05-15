@@ -18,7 +18,7 @@ function PDFDesign() {
   const { isLoading, showLoader, hideLoader } = useLoader();
   const [pdfName,setPDFName] = useState('')
   const [isSubmit,setIsSubmit] = useState(false)
-
+  const [isDuplicate,setIsDuplicate] = useState('')
 
   const onCreateDrive = (e) => {
     e.preventDefault()
@@ -54,6 +54,12 @@ function PDFDesign() {
         position:'top-center'
       })
       hideLoader()
+    }
+    if (resDrive?.isError && resDrive?.error?.data?.message === "Already Exists") {
+      setIsDuplicate(true)
+      toast.error("Drive Is Already Exist",{
+        position:'top-center'
+      })
     }
   },[resDrive?.isSuccess,resDrive?.isError])
  
