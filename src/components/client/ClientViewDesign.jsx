@@ -236,7 +236,7 @@ function ClientViewDesign() {
                         </div>
                         </div>
                     </div>
-                    <div className="col-md-5">
+                    {/* <div className="col-md-5">
                     <div className="form-inline">
                         <div className="search-box ms-2">
                           
@@ -253,7 +253,7 @@ function ClientViewDesign() {
                                 />
                                 </div>
                                 </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="tab-content p-3 text-muted">
                     <div
@@ -328,7 +328,7 @@ function ClientViewDesign() {
                                                           {el?.name}
                                                         </Link>
                                                       </h5>
-                                                      <p className="text-muted font-size-13">
+                                                      {/* <p className="text-muted font-size-13">
                                                         {el?.tag &&
                                                         Array.isArray(
                                                           el?.tag
@@ -341,7 +341,7 @@ function ClientViewDesign() {
                                                               )
                                                               ?.join(",")
                                                           : ""}
-                                                      </p>
+                                                      </p> */}
                                                     </div>
 
                                                     <div>
