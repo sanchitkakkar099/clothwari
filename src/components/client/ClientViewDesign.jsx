@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDesignUploadListMutation, useTagListMutation } from "../../service";
+import { useCategoryDropdownListQuery, useDesignUploadListMutation, useTagListMutation } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, useNavigate,useLocation } from "react-router-dom";
@@ -20,6 +20,7 @@ function ClientViewDesign() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation()
+  const categoryDropdownRes = useCategoryDropdownListQuery();
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag,resTag] = useTagListMutation()
   const tagList = useSelector((state) => state?.tagState.tagList)
@@ -36,9 +37,14 @@ function ClientViewDesign() {
   const pageSize = 9;
   const [totalCount, setTotalCount] = useState(0);
 
+  const [categoryDropdown,setCategoryDropdown] = useState([])
+
+
   const [startDate, setStartDate] = useState(null);
   const [search, setSearch] = useState('');
   const [tagsSearch, setTagSearch] = useState([]);
+  const [categorySearch, setCategorySearch] = useState([]);
+
 
 
   useEffect(() => {
@@ -51,13 +57,14 @@ function ClientViewDesign() {
   },[location])
 
   useEffect(() => {
-    if(search || startDate || tagsSearch){
+    if(search || startDate || tagsSearch || categorySearch){
       reqDesign({
         page: currentPage,
         limit: pageSize,
         search: search,
         date_filter:startDate ?  dayjs(startDate).format() : '',
-        tags:tagsSearch
+        tags:tagsSearch,
+        category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
       });
     }else{
       reqDesign({
@@ -65,10 +72,11 @@ function ClientViewDesign() {
         limit: pageSize,
         search: "",
         date_filter:'',
-        tags:[]
+        tags:[],
+        category : []
       });
     }
-  }, [currentPage,search,startDate,tagsSearch]);
+  }, [currentPage,search,startDate,tagsSearch,categorySearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -78,6 +86,12 @@ function ClientViewDesign() {
     }
   }, [resDesign]);
 
+  useEffect(() => {
+    if(categoryDropdownRes?.isSuccess && Array.isArray(categoryDropdownRes?.data?.data) && categoryDropdownRes?.data?.data){
+      setCategoryDropdown(categoryDropdownRes?.data?.data)
+    }
+  },[categoryDropdownRes?.isSuccess])
+
   const handleSearch = (search) => {
     setSearch(search)
     reqDesign({
@@ -85,7 +99,8 @@ function ClientViewDesign() {
       limit: pageSize,
       search: search,
       date_filter:startDate ?  dayjs(startDate).format() : '',
-      tags:tagsSearch
+      tags:tagsSearch,
+      category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
     });
   };
 
@@ -122,7 +137,8 @@ function ClientViewDesign() {
       page:currentPage,
       limit:pageSize,
       search:search,
-      date_filter:dayjs(date).format()
+      date_filter:dayjs(date).format(),
+      category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
     })
   }
 
@@ -168,6 +184,17 @@ function ClientViewDesign() {
   const handleChangePrimary = (e) => {
     e.preventDefault()
     setVariationImg(null)
+  }
+
+  const handleCategorySelection = (selected) => {
+    setCategorySearch(selected)
+    reqDesign({
+      page:currentPage,
+      limit:pageSize,
+      search:search,
+      date_filter:dayjs(startDate).format(),
+      category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
+    })
   }
 
   return (
@@ -235,6 +262,22 @@ function ClientViewDesign() {
                         />
                         </div>
                         </div>
+                    </div>
+                    <div className="col-md-4">
+                    <div className="form-inline">
+                        <div className="search-box ms-2">
+                          
+                        <Typeahead
+                                  allowNew={false}
+                                  id="custom-selections-example"
+                                  labelKey={'label'}
+                                  multiple
+                                  options={(categoryDropdown && Array.isArray(categoryDropdown) && categoryDropdown?.length > 0) ? categoryDropdown : []}
+                                  placeholder="Search category..."
+                                  onChange={handleCategorySelection}
+                                />
+                                </div>
+                                </div>
                     </div>
                     {/* <div className="col-md-5">
                     <div className="form-inline">
