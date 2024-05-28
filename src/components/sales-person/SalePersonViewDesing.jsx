@@ -228,7 +228,7 @@ function SalesPersonViewDesign() {
 
                   </div>
                   <div className="row m-4">
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       <div className="form-inline">
                         <div className="search-box ms-2">
                           <div className="position-relative">
@@ -259,7 +259,7 @@ function SalesPersonViewDesign() {
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       <div className="form-inline">
                         <div className="search-box ms-2">
 
@@ -275,7 +275,7 @@ function SalesPersonViewDesign() {
                         </div>
                       </div>
                     </div>
-                    {/* <div className="col-md-5">
+                    <div className="col-md-3">
                     <div className="form-inline">
                         <div className="search-box ms-2">
                           
@@ -291,7 +291,7 @@ function SalesPersonViewDesign() {
                                 />
                                 </div>
                                 </div>
-                    </div> */}
+                    </div>
                   </div>
                   <div className="tab-content p-3 text-muted">
                     <div
