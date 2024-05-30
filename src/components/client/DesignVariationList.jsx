@@ -116,7 +116,7 @@ function DesignVariationList() {
                         src={data?.thumbnail[0]?.pdf_extract_img}
                         // className="image"
                         alt="image post"
-                        height={250}
+                        height={"100%"}
                         width={"100%"}
                         style={{objectFit:'cover'}}
                       />
@@ -124,7 +124,7 @@ function DesignVariationList() {
                       <img
                         src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
                         alt="image post"
-                        height={250}
+                        height={"100%"}
                         width={"100%"}
                       />
                     )}
@@ -203,7 +203,7 @@ function DesignVariationList() {
                       <img
                         src={ver?.variation_thumbnail[0]?.pdf_extract_img}
                         alt="image post"
-                        height={250}
+                        height={"100%"}
                         width={"100%"}
                         style={{objectFit:'cover'}}
                       />
@@ -211,7 +211,7 @@ function DesignVariationList() {
                       <img
                         src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
                         alt="image post"
-                        height={250}
+                        height={"100%"}
                         width={"100%"}
                       />
                     )}
