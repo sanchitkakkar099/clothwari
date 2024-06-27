@@ -19,7 +19,7 @@ function VerifyCreateTagModal({
     <Modal isOpen={showModal} centered toggle={() => closeModal()}>
       <ModalHeader>{modalDetails?.label}</ModalHeader>
       <ModalBody>
-        <p>Are you sure you wan to create new tag?</p>
+        <p>Are you sure want to create new tag?</p>
       </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={() => closeModal()}>
