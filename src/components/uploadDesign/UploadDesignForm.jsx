@@ -36,6 +36,7 @@ import {
 import { ArrowDownCircle, Download, X } from "react-feather";
 import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
 import { useDebounce } from "../../hook/useDebpunce";
+import VerifyCreateTagModal from "../common/VerifyCreateTagModal";
 // import AWS from 'aws-sdk';
 const baseUrl =
   import.meta.env.MODE === "development"
@@ -82,6 +83,8 @@ function AddDesign() {
   const [categoryDropdown, setCategoryDropdown] = useState([]);
   const [colorDropdown, setColorDropdown] = useState([]);
   const [tagDropdown, setTagDropdown] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalDetails, setModalDetails] = useState(null);
   // tag state
   const [tagOptions, setTagOptions] = useState([]);
   const [tags, setTags] = useState([]);
@@ -633,7 +636,9 @@ function AddDesign() {
         }
         if(tagOptions && Array.isArray(tagOptions) && !tagOptions?.some(el => selected?.some(ts => ts?.label === el?.label))){
           const newTag = {...selected[selected.length - 1],label:selected[selected.length - 1]?.label?.trim().toUpperCase()}
-          reqCreateTag(newTag)
+          setModalDetails(newTag);
+          setShowModal(true)
+          // reqCreateTag(newTag)
         }
         setTagInput('');
     }else{
@@ -1431,6 +1436,12 @@ function AddDesign() {
           </div>
         </div>
       </div>
+      <VerifyCreateTagModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        modalDetails={modalDetails}
+        confirmAction={reqCreateTag}
+      />
     </div>
   );
 }
