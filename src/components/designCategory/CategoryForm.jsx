@@ -7,8 +7,7 @@ import { useCategoryByIdQuery, useSubmitCategoryMutation, useUniqueCategoryCheck
 import { toast } from "react-hot-toast";
 import { useDebounce } from "../../hook/useDebpunce";
 
-function CategoryForm() {
-  //---testttt
+function CategoryForm() {  
   const navigate = useNavigate()
   const location = useLocation();
   const { state: locationState } = location;

@@ -251,6 +251,13 @@ function SidebarComponent() {
                     </Link>
                 </li>
                 }
+                {(userInfo?.role === 'Super Admin') &&
+                 <li>
+                    <Link to="/view-mocks-domestic">
+                        <span className="menu-item" data-key="t-dashboards">View Mocks</span>
+                    </Link>
+                </li>
+                }
 
 
             </ul>

@@ -1043,6 +1043,13 @@ export const driveApi = createApi({
       }),
       providesTags: ["drive"],
     }),
+    driveById: builder.query({
+      query: (id) => ({
+        url: `market/drive/byId/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["drive"],
+    }),
     createDrive: builder.mutation({
       query: (payload) => ({
         url: "market/drive/create",
@@ -1079,6 +1086,7 @@ export const driveApi = createApi({
 });
 export const {
   useDriveListMutation,
+  useDriveByIdQuery,
   useCreateDriveMutation,
   useUploadCreateDriveMutation,
   useDeleteDriveMutation,
