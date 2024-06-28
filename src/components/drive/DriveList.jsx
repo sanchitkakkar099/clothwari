@@ -22,7 +22,7 @@ import {
   DropdownToggle,
   UncontrolledDropdown,
 } from "reactstrap";
-import { Download, Edit, Eye, Key, MoreVertical, Trash } from "react-feather";
+import { Download, Edit, Eye, Key, MoreVertical, Trash, Share2 } from "react-feather";
 import ChangePassowardModal from "../common/ChangePassowardModal";
 import { getSalesPerson } from "../../redux/salesPersonSlice";
 import { getDrive } from "../../redux/driveSlice";
@@ -127,6 +127,26 @@ function DriveList() {
     });
   };
 
+  const onEditPDFMockAction = (e, st) =>{
+    e.preventDefault();
+    console.log("st",st);
+    if(st?.typeOfPdf === 'Domestic'){
+      navigate("/view-mocks-domestic", {
+        state: {
+          _id: st?._id,
+          isEdit:true,
+        } 
+      });
+    }else{
+      navigate("/view-mocks-international", {
+        state: {
+          _id: st?._id,
+          isEdit:true,
+        }
+      })
+    }  
+  }
+
   const handleDelete = (e, st) => {
     e.preventDefault();
     setModalDetails({
@@ -135,6 +155,20 @@ function DriveList() {
     });
     setShowModal(true);
   };
+
+  const handleCopy = async (e, ele) =>{
+    try{
+      await navigator.clipboard.writeText(ele?.pdfurl);
+      toast.success("Link copied", {
+        position: "top-center",
+      });
+    }catch(err){
+      toast.error("sometings went wrong", {
+        position: "top-center",
+      });
+      console.log("error",err);
+    }
+  }
 
   useEffect(() => {
     if (resDelete?.isSuccess) {
@@ -242,6 +276,15 @@ function DriveList() {
                                   </DropdownItem>
                                 }
                                 {userInfo?.role === 'Super Admin' &&
+                                <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => onEditPDFMockAction(e,ele)}
+                                  >
+                                    <Edit className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Edit Mock</span>
+                                  </DropdownItem>
+                                }
+                                {userInfo?.role === 'Super Admin' &&
                                   <DropdownItem
                                     href="#!"
                                     onClick={(e) => handleDelete(e,ele)}
@@ -257,6 +300,14 @@ function DriveList() {
                                   >
                                     <Download className="me-50" size={15} />{" "}
                                     <span className="align-middle">Download</span>
+                                  </DropdownItem>
+
+                                  <DropdownItem
+                                    href="#!"
+                                    onClick={(e) => handleCopy(e,ele)}
+                                  >
+                                    <Share2 className="me-50" size={15} />{" "}
+                                    <span className="align-middle">Share</span>
                                   </DropdownItem>
                               
                                 </DropdownMenu>
