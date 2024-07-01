@@ -156,26 +156,34 @@ function DriveList() {
     setShowModal(true);
   };
 
-  const handleCopy = async (e, ele) =>{
+  const handleCopy = async (e, ele) => {
     try {
-      if (!navigator.clipboard) {
-        throw new Error("Clipboard API not supported");
+      const textArea = document.createElement("textarea");
+      textArea.value = ele?.pdfurl;
+      textArea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge
+      textArea.style.opacity = "0";  // Hide the element
+      textArea.style.pointerEvents = "none";  // Prevent interaction
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+  
+      const successful = document.execCommand('copy');
+      if (successful) {
+        toast.success("Link copied", {
+          position: "top-center",
+        });
+      } else {
+        throw new Error("Copy command was unsuccessful");
       }
-      await navigator.clipboard.writeText(ele?.pdfurl);
-      toast.success("Link copied", {
-        position: "top-center",
-      });
+  
+      document.body.removeChild(textArea);
     } catch (err) {
-      let errorMessage = "Something went wrong";
-      if (err.message === "Clipboard API not supported") {
-        errorMessage = "Clipboard API is not supported by your browser.";
-      }
-      toast.error(errorMessage, {
+      toast.error("Something went wrong", {
         position: "top-center",
       });
       console.error("Clipboard copy error:", err);
     }
-  }
+  };
 
   useEffect(() => {
     if (resDelete?.isSuccess) {
