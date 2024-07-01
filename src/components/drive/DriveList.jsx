@@ -157,16 +157,23 @@ function DriveList() {
   };
 
   const handleCopy = async (e, ele) =>{
-    try{
+    try {
+      if (!navigator.clipboard) {
+        throw new Error("Clipboard API not supported");
+      }
       await navigator.clipboard.writeText(ele?.pdfurl);
       toast.success("Link copied", {
         position: "top-center",
       });
-    }catch(err){
-      toast.error("sometings went wrong", {
+    } catch (err) {
+      let errorMessage = "Something went wrong";
+      if (err.message === "Clipboard API not supported") {
+        errorMessage = "Clipboard API is not supported by your browser.";
+      }
+      toast.error(errorMessage, {
         position: "top-center",
       });
-      console.log("error",err);
+      console.error("Clipboard copy error:", err);
     }
   }
 
