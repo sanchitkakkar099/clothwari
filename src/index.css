@@ -54,7 +54,22 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
-
+.c-maker_pag {
+  display: flex;
+  align-items: center;
+}
+.c-maker_pag .pagination{
+  width: 92%;
+}
+.c-maker_input {
+  width: 8%;
+  margin-top: 17px;
+  margin-right: 20px;
+}
+.c-maker_input .search-box .form-control {
+  border-radius: 30px;
+  padding-left: 15px;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

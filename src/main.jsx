@@ -1,6 +1,7 @@
 import React,{Suspense} from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+import "./index.css"
 import './assets/scss/bootstrap.scss'
 import './assets/scss/app.scss'
 import './assets/scss/icons.scss'

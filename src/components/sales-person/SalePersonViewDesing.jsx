@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useCategoryDropdownListQuery, useDesignUploadListMutation, useTagListMutation } from "../../service";
+import {
+  useCategoryDropdownListQuery,
+  useDesignUploadListMutation,
+  useTagListMutation,
+} from "../../service";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -8,10 +12,10 @@ import { addedBagItems, removeBagItems } from "../../redux/clientSlice";
 import ReactDatePicker from "react-datepicker";
 import { Typeahead } from "react-bootstrap-typeahead";
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc'; // Import UTC plugin
+import utc from "dayjs/plugin/utc"; // Import UTC plugin
 // import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
 import { getTag } from "../../redux/tagSlice";
-
+import { Input } from "reactstrap";
 // Extend Day.js with the plugins
 dayjs.extend(utc);
 // dayjs.extend(timezone);
@@ -19,15 +23,17 @@ dayjs.extend(utc);
 function SalesPersonViewDesign() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation()
+  const location = useLocation();
   const categoryDropdownRes = useCategoryDropdownListQuery();
   const [reqDesign, resDesign] = useDesignUploadListMutation();
-  const [reqTag, resTag] = useTagListMutation()
-  const tagList = useSelector((state) => state?.tagState.tagList)
+  const [reqTag, resTag] = useTagListMutation();
+  const tagList = useSelector((state) => state?.tagState.tagList);
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
-  const selectedBagItems = useSelector((state) => state?.clientState.selectedBagItems)
+  const selectedBagItems = useSelector(
+    (state) => state?.clientState.selectedBagItems
+  );
   const [designID, setDesignId] = useState(null);
   const [variationImg, setVariationImg] = useState(null);
 
@@ -37,22 +43,22 @@ function SalesPersonViewDesign() {
   const pageSize = 9;
   const [totalCount, setTotalCount] = useState(0);
 
-  const [categoryDropdown,setCategoryDropdown] = useState([])
+  const [categoryDropdown, setCategoryDropdown] = useState([]);
 
   const [startDate, setStartDate] = useState(null);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
+  const [searchPage, setSearchPage] = useState("");
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
 
   useEffect(() => {
     if (location?.state?.currentPage) {
-      setCurrentPage(location?.state?.currentPage)
-      setTagSearch(location?.state?.tagsSearch)
-      setSearch(location?.state?.search)
-      setStartDate(location?.state?.startDate)
+      setCurrentPage(location?.state?.currentPage);
+      setTagSearch(location?.state?.tagsSearch);
+      setSearch(location?.state?.search);
+      setStartDate(location?.state?.startDate);
     }
-  }, [location])
-
+  }, [location]);
 
   useEffect(() => {
     if (search || startDate || tagsSearch || categorySearch) {
@@ -60,18 +66,20 @@ function SalesPersonViewDesign() {
         page: currentPage,
         limit: pageSize,
         search: search,
-        date_filter: startDate ? dayjs(startDate).format() : '',
+        date_filter: startDate ? dayjs(startDate).format() : "",
         tags: tagsSearch,
-        category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
+        category: Array.isArray(categorySearch)
+          ? categorySearch?.map((el) => el?.value)
+          : [],
       });
     } else {
       reqDesign({
         page: currentPage,
         limit: pageSize,
         search: "",
-        date_filter: '',
+        date_filter: "",
         tags: [],
-        category: []
+        category: [],
       });
     }
   }, [currentPage, search, startDate, tagsSearch, categorySearch]);
@@ -85,20 +93,41 @@ function SalesPersonViewDesign() {
   }, [resDesign]);
 
   useEffect(() => {
-    if(categoryDropdownRes?.isSuccess && Array.isArray(categoryDropdownRes?.data?.data) && categoryDropdownRes?.data?.data){
-      setCategoryDropdown(categoryDropdownRes?.data?.data)
+    if (
+      categoryDropdownRes?.isSuccess &&
+      Array.isArray(categoryDropdownRes?.data?.data) &&
+      categoryDropdownRes?.data?.data
+    ) {
+      setCategoryDropdown(categoryDropdownRes?.data?.data);
     }
-  },[categoryDropdownRes?.isSuccess])
+  }, [categoryDropdownRes?.isSuccess]);
 
   const handleSearch = (search) => {
-    setSearch(search)
+    setSearch(search);
     reqDesign({
       page: currentPage,
       limit: pageSize,
       search: search,
-      date_filter: startDate ? dayjs(startDate).format() : '',
+      date_filter: startDate ? dayjs(startDate).format() : "",
       tags: tagsSearch,
-      category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
+      category: Array.isArray(categorySearch)
+        ? categorySearch?.map((el) => el?.value)
+        : [],
+    });
+  };
+
+  const handleSearchPageNumber = (pageNumber) => {
+    setCurrentPage(parseInt(pageNumber) ? parseInt(pageNumber) : 1);
+    setSearchPage(pageNumber);
+    reqDesign({
+      page: pageNumber,
+      limit: pageSize,
+      search: search,
+      date_filter: startDate ? dayjs(startDate).format() : "",
+      tags: tagsSearch,
+      category: Array.isArray(categorySearch)
+        ? categorySearch?.map((el) => el?.value)
+        : [],
     });
   };
 
@@ -121,38 +150,40 @@ function SalesPersonViewDesign() {
   };
 
   const handleAddToBag = (el) => {
-    dispatch(addedBagItems(el))
-  }
+    dispatch(addedBagItems(el));
+  };
 
   const handleRemoveFromBag = (el) => {
-    const res = selectedBagItems?.filter(sb => sb?._id !== el?._id)
-    dispatch(removeBagItems(res))
-  }
+    const res = selectedBagItems?.filter((sb) => sb?._id !== el?._id);
+    dispatch(removeBagItems(res));
+  };
 
   const handleDateFilter = (date) => {
-    setStartDate(date)
+    setStartDate(date);
     reqDesign({
       page: currentPage,
       limit: pageSize,
       search: search,
       date_filter: dayjs(date).format(),
-      category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
-    })
-  }
+      category: Array.isArray(categorySearch)
+        ? categorySearch?.map((el) => el?.value)
+        : [],
+    });
+  };
 
   const navigateToView = (e, el) => {
-    e.preventDefault()
-    navigate('/design-selection', {
+    e.preventDefault();
+    navigate("/design-selection", {
       state: {
         data: el,
         currentPage: currentPage,
         tag: "sales",
         tagsSearch: tagsSearch,
         startDate: startDate,
-        search: search
-      }
-    })
-  }
+        search: search,
+      },
+    });
+  };
 
   useEffect(() => {
     reqTag({
@@ -169,30 +200,32 @@ function SalesPersonViewDesign() {
   }, [resTag]);
 
   const handleTagSelection = (selected) => {
-    setTagSearch(selected)
+    setTagSearch(selected);
     reqDesign({
       page: currentPage,
       limit: pageSize,
       search: search,
       date_filter: dayjs(startDate).format(),
-      tags: selected
-    })
-  }
+      tags: selected,
+    });
+  };
 
   const handleChangePrimary = (e) => {
-    e.preventDefault()
-    setVariationImg(null)
-  }
+    e.preventDefault();
+    setVariationImg(null);
+  };
   const handleCategorySelection = (selected) => {
-    setCategorySearch(selected)
+    setCategorySearch(selected);
     reqDesign({
-      page:currentPage,
-      limit:pageSize,
-      search:search,
-      date_filter:dayjs(startDate).format(),
-      category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : []
-    })
-  }
+      page: currentPage,
+      limit: pageSize,
+      search: search,
+      date_filter: dayjs(startDate).format(),
+      category: Array.isArray(categorySearch)
+        ? categorySearch?.map((el) => el?.value)
+        : [],
+    });
+  };
 
   return (
     <div className="page-content">
@@ -225,7 +258,6 @@ function SalesPersonViewDesign() {
                         <h5>Designs</h5>
                       </div>
                     </div>
-
                   </div>
                   <div className="row m-4">
                     <div className="col-md-3">
@@ -241,10 +273,7 @@ function SalesPersonViewDesign() {
                             />
                             <i className="bx bx-search search-icon"></i>
                           </div>
-
                         </div>
-
-
                       </div>
                     </div>
                     <div className="col-md-3">
@@ -262,13 +291,18 @@ function SalesPersonViewDesign() {
                     <div className="col-md-3">
                       <div className="form-inline">
                         <div className="search-box ms-2">
-
                           <Typeahead
                             allowNew={false}
                             id="custom-selections-example"
-                            labelKey={'label'}
+                            labelKey={"label"}
                             multiple
-                            options={(categoryDropdown && Array.isArray(categoryDropdown) && categoryDropdown?.length > 0) ? categoryDropdown : []}
+                            options={
+                              categoryDropdown &&
+                              Array.isArray(categoryDropdown) &&
+                              categoryDropdown?.length > 0
+                                ? categoryDropdown
+                                : []
+                            }
                             placeholder="Search category..."
                             onChange={handleCategorySelection}
                           />
@@ -276,21 +310,26 @@ function SalesPersonViewDesign() {
                       </div>
                     </div>
                     <div className="col-md-3">
-                    <div className="form-inline">
+                      <div className="form-inline">
                         <div className="search-box ms-2">
-                          
-                        <Typeahead
-                                  allowNew={false}
-                                  id="custom-selections-example"
-                                  labelKey={'label'}
-                                  multiple
-                                  options={(tagList && Array.isArray(tagList) && tagList?.length > 0) ? tagList?.map(el => el?.label) : []}
-                                  placeholder="Search tags..."
-                                  onChange={handleTagSelection}
-                                  selected={tagsSearch}
-                                />
-                                </div>
-                                </div>
+                          <Typeahead
+                            allowNew={false}
+                            id="custom-selections-example"
+                            labelKey={"label"}
+                            multiple
+                            options={
+                              tagList &&
+                              Array.isArray(tagList) &&
+                              tagList?.length > 0
+                                ? tagList?.map((el) => el?.label)
+                                : []
+                            }
+                            placeholder="Search tags..."
+                            onChange={handleTagSelection}
+                            selected={tagsSearch}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="tab-content p-3 text-muted">
@@ -310,11 +349,19 @@ function SalesPersonViewDesign() {
                                     id="popularity"
                                     role="tabpanel"
                                   >
-                                    <h6 style={{ display: 'flex', justifyContent: 'end', textTransform: 'uppercase' }}>Total Designs: {totalCount}</h6>
+                                    <h6
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "end",
+                                        textTransform: "uppercase",
+                                      }}
+                                    >
+                                      Total Designs: {totalCount}
+                                    </h6>
                                     <div className="row">
                                       {designUploadList &&
-                                        Array.isArray(designUploadList) &&
-                                        designUploadList?.length > 0 ? (
+                                      Array.isArray(designUploadList) &&
+                                      designUploadList?.length > 0 ? (
                                         designUploadList?.map((el, i) => {
                                           return (
                                             <div
@@ -326,15 +373,15 @@ function SalesPersonViewDesign() {
                                                   {Array.isArray(
                                                     el?.thumbnail
                                                   ) &&
-                                                    el?.thumbnail[0]
-                                                      ?.pdf_extract_img ? (
+                                                  el?.thumbnail[0]
+                                                    ?.pdf_extract_img ? (
                                                     <img
                                                       src={
                                                         variationImg &&
-                                                          el?._id === designID
+                                                        el?._id === designID
                                                           ? variationImg
                                                           : el?.thumbnail[0]
-                                                            ?.pdf_extract_img
+                                                              ?.pdf_extract_img
                                                       }
                                                       alt="image post"
                                                       height={200}
@@ -360,7 +407,12 @@ function SalesPersonViewDesign() {
                                                       <h5 className="mb-1">
                                                         <Link
                                                           to={""}
-                                                          onClick={(e) => navigateToView(e, el)}
+                                                          onClick={(e) =>
+                                                            navigateToView(
+                                                              e,
+                                                              el
+                                                            )
+                                                          }
                                                           className="text-dark font-size-16"
                                                         >
                                                           {el?.name}
@@ -385,20 +437,25 @@ function SalesPersonViewDesign() {
                                                     <div>
                                                       <ul className="list-inline mb-0 text-muted product-color">
                                                         {el?.primary_color_code && (
-                                                          <li className="list-inline-item"
+                                                          <li
+                                                            className="list-inline-item"
                                                             style={{
                                                               backgroundColor:
                                                                 el?.primary_color_code,
-                                                              width: '14px',
-                                                              height: '14px',
-                                                              borderRadius: '50%',
-                                                              border: '1px solid #c7c7c7'
+                                                              width: "14px",
+                                                              height: "14px",
+                                                              borderRadius:
+                                                                "50%",
+                                                              border:
+                                                                "1px solid #c7c7c7",
                                                             }}
-                                                            onClick={(e) => handleChangePrimary(e)}>
-                                                            <span
-                                                              className=""
-
-                                                            ></span>
+                                                            onClick={(e) =>
+                                                              handleChangePrimary(
+                                                                e
+                                                              )
+                                                            }
+                                                          >
+                                                            <span className=""></span>
                                                           </li>
                                                         )}
                                                         {el?.color?.map(
@@ -409,10 +466,13 @@ function SalesPersonViewDesign() {
                                                                 style={{
                                                                   backgroundColor:
                                                                     cl?.value,
-                                                                  width: '14px',
-                                                                  height: '14px',
-                                                                  borderRadius: '50%',
-                                                                  border: '1px solid #c7c7c7'
+                                                                  width: "14px",
+                                                                  height:
+                                                                    "14px",
+                                                                  borderRadius:
+                                                                    "50%",
+                                                                  border:
+                                                                    "1px solid #c7c7c7",
                                                                 }}
                                                                 key={cinx}
                                                                 onClick={(e) =>
@@ -423,19 +483,14 @@ function SalesPersonViewDesign() {
                                                                   )
                                                                 }
                                                               >
-                                                                <span
-                                                                  className=""
-
-                                                                ></span>
+                                                                <span className=""></span>
                                                               </li>
                                                             );
                                                           }
                                                         )}
                                                       </ul>
                                                     </div>
-
                                                   </div>
-
                                                 </div>
                                                 {/* {selectedBagItems && Array.isArray(selectedBagItems) && selectedBagItems?.length > 0 && selectedBagItems?.some(sb => sb?._id ===el?._id)  ?
                                                 
@@ -466,13 +521,36 @@ function SalesPersonViewDesign() {
                                 </div>
                               </div>
                             </div>
-                            <Pagination
-                              currentPage={currentPage}
-                              totalCount={totalCount}
-                              pageSize={pageSize}
-                              onPageChange={(page) => setCurrentPage(page)}
-                              TBLData={TBLData}
-                            />
+                            <div className="c-maker_pag">
+                              
+                              <Pagination
+                                currentPage={currentPage}
+                                totalCount={totalCount}
+                                pageSize={pageSize}
+                                onPageChange={(page) => setCurrentPage(page)}
+                                TBLData={TBLData}
+                              />
+                              <div className="c-maker_input">
+                                
+                                <div className="form-inline">
+                                    <div className="search-box">
+                                      <div className="position-relative">
+                                        <input
+                                          type="text"
+                                          onChange={(e) =>
+                                            handleSearchPageNumber(
+                                              e.target.value
+                                            )
+                                          }
+                                          className="form-control "
+                                          placeholder="Find by Page Number"
+                                          value={searchPage}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
