@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   useCategoryDropdownListQuery,
   useDesignUploadListMutation,
+  useDesignerDropDownListQuery,
   useTagListMutation,
 } from "../../service";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +25,9 @@ function SalesPersonViewDesign() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const userInfo = useSelector((state) => state?.authState.userInfo);
   const categoryDropdownRes = useCategoryDropdownListQuery();
+  const staffDropDownRes = useDesignerDropDownListQuery()
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag, resTag] = useTagListMutation();
   const tagList = useSelector((state) => state?.tagState.tagList);
@@ -44,12 +47,16 @@ function SalesPersonViewDesign() {
   const [totalCount, setTotalCount] = useState(0);
 
   const [categoryDropdown, setCategoryDropdown] = useState([]);
+  const [staffDropdown,setStaffDropdown] = useState([])
 
   const [startDate, setStartDate] = useState(null);
   const [search, setSearch] = useState("");
   const [searchPage, setSearchPage] = useState("");
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
+
+  const [selectedStaff, setSelectedStaff] = useState(null);
+
 
   useEffect(() => {
     if (location?.state?.currentPage) {
@@ -61,13 +68,14 @@ function SalesPersonViewDesign() {
   }, [location]);
 
   useEffect(() => {
-    if (search || startDate || tagsSearch || categorySearch) {
+    if (search || startDate || tagsSearch || categorySearch || selectedStaff) {
       reqDesign({
         page: currentPage,
         limit: pageSize,
         search: search,
         date_filter: startDate ? dayjs(startDate).format() : "",
         tags: tagsSearch,
+        uploadedBy:selectedStaff ? selectedStaff : '',
         category: Array.isArray(categorySearch)
           ? categorySearch?.map((el) => el?.value)
           : [],
@@ -79,10 +87,11 @@ function SalesPersonViewDesign() {
         search: "",
         date_filter: "",
         tags: [],
+        uploadedBy: '',
         category: [],
       });
     }
-  }, [currentPage, search, startDate, tagsSearch, categorySearch]);
+  }, [currentPage, search, startDate, tagsSearch, selectedStaff, categorySearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -101,6 +110,14 @@ function SalesPersonViewDesign() {
       setCategoryDropdown(categoryDropdownRes?.data?.data);
     }
   }, [categoryDropdownRes?.isSuccess]);
+
+  useEffect(() => {
+    if(staffDropDownRes?.isSuccess && Array.isArray(staffDropDownRes?.data?.data) && staffDropDownRes?.data?.data){
+      const filterRes =  staffDropDownRes?.data?.data?.map((el) => ({label:el?.name,value:el?._id}))
+      const filterRes2 = (userInfo?.role !== "Super Admin" && userInfo?.role !== "Admin") ? filterRes?.filter(el => el?.value === userInfo?._id) : filterRes
+      setStaffDropdown(filterRes2)
+    }
+  },[staffDropDownRes?.isSuccess])
 
   const handleSearch = (search) => {
     setSearch(search);
@@ -214,6 +231,10 @@ function SalesPersonViewDesign() {
     e.preventDefault();
     setVariationImg(null);
   };
+  const handleStaffSelection = (selected) => {
+    console.log("selected",selected)
+    setSelectedStaff(selected[0]?.value)
+  }
   const handleCategorySelection = (selected) => {
     setCategorySearch(selected);
     reqDesign({
@@ -327,6 +348,28 @@ function SalesPersonViewDesign() {
                             placeholder="Search tags..."
                             onChange={handleTagSelection}
                             selected={tagsSearch}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row m-4">
+                    <div className="col-md-3">
+                      <div className="form-inline">
+                        <div className="search-box ms-2">
+                          <Typeahead
+                            allowNew={false}
+                            id="custom-selections-example"
+                            labelKey={"label"}
+                            options={
+                              staffDropdown &&
+                              Array.isArray(staffDropdown) &&
+                              staffDropdown?.length > 0
+                                ? staffDropdown
+                                : []
+                            }
+                            placeholder="Search staff..."
+                            onChange={handleStaffSelection}
                           />
                         </div>
                       </div>
@@ -522,7 +565,6 @@ function SalesPersonViewDesign() {
                               </div>
                             </div>
                             <div className="c-maker_pag">
-                              
                               <Pagination
                                 currentPage={currentPage}
                                 totalCount={totalCount}
@@ -531,24 +573,21 @@ function SalesPersonViewDesign() {
                                 TBLData={TBLData}
                               />
                               <div className="c-maker_input">
-                                
                                 <div className="form-inline">
-                                    <div className="search-box">
-                                      <div className="position-relative">
-                                        <input
-                                          type="text"
-                                          onChange={(e) =>
-                                            handleSearchPageNumber(
-                                              e.target.value
-                                            )
-                                          }
-                                          className="form-control "
-                                          placeholder="Find by Page Number"
-                                          value={searchPage}
-                                        />
-                                      </div>
+                                  <div className="search-box">
+                                    <div className="position-relative">
+                                      <input
+                                        type="text"
+                                        onChange={(e) =>
+                                          handleSearchPageNumber(e.target.value)
+                                        }
+                                        className="form-control "
+                                        placeholder="Find by Page Number"
+                                        value={searchPage}
+                                      />
                                     </div>
                                   </div>
+                                </div>
                               </div>
                             </div>
                           </div>
