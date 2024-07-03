@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
   categoryList: [],
+  selectedCategoryList: [],
 };
 
 export const categorySlice = createSlice({
@@ -14,12 +15,20 @@ export const categorySlice = createSlice({
     setCategoryList: (state, { payload }) => {
       state.categoryList = [...state?.categoryList,payload];
     },
+    getSelectedCategoryList: (state,  { payload }) =>{
+      state.selectedCategoryList = payload;
+    },
+    setSelectedCategoryList: (state, { payload }) => {
+      state.selectedCategoryList = payload;
+    },
   },
 });
 
 export const {
   getCategory,
-  setCategoryList
+  setCategoryList,
+  getSelectedCategoryList,
+  setSelectedCategoryList,
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

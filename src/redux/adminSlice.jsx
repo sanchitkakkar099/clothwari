@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
   adminList: [],
-  staffApprovalList:[]
+  staffApprovalList:[],
+  selectedStaffList: [],
 };
 
 export const adminSlice = createSlice({
@@ -15,12 +16,20 @@ export const adminSlice = createSlice({
     getStaffApprovalList: (state, { payload }) => {
       state.staffApprovalList = payload;
     },
+    getSelectedStaffList: (state,  { payload }) =>{
+      state.selectedStaffList = payload;
+    },
+    setSelectedStaffList: (state, { payload }) => {
+      state.selectedStaffList = payload;
+    },
   },
 });
 
 export const {
   getAdmin,
-  getStaffApprovalList
+  getStaffApprovalList,
+  getSelectedStaffList,
+  setSelectedStaffList,
 } = adminSlice.actions;
 
 export default adminSlice.reducer;

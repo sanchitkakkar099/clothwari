@@ -15,7 +15,9 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc"; // Import UTC plugin
 // import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
-import { getTag } from "../../redux/tagSlice";
+import { getTag, setSelectedTagList, setSelectedDate,setSearchData } from "../../redux/tagSlice";
+import { setSelectedStaffList } from "../../redux/adminSlice";
+import { setSelectedCategoryList } from "../../redux/categorySlice";
 import { Input } from "reactstrap";
 // Extend Day.js with the plugins
 dayjs.extend(utc);
@@ -26,11 +28,16 @@ function SalesPersonViewDesign() {
   const navigate = useNavigate();
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
+  const slectedTagList = useSelector((state) => state?.tagState.selectedTagList);
   const categoryDropdownRes = useCategoryDropdownListQuery();
   const staffDropDownRes = useDesignerDropDownListQuery()
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag, resTag] = useTagListMutation();
   const tagList = useSelector((state) => state?.tagState.tagList);
+  const searchData = useSelector((state) => state?.tagState.searchData);
+  const selectedDate = useSelector((state) => state?.tagState.selectedDate);
+  const selectedStaffList = useSelector((state) => state?.adminState.selectedStaffList);
+  const selectedCategoryList = useSelector((state) => state?.categoryState.selectedCategoryList);
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
@@ -66,6 +73,27 @@ function SalesPersonViewDesign() {
       setStartDate(location?.state?.startDate);
     }
   }, [location]);
+
+  useEffect(() => {
+    setSearch(searchData);
+  },[searchData]);
+
+  useEffect(() => {
+    setStartDate(selectedDate);
+  },[selectedDate]);
+
+  useEffect(() => {
+    setTagSearch(slectedTagList);
+  },[slectedTagList]);
+
+  useEffect(() => {
+    setSelectedStaff(selectedStaffList);
+  },[selectedStaffList]);
+
+  useEffect(() => {
+    setCategorySearch(selectedCategoryList);
+  },[selectedCategoryList]);
+      
 
   useEffect(() => {
     if (search || startDate || tagsSearch || categorySearch || selectedStaff) {
@@ -120,6 +148,7 @@ function SalesPersonViewDesign() {
   },[staffDropDownRes?.isSuccess])
 
   const handleSearch = (search) => {
+    dispatch(setSearchData(search));
     setSearch(search);
     reqDesign({
       page: currentPage,
@@ -178,6 +207,7 @@ function SalesPersonViewDesign() {
   };
 
   const handleDateFilter = (date) => {
+    dispatch(setSelectedDate(date));
     setStartDate(date);
     reqDesign({
       page: currentPage,
@@ -219,6 +249,7 @@ function SalesPersonViewDesign() {
   }, [resTag]);
 
   const handleTagSelection = (selected) => {
+    dispatch(setSelectedTagList(selected))
     setTagSearch(selected);
     reqDesign({
       page: currentPage,
@@ -238,9 +269,11 @@ function SalesPersonViewDesign() {
     setVariationImg(null);
   };
   const handleStaffSelection = (selected) => {
+    dispatch(setSelectedStaffList(selected));
     setSelectedStaff(selected)
   }
   const handleCategorySelection = (selected) => {
+    dispatch(setSelectedCategoryList(selected));
     setCategorySearch(selected);
     reqDesign({
       page: currentPage,
@@ -332,6 +365,7 @@ function SalesPersonViewDesign() {
                             }
                             placeholder="Search category..."
                             onChange={handleCategorySelection}
+                            selected={categorySearch}
                           />
                         </div>
                       </div>
@@ -377,6 +411,7 @@ function SalesPersonViewDesign() {
                             }
                             placeholder="Search staff..."
                             onChange={handleStaffSelection}
+                            selected={selectedStaff}
                           />
                         </div>
                       </div>
