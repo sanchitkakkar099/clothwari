@@ -62,7 +62,7 @@ function UploadDesignListV1() {
   const [colorSearch, setColorSearch] = useState([]);
 
 
-  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [selectedStaff, setSelectedStaff] = useState([]);
   
 
   useEffect(() => {
@@ -75,7 +75,7 @@ function UploadDesignListV1() {
         start_date:(startDate && endDate) ? dayjs(startDate).format() : "",
         end_date:(startDate && endDate) ? dayjs(endDate).format() : "",
         tags:tagsSearch,
-        uploadedBy:selectedStaff ? selectedStaff : '',
+        uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
         category:Array.isArray(categorySearch) ? categorySearch?.map(el => el?.value) : [],
         color:Array.isArray(colorSearch) ? colorSearch?.map(el => el?._id) : []
       });
@@ -88,7 +88,7 @@ function UploadDesignListV1() {
         start_date: "",
         end_date:"",
         tags:[],
-        uploadedBy: '',
+        uploadedBy: [],
         category:[],
         color:[]
       });
@@ -189,7 +189,7 @@ function UploadDesignListV1() {
   }
 
   const handleStaffSelection = (selected) => {
-    setSelectedStaff(selected[0]?.value)
+    setSelectedStaff(selected)
   }
 
   return (
@@ -303,6 +303,7 @@ function UploadDesignListV1() {
                                   allowNew={false}
                                   id="custom-selections-example"
                                   labelKey={'label'}
+                                  multiple
                                   options={(staffDropdown && Array.isArray(staffDropdown) && staffDropdown?.length > 0) ? staffDropdown : []}
                                   placeholder="Search staff..."
                                   onChange={handleStaffSelection}

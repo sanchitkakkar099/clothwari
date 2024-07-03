@@ -55,7 +55,7 @@ function SalesPersonViewDesign() {
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
 
-  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [selectedStaff, setSelectedStaff] = useState([]);
 
 
   useEffect(() => {
@@ -75,7 +75,7 @@ function SalesPersonViewDesign() {
         search: search,
         date_filter: startDate ? dayjs(startDate).format() : "",
         tags: tagsSearch,
-        uploadedBy:selectedStaff ? selectedStaff : '',
+        uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
         category: Array.isArray(categorySearch)
           ? categorySearch?.map((el) => el?.value)
           : [],
@@ -87,7 +87,7 @@ function SalesPersonViewDesign() {
         search: "",
         date_filter: "",
         tags: [],
-        uploadedBy: '',
+        uploadedBy: [],
         category: [],
       });
     }
@@ -127,6 +127,7 @@ function SalesPersonViewDesign() {
       search: search,
       date_filter: startDate ? dayjs(startDate).format() : "",
       tags: tagsSearch,
+      uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
       category: Array.isArray(categorySearch)
         ? categorySearch?.map((el) => el?.value)
         : [],
@@ -142,6 +143,7 @@ function SalesPersonViewDesign() {
       search: search,
       date_filter: startDate ? dayjs(startDate).format() : "",
       tags: tagsSearch,
+      uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
       category: Array.isArray(categorySearch)
         ? categorySearch?.map((el) => el?.value)
         : [],
@@ -224,6 +226,10 @@ function SalesPersonViewDesign() {
       search: search,
       date_filter: dayjs(startDate).format(),
       tags: selected,
+      uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
+      category: Array.isArray(categorySearch)
+      ? categorySearch?.map((el) => el?.value)
+      : [],
     });
   };
 
@@ -232,8 +238,7 @@ function SalesPersonViewDesign() {
     setVariationImg(null);
   };
   const handleStaffSelection = (selected) => {
-    console.log("selected",selected)
-    setSelectedStaff(selected[0]?.value)
+    setSelectedStaff(selected)
   }
   const handleCategorySelection = (selected) => {
     setCategorySearch(selected);
@@ -242,6 +247,7 @@ function SalesPersonViewDesign() {
       limit: pageSize,
       search: search,
       date_filter: dayjs(startDate).format(),
+      uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
       category: Array.isArray(categorySearch)
         ? categorySearch?.map((el) => el?.value)
         : [],
@@ -361,6 +367,7 @@ function SalesPersonViewDesign() {
                             allowNew={false}
                             id="custom-selections-example"
                             labelKey={"label"}
+                            multiple
                             options={
                               staffDropdown &&
                               Array.isArray(staffDropdown) &&
