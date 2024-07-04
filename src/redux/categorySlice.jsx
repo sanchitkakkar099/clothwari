@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initState = {
   categoryList: [],
   selectedCategoryList: [],
+  selectedCategoryListDesign: [],
 };
 
 export const categorySlice = createSlice({
@@ -15,8 +16,8 @@ export const categorySlice = createSlice({
     setCategoryList: (state, { payload }) => {
       state.categoryList = [...state?.categoryList,payload];
     },
-    getSelectedCategoryList: (state,  { payload }) =>{
-      state.selectedCategoryList = payload;
+    setSelectedCategoryListDesign: (state,  { payload }) =>{
+      state.selectedCategoryListDesign = payload;
     },
     setSelectedCategoryList: (state, { payload }) => {
       state.selectedCategoryList = payload;
@@ -27,7 +28,7 @@ export const categorySlice = createSlice({
 export const {
   getCategory,
   setCategoryList,
-  getSelectedCategoryList,
+  setSelectedCategoryListDesign,
   setSelectedCategoryList,
 } = categorySlice.actions;
 

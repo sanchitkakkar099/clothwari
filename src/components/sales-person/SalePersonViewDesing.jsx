@@ -15,7 +15,8 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc"; // Import UTC plugin
 // import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
-import { getTag, setSelectedTagList, setSelectedDate,setSearchData } from "../../redux/tagSlice";
+import { getTag, setSelectedTagList } from "../../redux/tagSlice";
+import { setSearchData, setSelectedDate } from "../../redux/mixedSlice";
 import { setSelectedStaffList } from "../../redux/adminSlice";
 import { setSelectedCategoryList } from "../../redux/categorySlice";
 import { Input } from "reactstrap";
@@ -28,14 +29,14 @@ function SalesPersonViewDesign() {
   const navigate = useNavigate();
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
-  const slectedTagList = useSelector((state) => state?.tagState.selectedTagList);
   const categoryDropdownRes = useCategoryDropdownListQuery();
   const staffDropDownRes = useDesignerDropDownListQuery()
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag, resTag] = useTagListMutation();
   const tagList = useSelector((state) => state?.tagState.tagList);
-  const searchData = useSelector((state) => state?.tagState.searchData);
-  const selectedDate = useSelector((state) => state?.tagState.selectedDate);
+  const slectedTagList = useSelector((state) => state?.tagState.selectedTagList);
+  const searchData = useSelector((state) => state?.mixedState.searchData);
+  const selectedDate = useSelector((state) => state?.mixedState.selectedDate);
   const selectedStaffList = useSelector((state) => state?.adminState.selectedStaffList);
   const selectedCategoryList = useSelector((state) => state?.categoryState.selectedCategoryList);
   const designUploadList = useSelector(
@@ -144,6 +145,10 @@ function SalesPersonViewDesign() {
       const filterRes =  staffDropDownRes?.data?.data?.map((el) => ({label:el?.name,value:el?._id}))
       const filterRes2 = (userInfo?.role !== "Super Admin" && userInfo?.role !== "Admin") ? filterRes?.filter(el => el?.value === userInfo?._id) : filterRes
       setStaffDropdown(filterRes2)
+      if(selectedStaffList.length<=0){
+        setSelectedStaff(filterRes2)
+        dispatch(setSelectedStaffList(filterRes2));
+      }
     }
   },[staffDropDownRes?.isSuccess])
 
@@ -401,6 +406,7 @@ function SalesPersonViewDesign() {
                             allowNew={false}
                             id="custom-selections-example"
                             labelKey={"label"}
+                            onActiveItemChange={false}
                             multiple
                             options={
                               staffDropdown &&

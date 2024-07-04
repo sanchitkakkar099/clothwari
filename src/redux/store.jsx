@@ -9,6 +9,7 @@ import dashboardSlice from "./dashboardSlice";
 import salesPersonSlice from "./salesPersonSlice";
 import authSlice from "./authSlice";
 import adminSlice from "./adminSlice";
+import mixedSlice from "./mixedSlice";
 import { adminApi, authApi, categoryApi, clientApi, clientBagApi, colorVariationApi, dashboardApi, designTagApi, designUploadApi, designerApi, driveApi, fileApi, salesPersonApi } from "../service";
 import driveSlice from "./driveSlice";
 import Cookies from "universal-cookie";
@@ -22,6 +23,7 @@ const appReducer = combineReducers({
   categoryState: categorySlice,
   colorVariationState: colorVariationSlice,
   tagState: tagSlice,
+  mixedState: mixedSlice,
   clientState: clientSlice,
   dashboardState: dashboardSlice,
   salesPersonState: salesPersonSlice,

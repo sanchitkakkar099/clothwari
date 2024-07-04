@@ -4,6 +4,7 @@ const initState = {
   adminList: [],
   staffApprovalList:[],
   selectedStaffList: [],
+  selectedStaffListDesign: [],
 };
 
 export const adminSlice = createSlice({
@@ -16,8 +17,8 @@ export const adminSlice = createSlice({
     getStaffApprovalList: (state, { payload }) => {
       state.staffApprovalList = payload;
     },
-    getSelectedStaffList: (state,  { payload }) =>{
-      state.selectedStaffList = payload;
+    setSelectedStaffListDesign: (state,  { payload }) =>{
+      state.selectedStaffListDesign = payload;
     },
     setSelectedStaffList: (state, { payload }) => {
       state.selectedStaffList = payload;
@@ -28,7 +29,7 @@ export const adminSlice = createSlice({
 export const {
   getAdmin,
   getStaffApprovalList,
-  getSelectedStaffList,
+  setSelectedStaffListDesign,
   setSelectedStaffList,
 } = adminSlice.actions;
 

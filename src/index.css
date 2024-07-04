@@ -70,6 +70,10 @@ button:focus-visible {
   border-radius: 30px;
   padding-left: 15px;
 }
+.rbt-input-wrapper {
+  max-height: 110px!important;
+  overflow: auto!important;
+}
 /* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

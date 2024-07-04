@@ -16,7 +16,11 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import dayjs from "dayjs";
 // import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 // import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
-import { getTag } from "../../redux/tagSlice";
+import { getTag, setSelectedTagListDesign } from "../../redux/tagSlice"; 
+import { setSearchDataDesign, setSelectedEndDateDesign, setSelectedFromDateDesign } from "../../redux/mixedSlice";
+import { setSelectedCategoryListDesign } from "../../redux/categorySlice"; 
+import { setSelectedColorVariationListDesign } from "../../redux/colorVariationSlice";
+import { setSelectedStaffListDesign } from "../../redux/adminSlice";
 
 // Extend Day.js with the plugins
 // dayjs.extend(utc);
@@ -39,6 +43,13 @@ function UploadDesignListV1() {
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
+  const slectedTagList = useSelector((state) => state?.tagState.selectedTagListDesign);
+  const searchData = useSelector((state) => state?.mixedState.searchDataDesign);
+  const selectedFromDate = useSelector((state) => state?.mixedState.selectedFromDateDesign);
+  const selectedEndDate = useSelector((state) => state?.mixedState.selectedEndDateDesign);
+  const selectedStaffList = useSelector((state) => state?.adminState.selectedStaffListDesign);
+  const selectedCategoryList = useSelector((state) => state?.categoryState.selectedCategoryListDesign);
+  const selectedColorList = useSelector((state) => state?.colorVariationState.selectedColorVariationListDesign);
   const [staffDropdown,setStaffDropdown] = useState([])
   const [categoryDropdown,setCategoryDropdown] = useState([])
   const [colorDropdown, setColorDropdown] = useState([]);
@@ -64,6 +75,40 @@ function UploadDesignListV1() {
 
   const [selectedStaff, setSelectedStaff] = useState([]);
   
+  useEffect(() => {
+    if(searchData)
+    setSearch(searchData);
+  },[searchData]);
+
+  useEffect(() => {
+    if(selectedFromDate)
+    setStartDate(selectedFromDate);
+  },[selectedFromDate]);
+
+  useEffect(() => {
+    if(selectedEndDate)
+    setEndDate(selectedEndDate);
+  },[selectedEndDate]);
+
+  useEffect(() => {
+    if(slectedTagList.length>0)
+    setTagSearch(slectedTagList);
+  },[slectedTagList]);
+
+  useEffect(() => {
+    if(selectedStaffList.length>0)
+    setSelectedStaff(selectedStaffList);
+  },[selectedStaffList]);
+
+  useEffect(() => {
+    if(selectedCategoryList.length>0)
+    setCategorySearch(selectedCategoryList);
+  },[selectedCategoryList]);
+
+  useEffect(() => {
+    if(selectedColorList.length>0)
+    setColorSearch(selectedColorList);
+  },[selectedColorList]);
 
   useEffect(() => {
     if(search || (startDate && endDate) || tagsSearch || selectedStaff || categorySearch || colorSearch){
@@ -109,6 +154,10 @@ function UploadDesignListV1() {
       const filterRes =  staffDropDownRes?.data?.data?.map((el) => ({label:el?.name,value:el?._id}))
       const filterRes2 = (userInfo?.role !== "Super Admin" && userInfo?.role !== "Admin") ? filterRes?.filter(el => el?.value === userInfo?._id) : filterRes
       setStaffDropdown(filterRes2)
+      if(selectedStaffList.length<=0){
+        setSelectedStaff(filterRes2)
+        dispatch(setSelectedStaffListDesign(filterRes2));
+      }
     }
   },[staffDropDownRes?.isSuccess])
 
@@ -125,6 +174,7 @@ function UploadDesignListV1() {
   }, [colorListDropdown]);
 
   const handleSearch = (search) => {
+    dispatch(setSearchDataDesign(search))
     setSearch(search)
     // reqDesign({
     //   page: currentPage,
@@ -156,19 +206,21 @@ function UploadDesignListV1() {
 
   const handleDateFilter = (tag,date) => {
     if(tag === 'start'){
+      dispatch(setSelectedFromDateDesign(date));
       setStartDate(date)
     }else{
+      dispatch(setSelectedEndDateDesign(date));
       setEndDate(date)
     }
   }
 
-  useEffect(() => {
-    reqTag({
-      page: 0,
-      limit: 0,
-      search: "",
-    });
-  }, []);
+  // useEffect(() => {
+  //   reqTag({
+  //     page: 0,
+  //     limit: 0,
+  //     search: "",
+  //   });
+  // }, []);
 
   useEffect(() => {
     if (resTag?.isSuccess) {
@@ -177,18 +229,22 @@ function UploadDesignListV1() {
   }, [resTag]);
 
   const handleTagSelection = (selected) => {
+    dispatch(setSelectedTagListDesign(selected))
     setTagSearch(selected)
   }
 
   const handleCategorySelection = (selected) => {
+    dispatch(setSelectedCategoryListDesign(selected));
     setCategorySearch(selected)
   }
 
   const handleColorSelection = (selected) => {
+    dispatch(setSelectedColorVariationListDesign(selected))
     setColorSearch(selected)
   }
 
   const handleStaffSelection = (selected) => {
+    dispatch(setSelectedStaffListDesign(selected));
     setSelectedStaff(selected)
   }
 
@@ -237,6 +293,7 @@ function UploadDesignListV1() {
                               onChange={(e) => handleSearch(e.target.value)}
                               className="form-control "
                               placeholder="Search..."
+                              value={search}
                             />
                             <i className="bx bx-search search-icon"></i>
                           </div>
@@ -289,6 +346,7 @@ function UploadDesignListV1() {
                                   options={(tagList && Array.isArray(tagList) && tagList?.length > 0) ? tagList?.map(el => el?.label) : []}
                                   placeholder="Search tags..."
                                   onChange={handleTagSelection}
+                                  selected={tagsSearch}
                                 />
                                 </div>
                                 </div>
@@ -307,6 +365,8 @@ function UploadDesignListV1() {
                                   options={(staffDropdown && Array.isArray(staffDropdown) && staffDropdown?.length > 0) ? staffDropdown : []}
                                   placeholder="Search staff..."
                                   onChange={handleStaffSelection}
+                                  selected={selectedStaff}
+                                  
                                 />
                                 </div>
                                 </div>
@@ -323,6 +383,7 @@ function UploadDesignListV1() {
                                   options={(categoryDropdown && Array.isArray(categoryDropdown) && categoryDropdown?.length > 0) ? categoryDropdown : []}
                                   placeholder="Search category..."
                                   onChange={handleCategorySelection}
+                                  selected={categorySearch}
                                 />
                                 </div>
                                 </div>
@@ -340,6 +401,7 @@ function UploadDesignListV1() {
                                   options={(colorDropdown && Array.isArray(colorDropdown) && colorDropdown?.length > 0) ? colorDropdown : []}
                                   placeholder="Search color..."
                                   onChange={handleColorSelection}
+                                  selected={colorSearch}
                                 />
                                 </div>
                                 </div>
