@@ -214,13 +214,13 @@ function UploadDesignListV1() {
     }
   }
 
-  // useEffect(() => {
-  //   reqTag({
-  //     page: 0,
-  //     limit: 0,
-  //     search: "",
-  //   });
-  // }, []);
+  useEffect(() => {
+    reqTag({
+      page: 0,
+      limit: 0,
+      search: "",
+    });
+  }, []);
 
   useEffect(() => {
     if (resTag?.isSuccess) {
