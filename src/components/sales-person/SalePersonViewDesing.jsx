@@ -145,10 +145,6 @@ function SalesPersonViewDesign() {
       const filterRes =  staffDropDownRes?.data?.data?.map((el) => ({label:el?.name,value:el?._id}))
       const filterRes2 = (userInfo?.role !== "Super Admin" && userInfo?.role !== "Admin") ? filterRes?.filter(el => el?.value === userInfo?._id) : filterRes
       setStaffDropdown(filterRes2)
-      if(selectedStaffList.length<=0){
-        setSelectedStaff(filterRes2)
-        dispatch(setSelectedStaffList(filterRes2));
-      }
     }
   },[staffDropDownRes?.isSuccess])
 
