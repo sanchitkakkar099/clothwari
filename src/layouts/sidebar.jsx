@@ -253,6 +253,13 @@ function SidebarComponent() {
                 }
                 {(userInfo?.role === 'Super Admin') &&
                  <li>
+                    <Link to="/report-list">
+                        <span className="menu-item" data-key="t-dashboards">Report</span>
+                    </Link>
+                </li>
+                }
+                {(userInfo?.role === 'Super Admin') &&
+                 <li>
                     <Link to="/view-mocks-domestic">
                         <span className="menu-item" data-key="t-dashboards">View Mocks</span>
                     </Link>

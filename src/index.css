@@ -74,6 +74,27 @@ button:focus-visible {
   max-height: 110px!important;
   overflow: auto!important;
 }
+
+.tag {
+  display: inline-block;
+  padding: 2px;
+  margin-right: 5px;
+}
+.category {
+  padding: 2px;
+  margin-right: 5px;
+}
+
+.tag-gray {
+  background-color: #e7f4ff;
+  color: #007bff;
+  border-radius: 5px;
+}
+
+.tag-transparent {
+  background-color: transparent;
+}
+
 /* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

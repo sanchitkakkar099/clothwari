@@ -39,6 +39,7 @@ const SalesPersonList = lazy(() => import("../components/sales-person/SalesPerso
 const SalesPersonForm = lazy(() => import("../components/sales-person/SalesPersonForm"));
 const DriveList = lazy(() => import("../components/drive/DriveList"));
 const SalesPersonViewDesign = lazy(() => import("../components/sales-person/SalePersonViewDesing"));
+const ReportList = lazy(()=>import("../components/report/ReportList"))
 
 const Domatic = lazy(()=> import("../components/mocks/domastic"));
 const International = lazy(()=> import("../components/mocks/international"))
@@ -90,6 +91,8 @@ export const privateRoutes = [
 
   { path: "/drive-list", Component: DriveList },
   { path: "/pdf-upload-form", Component: DriveForm },
+
+  { path: "/report-list", Component: ReportList},
 
   { path: "/view-mocks-domestic", Component: Domatic},
   { path: "/view-mocks-international", Component: International}

@@ -357,6 +357,14 @@ export const designUploadApi = createApi({
       }),
       providesTags: ["designeUpload"],
     }),
+    reportDesignUploadList: builder.mutation({
+      query: (payload) => ({
+        url: "designupload/report/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["designeUpload"],
+    }),
     designUploadList2: builder.mutation({
       query: (payload) => ({
         url: "designupload/list/v2",
@@ -423,6 +431,7 @@ export const designUploadApi = createApi({
 });
 export const {
   useDesignUploadListMutation,
+  useReportDesignUploadListMutation,
   useDesignUploadList2Mutation,
   useSubmitDesignUploadMutation,
   useSubmitMultipleDesignUploadMutation,
