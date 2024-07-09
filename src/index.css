@@ -95,6 +95,12 @@ button:focus-visible {
   background-color: transparent;
 }
 
+.css-13cymwt-control , .css-t3ipsp-control , .css-1abcu6c-ValueContainer2 {
+  border-color: hsl(216deg 9.8% 90%) !important;
+  border-radius: 30px !important;
+}
+
+
 /* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

@@ -20,6 +20,7 @@ import { setSearchData, setSelectedDate } from "../../redux/mixedSlice";
 import { setSelectedStaffList } from "../../redux/adminSlice";
 import { setSelectedCategoryList } from "../../redux/categorySlice";
 import { Input } from "reactstrap";
+import MultiSelect from "../common/MultiSelect";
 // Extend Day.js with the plugins
 dayjs.extend(utc);
 // dayjs.extend(timezone);
@@ -395,26 +396,18 @@ function SalesPersonViewDesign() {
                     </div>
                   </div>
                   <div className="row m-4">
-                    <div className="col-md-3">
+                    <div className="col-md-4">
                       <div className="form-inline">
                         <div className="search-box ms-2">
-                          <Typeahead
-                            allowNew={false}
-                            id="custom-selections-example"
-                            labelKey={"label"}
-                            onActiveItemChange={false}
-                            multiple
-                            options={
-                              staffDropdown &&
-                              Array.isArray(staffDropdown) &&
-                              staffDropdown?.length > 0
-                                ? staffDropdown
-                                : []
-                            }
-                            placeholder="Search staff..."
-                            onChange={handleStaffSelection}
-                            selected={selectedStaff}
-                          />
+                          <MultiSelect
+                                key="example_id"
+                                options={(staffDropdown && Array.isArray(staffDropdown) && staffDropdown?.length > 0) ? staffDropdown : []}
+                                onChange={handleStaffSelection}
+                                value={selectedStaff}
+                                isSelectAll={true}
+                                menuPlacement={"bottom"}
+                                placeholder="Search staff..."
+                              />
                         </div>
                       </div>
                     </div>
