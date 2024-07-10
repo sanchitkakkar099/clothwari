@@ -1,19 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "../common/Pagination";
 import ReactDatePicker from "react-datepicker";
-import { useReportDesignUploadListMutation } from "../../service";
+import ReportTooltip from "../common/ReportTooltip";
+import { CSVLink, CSVDownload } from "react-csv";
+import useLoader from "../../hook/useLoader";
+import PdfGeneratorLoader from "../common/PdfGeneratorLoader";
+import {
+  useReportDesignUploadListMutation,
+  useCSVDesignUploadListMutation,
+} from "../../service";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc"; // Import UTC plugin
+import utc from "dayjs/plugin/utc"; 
+
 
 dayjs.extend(utc);
 
 function ReportList() {
+  const btnRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqDesign, resDesign] = useReportDesignUploadListMutation();
+  const [reqCSVDesign, resCSVDesign] = useCSVDesignUploadListMutation();
+  const { isLoading, showLoader ,hideLoader } = useLoader();
 
   const [TBLData, setTBLData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,6 +38,12 @@ function ReportList() {
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [imageurl, setImageurl] = useState("");
+  const [target, setTarget] = useState("");
+
+  const [csvData, setCsvData] = useState([]);
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -48,7 +65,6 @@ function ReportList() {
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
-      console.log(resDesign?.data?.data?.docs);
       setTBLData(resDesign?.data?.data?.docs);
       setTotalDesign(resDesign?.data?.data?.totalDocs);
       setTotalCount(resDesign?.data?.data?.totalDocs);
@@ -66,6 +82,61 @@ function ReportList() {
       setStartDate(date);
     } else {
       setEndDate(date);
+    }
+  };
+
+  const handleDownloadCSV = async () => {
+    try {
+      showLoader()
+      const response = await reqCSVDesign({
+        start_date: startDate && endDate ? dayjs(startDate).format() : "",
+        end_date: startDate && endDate ? dayjs(endDate).format() : "",
+      });
+      
+      if (response?.data?.code === 200) {
+        const responseTBLData = response?.data?.data || [];
+
+        const csvDataTemp = [
+          [
+            "Design Name",
+            "Uploaded By",
+            "Created At",
+            "Tags Created",
+            "Category",
+          ],
+        ];
+        responseTBLData.forEach((data) => {
+          const tags = data.tag.map((tag) => tag.label).join(", ");
+          csvDataTemp.push([
+            data.name,
+            data.uploadedBy?.name || " ",
+            dayjs.utc(data.createdAt).format("MM/DD/YYYY"),
+            tags,
+            data.category?.name || " ",
+          ]);
+        });
+
+        setCsvData(csvDataTemp);
+        setTimeout(() => {
+          btnRef.current.link.click();
+          hideLoader();
+        }, 1000);
+      }
+    } catch (error) {
+      hideLoader();
+      console.error("Error fetching CSV data:", error);
+    }
+  };
+
+  const toggle = (tag, id, img) => {
+    if (tag === "open") {
+      setTooltipOpen(true);
+      setTarget(null);
+      setTarget(`design-${id}`);
+      setImageurl(img);
+    } else {
+      setTooltipOpen(false);
+      setTarget(`design-${id}`);
     }
   };
 
@@ -124,15 +195,22 @@ function ReportList() {
                               endDate={endDate}
                               minDate={startDate}
                             />
-                            {/* <button
+                            <button
                               type="button"
                               className="btn btn-success waves-effect waves-light mb-4 me-2"
                               data-bs-toggle="modal"
                               data-bs-target=".add-new-order"
-                              // onClick={() => navigate("/upload-design-form")}
+                              onClick={handleDownloadCSV}
                             >
-                              Download Excel
-                            </button> */}
+                              Download CSV
+                            </button>
+                            <CSVLink
+                              data={csvData}
+                              filename="data.csv"
+                              className="hidden"
+                              ref={btnRef}
+                              target="_blank"
+                            />
                           </div>
                         )}
                       </div>
@@ -207,7 +285,23 @@ function ReportList() {
                             TBLData?.map((ele) => {
                               return (
                                 <tr key={ele?._id}>
-                                  <td>{ele?.name}</td>
+                                  <td id={`design-${ele?._id}`}>
+                                    <Link
+                                      id={`design-${ele?._id}`}
+                                      onMouseEnter={() =>
+                                        toggle(
+                                          "open",
+                                          ele?._id,
+                                          ele?.thumbnail[0]?.pdf_extract_img
+                                        )
+                                      }
+                                      onMouseLeave={() =>
+                                        toggle("close", ele?._id)
+                                      }
+                                    >
+                                      {ele?.name}
+                                    </Link>
+                                  </td>
                                   <td>{ele?.uploadedBy?.name}</td>
                                   <td>
                                     {ele?.createdAt
@@ -224,15 +318,25 @@ function ReportList() {
                                           return (
                                             <span
                                               key={tag?._id}
-                                              className={`tag ${tag?.range ? 'tag-gray' : ''}`}
+                                              className={`tag ${
+                                                tag?.range ? "tag-gray" : ""
+                                              }`}
                                             >
                                               {tag?.label}
                                             </span>
                                           );
                                         })
                                       : ""}
-                                  </td >
-                                  <td><span className={`category ${ele?.category?.range ? 'tag-gray' : ''}`} >{ele?.category?.label}</span></td>
+                                  </td>
+                                  <td>
+                                    <span
+                                      className={`category ${
+                                        ele?.category?.range ? "tag-gray" : ""
+                                      }`}
+                                    >
+                                      {ele?.category?.label}
+                                    </span>
+                                  </td>
                                 </tr>
                               );
                             })
@@ -257,10 +361,19 @@ function ReportList() {
                 </div>
               </div>
             </div>
+            {isLoading && <PdfGeneratorLoader message={"CSV Generating.."}/>}
           </div>
         </div>
       ) : (
         <Navigate to={"/dashboard"} />
+      )}
+      {target && (
+        <ReportTooltip
+          imageurl={imageurl}
+          target={target}
+          setTooltipOpen={setTooltipOpen}
+          tooltipOpen={tooltipOpen}
+        />
       )}
     </>
   );

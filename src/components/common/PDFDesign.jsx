@@ -128,7 +128,7 @@ function PDFDesign() {
                     
                     </div>
                   </div>
-                  {isLoading && <PdfGeneratorLoader/>}
+                  {isLoading && <PdfGeneratorLoader message={"Generating.."}/>}
                 </div>
               </div>
             </div>
