@@ -89,6 +89,7 @@ function UploadDesignListV1() {
   const [endDate, setEndDate] = useState(null);
 
   const [search, setSearch] = useState("");
+  const [searchPage, setSearchPage] = useState("");
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
   const [colorSearch, setColorSearch] = useState([]);
@@ -228,6 +229,21 @@ function UploadDesignListV1() {
     //   date_filter:startDate ?  dayjs(startDate).format() : '',
     //   tags:tagsSearch,
     //   uploadedBy:selectedStaff ? selectedStaff : ''
+    // });
+  };
+  const handleSearchPageNumber = (pageNumber) => {
+    setCurrentPage(parseInt(pageNumber) ? parseInt(pageNumber) : 1);
+    setSearchPage(pageNumber);
+    // reqDesign({
+    //   page: pageNumber,
+    //   limit: pageSize,
+    //   search: search,
+    //   date_filter: startDate ? dayjs(startDate).format() : "",
+    //   tags: tagsSearch,
+    //   uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
+    //   category: Array.isArray(categorySearch)
+    //     ? categorySearch?.map((el) => el?.value)
+    //     : [],
     // });
   };
 
@@ -415,7 +431,13 @@ function UploadDesignListV1() {
                             <div className="search-box ms-2">
                               <MultiSelect
                                 key="example_id"
-                                options={(staffDropdown && Array.isArray(staffDropdown) && staffDropdown?.length > 0) ? staffDropdown : []}
+                                options={
+                                  staffDropdown &&
+                                  Array.isArray(staffDropdown) &&
+                                  staffDropdown?.length > 0
+                                    ? staffDropdown
+                                    : []
+                                }
                                 onChange={handleStaffSelection}
                                 value={selectedStaff}
                                 isSelectAll={true}
@@ -752,13 +774,43 @@ function UploadDesignListV1() {
                                 </div> */}
                                   </div>
                                 </div>
-                                <Pagination
+                                {/* <Pagination
                                   currentPage={currentPage}
                                   totalCount={totalCount}
                                   pageSize={pageSize}
                                   onPageChange={(page) => setCurrentPage(page)}
                                   TBLData={TBLData}
-                                />
+                                /> */}
+                                <div className="c-maker_pag">
+                                  <Pagination
+                                    currentPage={currentPage}
+                                    totalCount={totalCount}
+                                    pageSize={pageSize}
+                                    onPageChange={(page) =>
+                                      setCurrentPage(page)
+                                    }
+                                    TBLData={TBLData}
+                                  />
+                                  <div className="c-maker_input">
+                                    <div className="form-inline">
+                                      <div className="search-box">
+                                        <div className="position-relative">
+                                          <input
+                                            type="text"
+                                            onChange={(e) =>
+                                              handleSearchPageNumber(
+                                                e.target.value
+                                              )
+                                            }
+                                            className="form-control "
+                                            placeholder="Find by Page Number"
+                                            value={searchPage}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
