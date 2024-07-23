@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import One from "../../assets/images/product/five.jpg";
 import Two from "../../assets/images/product/seven.jpg";
 import Three from "../../assets/images/product/four.jpg";
@@ -12,6 +12,7 @@ import {
   useDesignerDropDownListQuery,
   useTagListMutation,
 } from "../../service";
+import { Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ import Pagination from "../common/Pagination";
 import MultiSelect from "../common/MultiSelect";
 import ReactDatePicker from "react-datepicker";
 import { Typeahead } from "react-bootstrap-typeahead";
+import "../../components/uploadDesign/dropdown-filter.css";
 import dayjs from "dayjs";
 // import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 // import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
@@ -42,6 +44,7 @@ import { setSelectedStaffListDesign } from "../../redux/adminSlice";
 function UploadDesignListV1() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dropdownRef = useRef(null);
   const userInfo = useSelector((state) => state?.authState.userInfo);
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag, resTag] = useTagListMutation();
@@ -89,12 +92,15 @@ function UploadDesignListV1() {
   const [endDate, setEndDate] = useState(null);
 
   const [search, setSearch] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMultiTagSearch, setIsMultiTagSearch] = useState(false);
   const [searchPage, setSearchPage] = useState("");
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
   const [colorSearch, setColorSearch] = useState([]);
 
   const [selectedStaff, setSelectedStaff] = useState([]);
+
 
   useEffect(() => {
     if (searchData) setSearch(searchData);
@@ -126,19 +132,34 @@ function UploadDesignListV1() {
   }, [selectedColorList]);
 
   useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
     if (
       search ||
       (startDate && endDate) ||
       tagsSearch ||
       selectedStaff ||
       categorySearch ||
-      colorSearch
+      colorSearch ||
+      isMultiTagSearch
     ) {
       reqDesign({
         page: currentPage,
         limit: pageSize,
         search: search,
         // date_filter:startDate ?  dayjs(startDate).format() : '',
+        isMultiTagSearch:isMultiTagSearch,
         start_date: startDate && endDate ? dayjs(startDate).format() : "",
         end_date: startDate && endDate ? dayjs(endDate).format() : "",
         tags: tagsSearch,
@@ -158,6 +179,7 @@ function UploadDesignListV1() {
         limit: pageSize,
         search: "",
         // date_filter:'',
+        isMultiTagSearch:isMultiTagSearch,
         start_date: "",
         end_date: "",
         tags: [],
@@ -173,8 +195,9 @@ function UploadDesignListV1() {
     endDate,
     tagsSearch,
     selectedStaff,
-    categorySearch,
+    categorySearch, 
     colorSearch,
+    isMultiTagSearch,
   ]);
 
   useEffect(() => {
@@ -278,6 +301,10 @@ function UploadDesignListV1() {
       dispatch(setSelectedEndDateDesign(date));
       setEndDate(date);
     }
+  };
+
+  const handleSorting = (e) => {
+    setIsMultiTagSearch(!isMultiTagSearch);
   };
 
   useEffect(() => {
@@ -404,7 +431,7 @@ function UploadDesignListV1() {
                         </div>
                         <div className="col-md-3">
                           <div className="form-inline">
-                            <div className="search-box ms-2">
+                            <div className="search-box ms-2  position-relative">
                               <Typeahead
                                 allowNew={false}
                                 id="custom-selections-example"
@@ -421,6 +448,44 @@ function UploadDesignListV1() {
                                 onChange={handleTagSelection}
                                 selected={tagsSearch}
                               />
+                              <div className="position-absolute" style={{top: '24%', right: '0%'}} >
+                                <div className="filter-dropdown" ref={dropdownRef}>
+                                  <span onClick={() => setIsOpen(!isOpen)}>
+                                    {" "}
+                                    <i className="mdi mdi-filter me-1"></i> 
+                                  </span>
+                                  {isOpen && (
+                                    <div
+                                      className="filter-dropdown-content"
+                                      id="dropdownContent"
+                                    >
+                                      <div className="filter-section">
+                                        <h4>Order</h4>
+                                        <label className="option">
+                                          <input
+                                            type="radio"
+                                            name="sorting"
+                                            value={"single"}
+                                            checked={!isMultiTagSearch}
+                                            onChange={(e) => handleSorting(e)}
+                                          />{" "}
+                                          Single tag by Search
+                                        </label>
+                                        <label className="option">
+                                          <input
+                                            type="radio"
+                                            name="sorting"
+                                            value={"multiple"}
+                                            checked={isMultiTagSearch}
+                                            onChange={(e) => handleSorting(e)}
+                                          />{" "}
+                                          Multiple tags by Search
+                                        </label>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
