@@ -262,15 +262,25 @@ function DesignApprovalForm() {
                         {displayFields.image && (
                           <tr>
                           <td>Image</td>
-                          <td><a href={TBLData?.image?.map(ele => ele.filepath).join(', ')} target="_blank">{TBLData?.image?.map(ele => ele.label).length > 0 ? <img src={TBLData?.image?.map(ele => ele.filepath).join(', ')} width={100} height={100}/> : "Null"}</a></td>
-                          <td><a href={TBLEditData?.image?.map(ele => ele.filepath).join(', ')} target="_blank">{TBLEditData?.image?.map(ele => ele.label).length > 0 ? <img src={TBLEditData?.image?.map(ele => ele.filepath).join(', ')} width={100} height={100}/> : "Null"}</a></td>
+                          <td>{TBLData?.image?.length>0 && (TBLData?.image?.map(ele => (
+                            <a href={ele?.filepath} target="_blank"> <img src={ele.filepath} width={100} height={100}/></a>
+                          )))}</td>
+                          <td>{TBLEditData?.image?.length>0 && (TBLEditData?.image?.map(ele => (
+                            <a href={ele?.filepath} target="_blank"> <img src={ele.filepath} width={100} height={100}/></a>
+                          )))}</td>
                           </tr>
                         )}
                         {displayFields.thumbnail && (
                           <tr>
                           <td>Thumbnail</td>
-                          <td><a href={TBLData?.thumbnail?.map(ele => ele.filepath).join(', ')} target="_blank">{TBLData?.thumbnail?.map(ele => ele.filepath).join(', ') ? "PDF" :"Null"}</a></td>
-                          <td><a href={TBLEditData?.thumbnail?.map(ele => ele.filepath).join(', ')} target="_blank">{TBLEditData?.thumbnail?.map(ele => ele.filepath).join(', ') ? "PDF" :"Null"}</a></td>
+                          <td>{TBLData?.thumbnail?.length>0 && (TBLData?.thumbnail?.map(ele => (
+                            <a href={ele?.filepath} target="_blank">Pdf</a>
+                          )))}
+                          </td>
+                          <td>{TBLEditData?.thumbnail?.length>0 && (TBLEditData?.thumbnail?.map(ele => (
+                            <a href={ele?.filepath} target="_blank"> Pdf</a>
+                          )))}
+                          </td>         
                           </tr>
                         )}
                         {displayFields.primary_color_name && (
@@ -317,16 +327,28 @@ function DesignApprovalForm() {
                             )}
                             {differences?.variation_image &&(
                               <tr key={index}>
-                              <td>Image</td> 
-                              <td><a href={TBLData?.variations[index]?.variation_image?.map(ele => ele.filepath).join(',')} target="_blank">{TBLData?.variations[index]?.variation_image?.map(ele => ele.filepath).length > 0 ? <img src={TBLData?.variations[index]?.variation_image?.map(ele => ele.filepath).join(',')} width={100} height={100}/> : "Null"}</a></td>
-                              <td><a href={TBLEditData?.variations[index]?.variation_image?.map(ele => ele.filepath).join(',')} target="_blank">{TBLEditData?.variations[index]?.variation_image?.map(ele => ele.filepath).length > 0 ? <img src={TBLEditData?.variations[index]?.variation_image?.map(ele => ele.filepath).join(',')} width={100} height={100}/> : "Null"}</a></td>
+                              <td>Image</td>
+                              <td>{TBLData?.variations[index]?.variation_image?.length>0 && (TBLData?.variations[index]?.variation_image?.map(ele => (
+                                <a href={ele?.filepath} target="_blank">Pdf</a>
+                                )))}
+                              </td>
+                              <td>{TBLEditData?.variations[index]?.variation_image?.length>0 && (TBLEditData?.variations[index]?.variation_image?.map(ele => (
+                                <a href={ele?.filepath} target="_blank"> Pdf</a>
+                                )))}
+                              </td> 
                               </tr>
                             )}
                             {differences?.variation_thumbnail &&(
                               <tr key={index}>
                               <td>Thumbnail </td> 
-                              <td><a href={TBLData?.variations[index]?.variation_thumbnail?.map(ele => ele.filepath).join(',') } target="_blank">{TBLData?.variations[index]?.variation_thumbnail?.map(ele => ele.filepath).join(',') ? "PDF" :"Null"}</a></td>
-                              <td><a href={TBLEditData?.variations[index]?.variation_thumbnail?.map(ele => ele.filepath).join(',')} target="_blank">New Pdf</a></td>
+                              <td>{TBLData?.variations[index]?.variation_thumbnail?.length>0 && (TBLData?.variations[index]?.variation_thumbnail?.map(ele => (
+                                <a href={ele?.filepath} target="_blank">Pdf</a>
+                                )))}
+                              </td>
+                              <td>{TBLEditData?.variations[index]?.variation_thumbnail?.length>0 && (TBLEditData?.variations[index]?.variation_thumbnail?.map(ele => (
+                                <a href={ele?.filepath} target="_blank"> Pdf</a>
+                              )))}
+                              </td> 
                               </tr>
                             )}
                             </>
