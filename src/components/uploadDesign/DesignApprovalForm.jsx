@@ -164,10 +164,10 @@ function DesignApprovalForm() {
                   if (el.variation_name) {
                       variation.variation_name = TBLEditData?.variations[index]?.variation_name;
                   }
-                  if (el.variation_image?.length) {
+                  if (el.variation_image) {
                       variation.variation_image = TBLEditData?.variations[index]?.variation_image?.map((vi) => vi?._id);
                   }
-                  if (el.variation_thumbnail?.length) {
+                  if (el.variation_thumbnail) {
                       variation.variation_thumbnail = TBLEditData?.variations[index]?.variation_thumbnail?.map((vi) => vi?._id);
                   }
               }
@@ -263,10 +263,10 @@ function DesignApprovalForm() {
                           <tr>
                           <td>Image</td>
                           <td>{TBLData?.image?.length>0 && (TBLData?.image?.map(ele => (
-                            <a href={ele?.filepath} target="_blank"> <img src={ele.filepath} width={100} height={100}/></a>
+                            <a href={ele?.filepath} target="_blank"> <img src={ele?.filepath} width={100} height={100}/></a>
                           )))}</td>
                           <td>{TBLEditData?.image?.length>0 && (TBLEditData?.image?.map(ele => (
-                            <a href={ele?.filepath} target="_blank"> <img src={ele.filepath} width={100} height={100}/></a>
+                            <a href={ele?.filepath} target="_blank"> <img src={ele?.filepath} width={100} height={100}/></a>
                           )))}</td>
                           </tr>
                         )}
@@ -329,11 +329,11 @@ function DesignApprovalForm() {
                               <tr key={index}>
                               <td>Image</td>
                               <td>{TBLData?.variations[index]?.variation_image?.length>0 && (TBLData?.variations[index]?.variation_image?.map(ele => (
-                                <a href={ele?.filepath} target="_blank">Pdf</a>
+                                <a href={ele?.filepath} target="_blank"><img src={ele?.filepath} width={100} height={100}/></a>
                                 )))}
                               </td>
                               <td>{TBLEditData?.variations[index]?.variation_image?.length>0 && (TBLEditData?.variations[index]?.variation_image?.map(ele => (
-                                <a href={ele?.filepath} target="_blank"> Pdf</a>
+                                <a href={ele?.filepath} target="_blank"> <img src={ele?.filepath} width={100} height={100}/></a>
                                 )))}
                               </td> 
                               </tr>
