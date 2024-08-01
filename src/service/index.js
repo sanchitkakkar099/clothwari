@@ -381,6 +381,14 @@ export const designUploadApi = createApi({
       }),
       providesTags: ["designeUpload"],
     }),
+    designUploadApprovalList: builder.mutation({
+      query: (payload) => ({
+        url: "designupload/list/approval",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["designeUpload"],
+    }),
     submitDesignUpload: builder.mutation({
       query: (payload) => ({
         url: "designupload/create",
@@ -397,6 +405,14 @@ export const designUploadApi = createApi({
       }),
       invalidatesTags: ["designeUpload"],
     }),
+    submitApprovalDesignUpload: builder.mutation({
+      query: (payload) => ({
+        url: "designupload/update/approved",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["designeUpload"],
+    }),
     designUploadById: builder.query({
       query: (id) => ({
         url: `designupload/byId/${id}`,
@@ -404,9 +420,23 @@ export const designUploadApi = createApi({
       }),
       providesTags: ["designeUpload"],
     }),
+    designUploadApprovalById: builder.query({
+      query: (id) => ({
+        url: `designupload/approvalById/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["designeUpload"],
+    }),
     deleteDesignUpload: builder.mutation({
       query: (id) => ({
         url: `designupload/byId/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["designeUpload"],
+    }),
+    deleteRejectDesignUploadReq: builder.mutation({
+      query: (id) => ({
+        url: `designupload/rejectById/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["designeUpload"],
@@ -442,10 +472,14 @@ export const {
   useReportDesignUploadListMutation,
   useCSVDesignUploadListMutation,
   useDesignUploadList2Mutation,
+  useDesignUploadApprovalListMutation,
   useSubmitDesignUploadMutation,
   useSubmitMultipleDesignUploadMutation,
+  useSubmitApprovalDesignUploadMutation,
   useDesignUploadByIdQuery,
+  useDesignUploadApprovalByIdQuery,
   useDeleteDesignUploadMutation,
+  useDeleteRejectDesignUploadReqMutation,
   useUniqueDesignNameCheckMutation,
   useUniqueDesignNumberCheckMutation,
   useUpdateUploadedByMutation

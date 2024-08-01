@@ -227,6 +227,15 @@ function SidebarComponent() {
                     </Link>
                 </li>
                 }
+                {(userInfo?.role === 'Super Admin') &&
+                <li>
+                    <Link to="/design-approval-list">
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-dashboards">Design Approval</span>
+                        {/* <span className="badge rounded-pill bg-success">5+</span> */}
+                    </Link>
+                </li>
+                }
 
                 {/* {(userInfo?.role === 'Super Admin') &&
                 <li>
@@ -258,10 +267,10 @@ function SidebarComponent() {
                     </Link>
                 </li>
                 }
-                {(userInfo?.role === 'Super Admin') &&
+                {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') &&
                  <li>
                     <Link to="/view-mocks-domestic">
-                        <span className="menu-item" data-key="t-dashboards">View Mocks</span>
+                        <span className="menu-item" data-key="t-dashboards">Create Mocks</span>
                     </Link>
                 </li>
                 }

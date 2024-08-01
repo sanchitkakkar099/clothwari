@@ -10,7 +10,7 @@ import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { downloadFile } from "../common/FileDownload";
 import UploadDesignView from "./UploadDesignView";
 import { ChevronDown, ChevronUp, Download, Edit, Eye, Image, MoreVertical, Trash } from "react-feather";
-import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { Badge, Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { useRef } from "react";
 import Pagination from "../common/Pagination";
 import ReactDatePicker from "react-datepicker";
@@ -400,6 +400,7 @@ function UploadDesignListV2() {
                         <th>Category</th>
                         <th>Uploaded By</th>
                         <th>Created At</th>
+                        <th>Status</th>
                         <th>Action</th>
                       </tr>
                       <tr>
@@ -425,6 +426,7 @@ function UploadDesignListV2() {
                               minDate={startDate}
                         /></td>
                         <td/>
+                        <td/>
                         </tr>
                     </thead>
                     <tbody>
@@ -433,13 +435,13 @@ function UploadDesignListV2() {
                         return(
                           <tr key={ele?._id}>
                           {userInfo?.role === 'Super Admin' && <td><input type='checkbox' style={{width:'auto'}} checked={Array.isArray(selectedDesign) && selectedDesign?.some(sc => sc === ele?._id)}  onChange={(e) => handleSelectDesign(e,ele?._id)}/></td>}
-                          <td>{(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
+                          <td>{(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit") || userInfo?.permissions?.includes("Uploaded Design Replace")) ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
                           <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
-
+                          <td>{ele?.status ? <Badge color="danger" pill>Pending</Badge>:<Badge color="success" pill >Approved</Badge>}</td>
                           <td>
-                          {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit")) ?
+                          {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit" || el === "Uploaded Design Replace")) ?
                           <UncontrolledDropdown>
                             <DropdownToggle
                               className="icon-btn hide-arrow moreOption"
@@ -459,7 +461,7 @@ function UploadDesignListV2() {
                                 <span className="align-middle">View</span>
                               </DropdownItem>
                             }
-                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit")) &&
+                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Edit") || userInfo?.permissions?.includes("Uploaded Design Replace")) &&
 
                               <DropdownItem
                                 href="#!"

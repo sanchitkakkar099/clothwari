@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
   designUploadList: [],
+  designUploadApprovalList: [],
   designUploadView: null,
   designUploadEdit: null,
   uploadProgress:null,
@@ -14,6 +15,9 @@ export const designSlice = createSlice({
   reducers: {
     getDesignUpload: (state, { payload }) => {
       state.designUploadList = payload;
+    },
+    getDesignUploadApproval: (state, { payload }) => {
+      state.designUploadApprovalList = payload;
     },
     setDesignUploadView: (state, { payload }) => {
       state.designUploadView = payload;
@@ -32,6 +36,7 @@ export const designSlice = createSlice({
 
 export const {
   getDesignUpload,
+  getDesignUploadApproval,
   setDesignUploadView,
   setDesignUploadEdit,
   setUploadProgress,

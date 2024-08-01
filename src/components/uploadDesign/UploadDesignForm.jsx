@@ -309,6 +309,7 @@ function AddDesign() {
   // };
 
   const onNext = (state) => {
+    delete state?.createdAt;
     console.log("state", {
       ...state,
       category: state?.category?.value,
@@ -375,7 +376,9 @@ function AddDesign() {
         message:
           resDesignUpload?.error?.data?.message === "Already uploaded"
             ? "Design Name Already Exist"
-            : "",
+            : toast.error(resDesignUpload?.error?.data?.message, {
+                position: "top-center",
+              }),
       });
     }
   }, [resDesignUpload?.isSuccess, resDesignUpload?.isError]);
@@ -840,6 +843,11 @@ function AddDesign() {
                             id="image"
                             name="image"
                             control={control}
+                            rules={(locationState?.isEdit &&
+                              userInfo?.permissions?.some(
+                                (el) =>
+                                  el === "Uploaded Design Replace"
+                              )) ? { required: "field is required" } : {}}
                             render={({ field: { onChange, value } }) => (
                               <Input
                                 multiple
@@ -857,6 +865,11 @@ function AddDesign() {
                               />
                             )}
                           />
+                          {errors.image && (
+                            <FormFeedback>
+                              {errors?.image?.message}
+                            </FormFeedback>
+                          )}
                           {(uploadProgress && uploadTag?.image) &&
                                   <div style={{marginTop:'10px'}}>
                                     <Progress animated color="success" value={uploadProgress} />
@@ -890,7 +903,7 @@ function AddDesign() {
                                           }
                                         />
                                       )}
-                                      {(userInfo?.role === "Super Admin" || !locationState?.designID) &&
+                                      {(userInfo?.role === "Super Admin" || !locationState?.designID || userInfo?.permissions?.some(el => el === "Uploaded Design Replace")) &&
                                       <div className="remove-wrapper">
                                         <X
                                           className="remove-icon"
@@ -919,6 +932,11 @@ function AddDesign() {
                             id="thumbnail"
                             name="thumbnail"
                             control={control}
+                            rules={(locationState?.isEdit &&
+                              userInfo?.permissions?.some(
+                                (el) =>
+                                  el === "Uploaded Design Replace"
+                              )) ? { required: "field is required" } : {}}
                             render={({ field: { onChange, value } }) => (
                               <Input
                                 multiple
@@ -972,7 +990,7 @@ function AddDesign() {
                                           }
                                         />
                                       )}
-                                      {(userInfo?.role === "Super Admin" || !locationState?.designID) &&
+                                      {(userInfo?.role === "Super Admin" || !locationState?.designID || userInfo?.permissions?.some(el => el === "Uploaded Design Replace")) &&
                                       <div className="remove-wrapper">
                                         <X
                                           className="remove-icon"
@@ -1179,6 +1197,11 @@ function AddDesign() {
                                     id={`variations.${finx}.variation_image`}
                                     name={`variations.${finx}.variation_image`}
                                     control={control}
+                                    rules={(locationState?.isEdit &&
+                                      userInfo?.permissions?.some(
+                                        (el) =>
+                                          el === "Uploaded Design Replace"
+                                      )) ? { required: "field is required" } : {}}
                                     render={({
                                       field: { onChange, value },
                                     }) => (
@@ -1207,6 +1230,14 @@ function AddDesign() {
                                       />
                                     )}
                                   />
+                                  {errors.variations && (
+                                    <FormFeedback>
+                                      {
+                                        errors?.variations[finx]
+                                          ?.variation_image?.message
+                                      }
+                                    </FormFeedback>
+                                  )}
                                   {(uploadProgress && uploadTag?.variation_image && uploadTag?.color === fld?.color) &&
                                   <div style={{marginTop:'10px'}}>
                                     <Progress animated color="success" value={uploadProgress} />
@@ -1263,7 +1294,7 @@ function AddDesign() {
                                                     }
                                                   />
                                                 )}
-                                                {(userInfo?.role === "Super Admin" || !locationState?.designID) &&
+                                                {(userInfo?.role === "Super Admin" || !locationState?.designID || userInfo?.permissions?.some(el => el === "Uploaded Design Replace")) &&
                                                 <div className="remove-wrapper">
                                                   <X
                                                     className="remove-icon"
@@ -1301,6 +1332,11 @@ function AddDesign() {
                                     id={`variations.${finx}.variation_thumbnail`}
                                     name={`variations.${finx}.variation_thumbnail`}
                                     control={control}
+                                    rules={(locationState?.isEdit &&
+                                      userInfo?.permissions?.some(
+                                        (el) =>
+                                          el === "Uploaded Design Replace"
+                                      )) ? { required: "field is required" } : {}}
                                     render={({
                                       field: { onChange, value },
                                     }) => (
@@ -1322,6 +1358,14 @@ function AddDesign() {
                                       />
                                     )}
                                   />
+                                  {errors.variations && (
+                                    <FormFeedback>
+                                      {
+                                        errors?.variations[finx]
+                                          ?.variation_thumbnail?.message
+                                      }
+                                    </FormFeedback>
+                                  )}
                                    {(uploadProgress && uploadTag?.variation_thumbnail && uploadTag?.color === fld?.color) &&
                                   <div style={{marginTop:'10px'}}>
                                     <Progress animated color="success" value={uploadProgress} />
@@ -1377,7 +1421,7 @@ function AddDesign() {
                                                     }
                                                   />
                                                 )}
-                                                {(userInfo?.role === "Super Admin" || !locationState?.designID) &&
+                                                {(userInfo?.role === "Super Admin" || !locationState?.designID || userInfo?.permissions?.some(el => el === "Uploaded Design Replace")) &&
                                                 <div className="remove-wrapper">
                                                   <X
                                                     className="remove-icon"

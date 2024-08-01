@@ -26,6 +26,8 @@ const ColorVariationForm = lazy(() => import("../components/colorVariation/Color
 const ColorVariationList = lazy(() => import("../components/colorVariation/ColorVariationList"));
 const StaffApprovalList = lazy(() => import("../components/staff/StaffApprovalList"));
 const ProductView = lazy(() => import("../components/uploadDesign/ProductView"));
+const DesignApprovalList = lazy(() => import("../components/uploadDesign/DesignApprovalList"));
+const DesignApprovalForm = lazy(() => import("../components/uploadDesign/DesignApprovalForm"));
 
 const ChangePassword = lazy(() => import("../components/auth/changePassword"));
 const ClientBagItem = lazy(() => import("../components/client/BagItem"));
@@ -58,6 +60,8 @@ export const privateRoutes = [
   { path: "/upload-design-image", Component: DesignImageForm },
   { path: "/upload-multiple-design-form", Component: UploadDesignMultipleForm },
   { path: "/product-view/:id", Component: ProductView },
+  { path: "/design-approval-list", Component: DesignApprovalList },
+  { path: "/design-approval-form", Component: DesignApprovalForm },
 
 
   { path: "/staff-form", Component: StaffForm },

@@ -652,6 +652,7 @@ function UploadDesignListV1() {
                                                                     ?.pdf_extract_img
                                                             }
                                                             alt="image post"
+                                                            loading="lazy"
                                                             height={200}
                                                             width={250}
                                                             className="image"
