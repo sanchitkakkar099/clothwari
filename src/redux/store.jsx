@@ -1,5 +1,6 @@
 import { configureStore, combineReducers, createAction } from "@reduxjs/toolkit";
 import designUploadSlice from "./designUploadSlice";
+import designApprovalSlice from "./designApprovalSlice"
 import designerSlice from "./designerSlice";
 import categorySlice from "./categorySlice";
 import colorVariationSlice from "./colorVariationSlice";
@@ -19,6 +20,7 @@ const appReducer = combineReducers({
   authState: authSlice,
   adminState: adminSlice,
   designUploadState: designUploadSlice,
+  designApprovalState: designApprovalSlice,
   designerState: designerSlice,
   categoryState: categorySlice,
   colorVariationState: colorVariationSlice,

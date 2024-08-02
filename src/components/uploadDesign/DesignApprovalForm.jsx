@@ -186,7 +186,7 @@ function DesignApprovalForm() {
 
   return (
     <>
-    {(userInfo?.role === 'Super Admin') ?
+    {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Design Approval")) ?
     <>
     <div className="page-content">
       <div className="container-fluid">
@@ -357,6 +357,7 @@ function DesignApprovalForm() {
                     </tbody>
                   </table>
               </div>
+              {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Upload Design Create")) &&
               <div className="row">
                 <div className="col text-end">
                 <Link
@@ -373,8 +374,7 @@ function DesignApprovalForm() {
                   <i className=" bx bx-file me-1"></i> Approve{" "}
                 </button>
               </div>
-              
-        </div>
+            </div>}
             </div>
           </div>
         </div>

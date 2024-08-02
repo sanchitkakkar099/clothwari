@@ -227,7 +227,7 @@ function SidebarComponent() {
                     </Link>
                 </li>
                 }
-                {(userInfo?.role === 'Super Admin') &&
+                {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Design Approval")) &&
                 <li>
                     <Link to="/design-approval-list">
                         {/* <i className="bx bx-store icon nav-icon"></i> */}
@@ -267,7 +267,7 @@ function SidebarComponent() {
                     </Link>
                 </li>
                 }
-                {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer') &&
+                {(userInfo?.role === 'Super Admin' ) &&
                  <li>
                     <Link to="/view-mocks-domestic">
                         <span className="menu-item" data-key="t-dashboards">Create Mocks</span>

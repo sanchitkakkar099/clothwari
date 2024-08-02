@@ -5,6 +5,7 @@ import { useNavigate,Link, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useDesignUploadApprovalListMutation, useDesignUploadListMutation, useMultipleFileUploadMutation } from "../../service";
 import { getDesignUploadApproval } from "../../redux/designUploadSlice";
+import { getCurrentPage } from "../../redux/designApprovalSlice";
 import toast from "react-hot-toast";
 import { ChevronDown, ChevronUp, Download, Edit, Eye, Image, MoreVertical, Trash } from "react-feather";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, Input, UncontrolledDropdown } from "reactstrap";
@@ -22,6 +23,7 @@ function DesignApprovalList() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const userInfo = useSelector((state) => state?.authState.userInfo)
+  const latestCurrentPage = useSelector((state) => state?.designApprovalState?.currentPage);
   // const [reqDesign,resDesign] = useDesignUploadListMutation()
   const [reqDesign,resDesign] = useDesignUploadApprovalListMutation()
   const designUploadList = useSelector((state) => state?.designUploadState.getDesignUploadApprovalList)
@@ -32,7 +34,7 @@ function DesignApprovalList() {
   // pagination 
   const [TBLData, setTBLData] = useState([]);
   const [TBLEditData, setTBLEditData] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(latestCurrentPage)
   const pageSize = 10
   const [totalCount, setTotalCount] = useState(0)
 
@@ -67,7 +69,7 @@ function DesignApprovalList() {
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
-      dispatch(getDesignUploadApproval(resDesign?.data?.data?.docs));
+      // dispatch(getDesignUploadApproval(resDesign?.data?.data?.docs));
       setTBLEditData(resDesign?.data?.data?.editDesign?.docs);
       setTBLData(resDesign?.data?.data?.Design);
       setTotalCount(resDesign?.data?.data?.editDesign?.totalDocs)
@@ -254,7 +256,7 @@ function DesignApprovalList() {
 
   return (
     <>
-    {(userInfo?.role === 'Super Admin') ?
+    {(userInfo?.role === 'Super Admin'|| userInfo?.permissions?.some((el) => el === "Design Approval")) ?
     <>
     <div className="page-content">
       <div className="container-fluid">
@@ -349,7 +351,7 @@ function DesignApprovalList() {
                         return(
                           <tr key={ele?._id}>
                           {/* {userInfo?.role === 'Super Admin' && <td><input type='checkbox' style={{width:'auto'}} checked={Array.isArray(selectedDesign) && selectedDesign?.some(sc => sc === ele?._id)}  onChange={(e) => handleSelectDesign(e,ele?._id)}/></td>} */}
-                          <td>{(userInfo?.role === 'Super Admin') ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
+                          <td>{(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Design Approval")) ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
                           <td>{ele?.status}</td>
                           <td>{ele?.editReqId?.name}</td>
                           <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
@@ -368,7 +370,10 @@ function DesignApprovalList() {
                     currentPage={currentPage}
                     totalCount={totalCount}
                     pageSize={pageSize}
-                    onPageChange={(page) => setCurrentPage(page)}
+                    onPageChange={(page) => { 
+                      dispatch(getCurrentPage(page));
+                      setCurrentPage(page)}
+                    }
                     TBLData={TBLEditData}
                   />
               </div>
