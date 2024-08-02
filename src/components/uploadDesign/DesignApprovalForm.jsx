@@ -180,9 +180,9 @@ function DesignApprovalForm() {
   }  
 
 
-  useEffect(()=>{
-    console.log("displayVariations",displayVariations)
-  ,[displayVariations]})
+  // useEffect(()=>{
+  //   console.log("displayVariations",displayVariations)
+  // ,[displayVariations]})
 
   return (
     <>

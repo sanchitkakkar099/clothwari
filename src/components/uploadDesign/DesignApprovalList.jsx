@@ -11,6 +11,7 @@ import { Button, DropdownItem, DropdownMenu, DropdownToggle, Input, Uncontrolled
 import { useRef } from "react";
 import Pagination from "../common/Pagination";
 import ReactDatePicker from "react-datepicker";
+import { getArrayDifferences } from '../../utils/compareEditDesign'
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 
@@ -29,7 +30,8 @@ function DesignApprovalList() {
 
 
   // pagination 
-  const [TBLData, setTBLData] = useState([])
+  const [TBLData, setTBLData] = useState([]);
+  const [TBLEditData, setTBLEditData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
   const [totalCount, setTotalCount] = useState(0)
@@ -38,6 +40,8 @@ function DesignApprovalList() {
   const [filterName, setFilterName] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterUploadedBy, setFilterUploadedBy] = useState('');
+  const [displayFields, setDisplayFields] = useState({})
+  const [displayVariations, setDisplayVariations] = useState([])
 
   const [sortConfig, setSortConfig] = useState(null);
   
@@ -64,13 +68,107 @@ function DesignApprovalList() {
   useEffect(() => {
     if (resDesign?.isSuccess) {
       dispatch(getDesignUploadApproval(resDesign?.data?.data?.docs));
-      setTBLData(resDesign?.data?.data?.docs)
-      setTotalCount(resDesign?.data?.data?.totalDocs)
+      setTBLEditData(resDesign?.data?.data?.editDesign?.docs);
+      setTBLData(resDesign?.data?.data?.Design);
+      setTotalCount(resDesign?.data?.data?.editDesign?.totalDocs)
       if(sortConfig?.key && sortConfig?.direction){
         setSortConfig({ key:sortConfig?.key, direction:sortConfig?.direction });
       }
     }
   }, [resDesign]);
+
+  const compareArrayFields = (index, element, TBLData, TBLEditData) => {
+    let originalArray = TBLData?.[element] || [];
+    let editedArray = TBLEditData?.[element] || [];
+    let flag = originalArray.length !== editedArray.length;
+
+    for (let i = 0; !flag && i < originalArray.length; i++) {
+        if (element === 'tag') {
+            if (originalArray[i]?.label !== editedArray[i]?.label) {
+              flag = true;
+              break;
+            }
+          } else {
+            if (originalArray[i]?._id !== editedArray[i]?._id) {
+              flag = true;
+              break;
+            }
+          }
+    }
+
+    if (flag) {
+      setDisplayFields(prevState => ({
+        ...prevState,
+        [index]:{
+          ...prevState[index],
+          [element]: true
+        }
+      }));
+    }else{
+      setDisplayFields(prevState => ({
+        ...prevState,
+        [index]:{
+          ...prevState[index],
+          [element]: false
+        }
+      }));
+
+    }
+  };
+
+
+  useEffect(()=>{
+    if (!TBLData || !TBLEditData) return;
+    const fields = ['name', 'designNo', 'primary_color_name', 'primary_color_code'];
+    const arrayFields = ['category', 'tag', 'image','thumbnail'];
+    const length = TBLData.length;
+    for(let i=0;i<length;i++){
+      fields.forEach(field => {
+        setDisplayFields(prev => ({
+            ...prev,
+            [i]:{
+              ...prev[i],
+              [field]:(TBLData[i][field] && TBLEditData[i][field]) ? (TBLData[i][field] !== TBLEditData[i][field]) : false,
+            }
+          }));
+    });
+    arrayFields.forEach(element => {
+        if (element === 'category') {
+            setDisplayFields(prev => ({
+              ...prev,
+              [i]:{
+                ...prev[i],
+                [element]: (TBLData[i][element]?._id && TBLEditData[i][element]?._id) ? TBLData[i][element]?._id !== TBLEditData[i][element]?._id : false,
+              }
+            }));
+          } else {
+            compareArrayFields(i,element, TBLData[i], TBLEditData[i]);
+          }
+    }); 
+    if(TBLData[i] && TBLEditData[i]){
+      const differences = getArrayDifferences(TBLEditData[i]?.variations , TBLData[i]?.variations);
+      console.log("differences variations",differences);
+      setDisplayFields(prev => ({
+        ...prev,
+        [i]:{
+          ...prev[i],
+          "variations": differences.length>0 ? true : false,
+        }
+      }));
+      // setDisplayVariations(prev => ({
+      //   ...prev,
+      //   [i]:{
+      //     ...prev[i],
+      //     [i]: differences,
+      //   }
+      // }));
+    }  
+    }     
+  },[TBLData, TBLEditData])
+  // useEffect(()=>{
+  //   console.log("displayFields",displayFields);
+  // },[displayFields])
+
 
 
   const handleSort = (key) => {
@@ -83,10 +181,10 @@ function DesignApprovalList() {
 
   const sortedData = () => {
     if (!sortConfig) {
-      return TBLData;
+      return TBLEditData;
     }
 
-    return [...TBLData].sort((a, b) => {
+    return [...TBLEditData].sort((a, b) => {
       if (a[sortConfig.key] < b[sortConfig.key]) {
         return sortConfig.direction === 'asc' ? -1 : 1;
       }
@@ -98,7 +196,7 @@ function DesignApprovalList() {
   };
   useEffect(() => {
     const sortedTableData = sortedData();
-    setTBLData(sortedTableData)
+    setTBLEditData(sortedTableData)
 
   },[sortConfig])
 
@@ -120,6 +218,19 @@ function DesignApprovalList() {
     navigate(`/product-view/${ID}`)
   };
 
+    const getFieldLabels = (fields) => {
+    const labels = [];
+    if (fields?.name) labels.push('Design Name');
+    if (fields?.designNo) labels.push('Design Number');
+    if (fields?.category) labels.push('Category');
+    if (fields?.tag) labels.push('Tags');
+    if (fields?.image) labels.push('Image');
+    if (fields?.thumbnail) labels.push('Thumbnail');
+    if (fields?.primary_color_code) labels.push('Primary color code');
+    if (fields?.primary_color_name) labels.push('primary color name');
+    if (fields?.variations) labels.push('variations');
+    return labels.join(', ');
+  };
 
   const handleNameFilter = (e) => {
     setFilterName(e.target.value)
@@ -190,6 +301,7 @@ function DesignApprovalList() {
                         <th>Status</th>
                         <th>Edited Req By</th>
                         <th>Created At</th>
+                        <th>Changes</th>
                       </tr>
                       <tr>
                         {userInfo?.role === 'Super Admin'}
@@ -228,12 +340,12 @@ function DesignApprovalList() {
                               endDate={endDate}
                               minDate={startDate}
                         /></td>
-                        <td/>
+                        <td></td>
                         </tr>
                     </thead>
                     <tbody>
-                    {(TBLData && Array.isArray(TBLData) && TBLData?.length > 0) ? 
-                      TBLData?.map((ele) => {
+                    {(TBLEditData && Array.isArray(TBLEditData) && TBLEditData?.length > 0) ? 
+                      TBLEditData?.map((ele,i) => {
                         return(
                           <tr key={ele?._id}>
                           {/* {userInfo?.role === 'Super Admin' && <td><input type='checkbox' style={{width:'auto'}} checked={Array.isArray(selectedDesign) && selectedDesign?.some(sc => sc === ele?._id)}  onChange={(e) => handleSelectDesign(e,ele?._id)}/></td>} */}
@@ -241,6 +353,7 @@ function DesignApprovalList() {
                           <td>{ele?.status}</td>
                           <td>{ele?.editReqId?.name}</td>
                           <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
+                          <td>{getFieldLabels(displayFields[i])}</td>
                           </tr>
                         )
                       }):
@@ -256,7 +369,7 @@ function DesignApprovalList() {
                     totalCount={totalCount}
                     pageSize={pageSize}
                     onPageChange={(page) => setCurrentPage(page)}
-                    TBLData={TBLData}
+                    TBLData={TBLEditData}
                   />
               </div>
             </div>
