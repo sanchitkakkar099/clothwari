@@ -149,27 +149,31 @@ function DesignApprovalList() {
     }); 
     if(TBLData[i] && TBLEditData[i]){
       const differences = getArrayDifferences(TBLEditData[i]?.variations , TBLData[i]?.variations);
-      console.log("differences variations",differences);
-      setDisplayFields(prev => ({
-        ...prev,
-        [i]:{
-          ...prev[i],
-          "variations": differences.length>0 ? true : false,
-        }
-      }));
-      // setDisplayVariations(prev => ({
+      // console.log("differences variations",differences);
+      // setDisplayFields(prev => ({
       //   ...prev,
       //   [i]:{
       //     ...prev[i],
-      //     [i]: differences,
+      //     "variations": differences.length>0 ? true : false,
       //   }
       // }));
+      setDisplayVariations(prev => ({
+        ...prev,
+        [i]:{
+          ...prev[i],
+          ...differences,
+        }
+      }));
     }  
     }     
   },[TBLData, TBLEditData])
+
   // useEffect(()=>{
   //   console.log("displayFields",displayFields);
   // },[displayFields])
+  // useEffect(()=>{
+  //   console.log("displayVariations",displayVariations);
+  // },[displayVariations])
 
 
 
@@ -220,18 +224,27 @@ function DesignApprovalList() {
     navigate(`/product-view/${ID}`)
   };
 
-    const getFieldLabels = (fields) => {
+  const getFieldLabels = (fields) => {
     const labels = [];
-    if (fields?.name) labels.push('Design Name');
-    if (fields?.designNo) labels.push('Design Number');
-    if (fields?.category) labels.push('Category');
-    if (fields?.tag) labels.push('Tags');
-    if (fields?.image) labels.push('Image');
-    if (fields?.thumbnail) labels.push('Thumbnail');
-    if (fields?.primary_color_code) labels.push('Primary color code');
-    if (fields?.primary_color_name) labels.push('primary color name');
-    if (fields?.variations) labels.push('variations');
-    return labels.join(', ');
+    if (fields?.name) labels.push('Design Name, ');
+    if (fields?.designNo) labels.push('Design Number, ');
+    if (fields?.category) labels.push('Category, ');
+    if (fields?.tag) labels.push('Tags, ');
+    if (fields?.image) labels.push('Image, ');
+    if (fields?.thumbnail) labels.push('Thumbnail, ');
+    if (fields?.primary_color_code) labels.push('Primary color code, ');
+    if (fields?.primary_color_name) labels.push('primary color name, ');
+    return labels;
+  };
+
+  const getFieldVariantLabels = (fields,index) => {
+    const labels = [];
+    if (fields?.color) labels.push(`Variant ${index+1} color, `);
+    if (fields?.variation_designNo) labels.push(`Variant ${index+1} Design Number, `);
+    if (fields?.variation_name) labels.push(`Variant ${index+1} Design Name, `);
+    if (fields?.variation_image) labels.push(`Variant ${index+1} Image, `);
+    if (fields?.variation_thumbnail) labels.push(`Variant ${index+1} Thumbmail,`);
+    return labels;
   };
 
   const handleNameFilter = (e) => {
@@ -355,8 +368,14 @@ function DesignApprovalList() {
                           <td>{ele?.status}</td>
                           <td>{ele?.editReqId?.name}</td>
                           <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
-                          <td>{getFieldLabels(displayFields[i])}</td>
-                          </tr>
+                          <td>{getFieldLabels(displayFields[i])} 
+                          {displayVariations[i] && Object.keys(displayVariations[i]).length > 0 ? (
+                            Object.keys(displayVariations[i]).map((key,index) => (
+                            <span key={key}>{getFieldVariantLabels(displayVariations[i][key], index)}</span>
+                              ))
+                            ) : ''}
+                        </td>
+                        </tr>
                         )
                       }):
                       <tr><td colSpan={4} className="text-center">No Data To Display</td></tr>
