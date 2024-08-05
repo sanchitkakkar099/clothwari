@@ -441,6 +441,13 @@ export const designUploadApi = createApi({
       }),
       invalidatesTags: ["designeUpload"],
     }),
+    deleteRemoveDesignUploadReq: builder.mutation({
+      query: (id) => ({
+        url: `designupload/removeById/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["designeUpload"],
+    }),
     uniqueDesignNameCheck: builder.mutation({
       query: (payload) => ({
         url: "designupload/name/check",
@@ -480,6 +487,7 @@ export const {
   useDesignUploadApprovalByIdQuery,
   useDeleteDesignUploadMutation,
   useDeleteRejectDesignUploadReqMutation,
+  useDeleteRemoveDesignUploadReqMutation,
   useUniqueDesignNameCheckMutation,
   useUniqueDesignNumberCheckMutation,
   useUpdateUploadedByMutation

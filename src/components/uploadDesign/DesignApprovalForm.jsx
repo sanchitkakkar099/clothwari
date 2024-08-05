@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate,Link, Navigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useDesignUploadApprovalByIdQuery, useDeleteRejectDesignUploadReqMutation, useSubmitApprovalDesignUploadMutation  } from "../../service";
+import { useDesignUploadApprovalByIdQuery, useDeleteRejectDesignUploadReqMutation, useSubmitApprovalDesignUploadMutation, useDeleteRemoveDesignUploadReqMutation  } from "../../service";
 import toast from "react-hot-toast";
 import { ChevronDown, ChevronUp, Download, Edit, Eye, Image, MoreVertical, Trash } from "react-feather";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, Input, UncontrolledDropdown } from "reactstrap";
@@ -24,6 +24,7 @@ function DesignApprovalForm() {
   })
   const [reqDelete, resDelete] = useDeleteRejectDesignUploadReqMutation();
   const [reqApprove, resApprove] = useSubmitApprovalDesignUploadMutation();
+  const [reqRemove, resRemove] = useDeleteRemoveDesignUploadReqMutation();
 
   // pagination 
   const [TBLData, setTBLData] = useState('')
@@ -117,6 +118,21 @@ function DesignApprovalForm() {
   },[resDelete])
 
   useEffect(()=>{
+    if(resRemove?.isSuccess){
+      toast.success('Successfully Rejected',{
+        position: "top-center"
+      })
+      navigate("/design-approval-list");
+    }
+    if(resRemove?.isError){
+      toast.error(resRemove?.message ? resRemove?.message : "Somethings went wrong",{
+        position: "top-center"
+      })
+    }
+
+  },[resRemove])
+
+  useEffect(()=>{
     if(resApprove?.isSuccess){
       toast.success('Successfully Updated',{
         position: "top-center"
@@ -134,6 +150,10 @@ function DesignApprovalForm() {
   const handleReject = (e) => {
     e.preventDefault();
     reqDelete(TBLEditData._id);
+  };
+  const handleRemoveApproval = (e) => {
+    e.preventDefault();
+    reqRemove(TBLEditData._id);
   };
   const handleApprove = (e) => {
     e.preventDefault();
@@ -367,6 +387,9 @@ function DesignApprovalForm() {
                 {" "}
                   <i className="bx bx-x mr-1"></i> Cancel{" "}
                 </Link>
+                <button onClick={handleRemoveApproval} className="btn btn-warning m-1">
+                  <i className=" bx bx-file me-1"></i> Remove Approval{" "}
+                </button>
                 <button onClick={handleReject} className="btn btn-secondary m-1">
                   <i className=" bx bx-file me-1"></i> Reject{" "}
                 </button>

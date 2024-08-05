@@ -278,6 +278,15 @@ function UploadDesignListV2() {
     setSelectedDesign([])
   }
 
+  const handleCheckStatus = (status) =>{
+    if(status === 'Pending'){
+      return <Badge color="danger" pill>Pending</Badge>
+    }else if(status === 'Approved'){
+      return <Badge color="success" pill >Approved</Badge>
+    }else if(status === 'Rejected'){
+      return <Badge color="info" pill >Rejected</Badge>
+    }
+  }
 
   
 
@@ -439,7 +448,7 @@ function UploadDesignListV2() {
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
                           <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
-                          <td>{ele?.status ? <Badge color="danger" pill>Pending</Badge>:<Badge color="success" pill >Approved</Badge>}</td>
+                          <td>{handleCheckStatus(ele?.status)}</td>
                           <td>
                           {((userInfo?.role === 'Super Admin') || userInfo?.permissions?.some(el => el === "Upload Design View" || el === "Upload Design Edit" || el === "Uploaded Design Replace")) ?
                           <UncontrolledDropdown>
