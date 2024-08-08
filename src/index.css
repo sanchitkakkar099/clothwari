@@ -57,14 +57,15 @@ button:focus-visible {
 .c-maker_pag {
   display: flex;
   align-items: center;
+  justify-content: end;
 }
 .c-maker_pag .pagination{
   width: 92%;
 }
 .c-maker_input {
-  width: 8%;
-  margin-top: 17px;
-  margin-right: 20px;
+  width: 17%;
+  margin-top: 0px;
+  margin-right: 0px;
 }
 .c-maker_input .search-box .form-control {
   border-radius: 30px;

@@ -1,6 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
-
+import { createSlice, current } from "@reduxjs/toolkit";
 const initState = {
+  currentPage:1,
   driveList: [],
 };
 
@@ -11,11 +11,15 @@ export const driveSlice = createSlice({
     getDrive: (state, { payload }) => {
       state.driveList = payload;
     },
+    getCurrentPage: (state, { payload }) => {
+      state.currentPage = payload;
+    }
   },
 });
 
 export const {
-  getDrive
+  getDrive,
+  getCurrentPage
 } = driveSlice.actions;
 
 export default driveSlice.reducer;

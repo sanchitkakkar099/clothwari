@@ -4,7 +4,7 @@ import DataTable from "../common/DataTable";
 import { useNavigate,Link, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useDeleteDesignUploadMutation, useDesignUploadList2Mutation, useDesignUploadListMutation, useMultipleFileUploadMutation } from "../../service";
-import { getDesignUpload } from "../../redux/designUploadSlice";
+import { getCurrentPageV2, getDesignUpload } from "../../redux/designUploadSlice";
 import toast from "react-hot-toast";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import { downloadFile } from "../common/FileDownload";
@@ -31,6 +31,7 @@ function UploadDesignListV2() {
   const [reqDelete, resDelete] = useDeleteDesignUploadMutation();
   const [reqFile] = useMultipleFileUploadMutation();
   const designUploadList = useSelector((state) => state?.designUploadState.designUploadList)
+  const latestCurrentPage = useSelector((state) => state?.designUploadState?.currentPageV2);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
   const [modalView, setModalView] = useState(false);
@@ -42,7 +43,7 @@ function UploadDesignListV2() {
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(latestCurrentPage)
   const pageSize = 10
   const [totalCount, setTotalCount] = useState(0)
 
@@ -524,7 +525,10 @@ function UploadDesignListV2() {
                     currentPage={currentPage}
                     totalCount={totalCount}
                     pageSize={pageSize}
-                    onPageChange={(page) => setCurrentPage(page)}
+                    onPageChange={(page) => {
+                      dispatch(getCurrentPageV2(page))
+                      setCurrentPage(page)
+                    }}
                     TBLData={TBLData}
                   />
               </div>

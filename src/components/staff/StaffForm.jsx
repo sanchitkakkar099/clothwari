@@ -5,7 +5,7 @@ import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
-import { useDesignerByIdQuery, useGetDesignerPermissionListQuery, useSubmitDesignerMutation } from "../../service";
+import { useDesignerByIdQuery, useGetDesignerPermissionListQuery, useSubmitDesignerMutation, useUserTagDropdownListQuery } from "../../service";
 import toast from "react-hot-toast";
 
 function StaffForm() {
@@ -15,10 +15,12 @@ function StaffForm() {
   const { state: locationState } = location;
   const [reqDesigner, resDesigner] = useSubmitDesignerMutation();
   const permissionList = useGetDesignerPermissionListQuery()
+  const userTagList = useUserTagDropdownListQuery();
   const resDesignerById = useDesignerByIdQuery(locationState?.designerID, {
     skip: !locationState?.designerID,
   });
   const [permissionDropdown,setPermissionDropDown] = useState([])
+  const [userTagDropdowm,setUserTagDropdowm] = useState([])
   const userInfo = useSelector((state) => state?.authState.userInfo)
 
 
@@ -37,7 +39,8 @@ function StaffForm() {
         name: resDesignerById?.data?.data?.name,
         email: resDesignerById?.data?.data?.email,
         phone: resDesignerById?.data?.data?.phone,
-        permissions:resDesignerById?.data?.data?.permissions
+        permissions:resDesignerById?.data?.data?.permissions,
+        tag: resDesignerById?.data?.data?.tag
       });
     }
   }, [resDesignerById]);
@@ -48,9 +51,16 @@ function StaffForm() {
     }
   },[permissionList])
 
+  useEffect(() => {
+    if(userTagList?.isSuccess && userTagList?.data?.data){
+      setUserTagDropdowm(userTagList?.data?.data)
+    }
+  },[userTagList])
+
   const onNext = (state) => {
     reqDesigner({...state,
-      permissions:state?.permissions?.map(el => el?._id)
+      permissions:state?.permissions?.map(el => el?._id),
+      tag:state?.tag?.map(el => el?._id)
     });
   };
 
@@ -289,6 +299,41 @@ function StaffForm() {
                             {errors.permissions && (
                               <FormFeedback>
                                 {errors?.permissions?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                      }
+                      {userInfo?.role === 'Super Admin' &&
+                      <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label for="permissions" className="form-label">
+                              Zone Name
+                            </Label>
+                            <Controller
+                              id="tag"
+                              name="tag"
+                              control={control}
+                              render={({ field: { onChange, value } }) => (
+                                <Select
+                                  isClearable
+                                  isMulti
+                                  options={userTagDropdowm}
+                                  className="react-select"
+                                  classNamePrefix="select"
+                                  onChange={onChange}
+                                  value={value ? value : null}
+                                  menuPortalTarget={document.body}
+                                  styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                    menu: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                  }}
+                                />
+                              )}
+                            />
+                            {errors.tag && (
+                              <FormFeedback>
+                                {errors?.tag?.message}
                               </FormFeedback>
                             )}
                           </div>

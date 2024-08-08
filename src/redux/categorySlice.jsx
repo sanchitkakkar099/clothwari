@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const initState = {
+  currentPage:1,
   categoryList: [],
   selectedCategoryList: [],
   selectedCategoryListDesign: [],
@@ -22,6 +23,9 @@ export const categorySlice = createSlice({
     setSelectedCategoryList: (state, { payload }) => {
       state.selectedCategoryList = payload;
     },
+    getCurrentPage: (state, { payload }) =>{
+      state.currentPage = payload;
+    }
   },
 });
 
@@ -30,6 +34,7 @@ export const {
   setCategoryList,
   setSelectedCategoryListDesign,
   setSelectedCategoryList,
+  getCurrentPage
 } = categorySlice.actions;
 
 export default categorySlice.reducer;

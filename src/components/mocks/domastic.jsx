@@ -286,8 +286,8 @@ function domastic() {
         }
   
         const pdfBlob = pdf.output("blob");
-        await handleUpload(pdfBlob); 
-        // pdf.save(`${title}.pdf`);
+        // await handleUpload(pdfBlob); 
+        pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("Something went wrong", {
           position: "top-center",
@@ -295,7 +295,7 @@ function domastic() {
         console.error("Error generating canvas:", error);
       } finally {
         setViewButton(false);
-        componentRef.current.style.display = "none";
+        componentRef.current.style.display = "";
       }
     }
   };
@@ -713,10 +713,10 @@ function domastic() {
                   </div>
                 </div>
                 <div id="pdf" className="w-100 ">
-                      <div ref={componentRef} style={{ display: "none" }}>
+                      <div ref={componentRef} style={{ display: "" }}>
                         <div
                           className="container-wrapper c-main-content"
-                          style={{ height: "762px" }}
+                          style={{ height: "898px" }}
                         >
                           <div className="container text-center">
                             <div className="row">

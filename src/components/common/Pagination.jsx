@@ -8,7 +8,7 @@ function Pagination({
   siblingCount = 1,
   currentPage,
   pageSize,
-  TBLData
+  TBLData,
 }) {
   const paginationRange = usePagination({
     currentPage,
@@ -49,6 +49,7 @@ function Pagination({
   <div className="records-info">
   {`Showing ${start} - ${end}  of ${totalCount} records`}
   </div>
+  <div className="c-maker_pag">
   <div className="pagination-controls">
     <button className="previous-page-btn" onClick={(e) => onPrevious(e)} disabled={currentPage === 1}>Previous</button>
     <div className="page-numbers">
@@ -65,6 +66,22 @@ function Pagination({
     </div>
     <button className="next-page-btn" onClick={(e) => onNext(e)} disabled={currentPage === lastPage}>Next</button>
   </div>
+  <div className="c-maker_input">
+    <div className="form-inline">
+      <div className="search-box">
+        <div className="position-relative">
+          <input
+            type="text"
+            onChange={(e) => onPageChangeFunc(e,parseInt(e.target.value) || 1)}
+            className="form-control "
+            placeholder="Go to page"
+            
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
 </div>
   );
 }

@@ -42,6 +42,8 @@ const SalesPersonForm = lazy(() => import("../components/sales-person/SalesPerso
 const DriveList = lazy(() => import("../components/drive/DriveList"));
 const SalesPersonViewDesign = lazy(() => import("../components/sales-person/SalePersonViewDesing"));
 const ReportList = lazy(()=>import("../components/report/ReportList"))
+const UserTagList = lazy(() => import("../components/userTag/UserTagList"));
+const UserTagForm = lazy(() => import("../components/userTag/UserTagForm"));
 
 const Domatic = lazy(()=> import("../components/mocks/domastic"));
 const International = lazy(()=> import("../components/mocks/international"))
@@ -72,6 +74,8 @@ export const privateRoutes = [
   { path: "/sales-person-list", Component: SalesPersonList },
   { path: "/pdf-maker-view-design", Component: SalesPersonViewDesign },
 
+  { path: "/user-tag-list", Component: UserTagList},
+  { path: "/user-tag-form", Component: UserTagForm},
 
   { path: "/category-list", Component: CategoryList },
   { path: "/category-form", Component: CategoryForm },

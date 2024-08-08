@@ -335,6 +335,84 @@ export const {
   useMergeTagMutation
 } = designTagApi;
 
+export const userTagApi = createApi({
+  tagTypes: ["userTag"],
+  reducerPath: "userTagApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${baseUrl}/`,
+    prepareHeaders: (headers, { getState }) => {
+      if(getState()?.authState?.userToken){
+        headers.set('Authorization', getState()?.authState?.userToken);
+      }
+      return headers
+    },
+  }),
+  endpoints: (builder) => ({
+    userTagList: builder.mutation({
+      query: (payload) => ({
+        url: "usertag/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["userTag"],
+    }),
+    userTagListV2: builder.mutation({
+      query: (payload) => ({
+        url: "usertag/list/v2",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["userTag"],
+    }),
+    userTagDropdownList: builder.query({
+      query: () => ({
+        url: "usertag/drop/dwon/list",
+        method: "GET",
+      }),
+      providesTags: ["userTag"],
+    }),
+    submitUserTag: builder.mutation({
+      query: (payload) => ({
+        url: "usertag/create",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["userTag"],
+    }),
+    searchUserTag: builder.mutation({
+      query: (payload) => ({
+        url: "usertag/search",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["userTag"],
+    }),
+    userTagById: builder.query({
+      query: (id) => ({
+        url: `usertag/byId/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["userTag"],
+    }),
+    deleteUserTag: builder.mutation({
+      query: (id) => ({
+        url: `usertag/byId/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["userTag"],
+    }),
+  }),
+});
+export const {
+  useUserTagListMutation,
+  useUserTagListV2Mutation,
+  useUserTagDropdownListQuery,
+  useSubmitUserTagMutation,
+  useSearchUserTagMutation,
+  useUserTagByIdQuery,
+  useDeleteUserTagMutation,
+} = userTagApi;
+
 
 export const designUploadApi = createApi({
   tagTypes: ["designeUpload"],

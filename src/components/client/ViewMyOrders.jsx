@@ -247,6 +247,7 @@ function ViewMyOrders() {
                     pageSize={pageSize}
                     onPageChange={(page) => setCurrentPage(page)}
                     TBLData={TBLData}
+                    setCurrentPage={setCurrentPage}
                   />
             </div>
           </div>

@@ -3,9 +3,9 @@ import { TextSearchFilter } from '../common/Filter';
 import DataTable from "../common/DataTable";
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useDeleteTagMutation, useTagListMutation, useTagListV2Mutation } from '../../service';
+import { useDeleteUserTagMutation, useUserTagListMutation, useUserTagListV2Mutation } from '../../service';
 import VerifyDeleteModal from '../common/VerifyDeleteModal';
-import { getCurrentPage, getTag } from '../../redux/tagSlice';
+import { getTag } from '../../redux/tagSlice';
 import toast from 'react-hot-toast';
 import { CSVLink } from "react-csv";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
@@ -19,21 +19,18 @@ import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
 
 
-function TagList() {
+function UserTagList() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const location = useLocation()
   const btnRef = useRef(null);
   const userInfo = useSelector((state) => state?.authState.userInfo);
-  const [reqTag,resTag] = useTagListV2Mutation()
-  const [reqTagList, resTagList] = useTagListMutation();
-  const [reqDelete, resDelete] = useDeleteTagMutation();
+  const [reqTag,resTag] = useUserTagListV2Mutation()
+  const [reqTagList, resTagList] = useUserTagListMutation();
+  const [reqDelete, resDelete] = useDeleteUserTagMutation();
   const tagList = useSelector((state) => state?.tagState.tagList)
-  const latestCurrentPage = useSelector((state) => state?.tagState?.currentPage);
   const [showModal, setShowModal] = useState(false);
   const [modalDetails, setModalDetails] = useState(null);
-  const [mergeFrom, setMergeFrom] = useState(null);
-  const [mergeTo, setMergeTo] = useState(null);
   
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -41,14 +38,12 @@ function TagList() {
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
-  const [currentPage, setCurrentPage] = useState(latestCurrentPage)
+  const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
   const [totalCount, setTotalCount] = useState(0)
 
   // filter
   const [filterName, setFilterName] = useState('');
-
-  const [csvData, setCsvData] = useState([]);
 
   useEffect(() => {
     if(filterName || sortingBy){
@@ -103,7 +98,7 @@ function TagList() {
 
   const onEditAction = (e, st) => {
     e.preventDefault();
-    navigate("/tag-form", {
+    navigate("/user-tag-form", {
       state: {
         tagID: st?._id,
         isEdit:true,
@@ -136,47 +131,6 @@ function TagList() {
     }
   }, [resDelete]);
 
-  const handleDownloadCSV = async () => {
-    try {
-      if(resTagList?.isSuccess){
-        const responseCatData = resTagList?.data?.data?.docs || [];
-      
-      const csvDataTemp = [
-        [
-          "Tag Name",
-          "Created At"
-        ],
-      ];
-      responseCatData.forEach((data) => {
-        csvDataTemp.push([
-          data.label,
-          dayjs.utc(data.createdAt).format("MM/DD/YYYY")
-        ]);
-      });
-
-      setCsvData(csvDataTemp);
-      setTimeout(() => {
-        btnRef.current.link.click();
-      }, 1000);
-    }
-    } catch (error) {
-      console.error("Error fetching CSV data:", error);
-    }
-  };
-
-  const handleMerge = (e, st) => {
-    e.preventDefault();
-    setMergeTo(st)
-  }
-
-  
-  const onMergeCloseClick = (e) => {
-    e.preventDefault();
-    setMergeTo(null)
-    setMergeFrom(null)
-  }
-  
-
   const handleSorting = (e) => {
     setSortingBy(e.target.value)
   }
@@ -187,23 +141,21 @@ function TagList() {
 
   return (
     <>
-      {userInfo?.role === "Super Admin" ||
-      userInfo?.role === "Admin" ||
-      userInfo?.role === "Designer" ? (
+      {userInfo?.role === "Super Admin" ? (
         <>
           <div className="page-content">
             <div className="container-fluid">
               <div className="row">
                 <div className="col-12">
                   <div className="page-title-box d-flex align-items-center justify-content-between">
-                    <h4 className="mb-0">Tag</h4>
+                    <h4 className="mb-0">Zone</h4>
 
                     <div className="page-title-right">
                       <ol className="breadcrumb m-0">
                         <li className="breadcrumb-item">
                           <a href="#!">Clothwari</a>
                         </li>
-                        <li className="breadcrumb-item active">Tag</li>
+                        <li className="breadcrumb-item active">Zone</li>
                       </ol>
                     </div>
                   </div>
@@ -221,26 +173,10 @@ function TagList() {
                             className="btn btn-success waves-effect waves-light mb-4 me-2"
                             data-bs-toggle="modal"
                             data-bs-target=".add-new-order"
-                            onClick={() => navigate("/tag-form")}
+                            onClick={() => navigate("/user-tag-form")}
                           >
-                            <i className="mdi mdi-plus me-1"></i> Create Tag
+                            <i className="mdi mdi-plus me-1"></i> Create Zone
                           </button>
-                          <button
-                            type="button"
-                            className="btn btn-success waves-effect waves-light mb-4 me-2"
-                            data-bs-toggle="modal"
-                            data-bs-target=".add-new-order"
-                            onClick={handleDownloadCSV}
-                          >
-                            Download CSV
-                          </button>
-                          <CSVLink
-                            data={csvData}
-                            filename="data.csv"
-                            className="hidden"
-                            ref={btnRef}
-                            target="_blank"
-                          />
                         </div>
                       </div>
                       <div className="position-relative">
@@ -286,7 +222,7 @@ function TagList() {
                       <table className="filter-table">
                         <thead>
                           <tr>
-                            <th>Tag Name</th>
+                            <th>Zone Name</th>
                             <th>Action</th>
                           </tr>
                           <tr>
@@ -337,19 +273,6 @@ function TagList() {
                                             Delete
                                           </span>
                                         </DropdownItem>
-
-                                        <DropdownItem
-                                          href="#!"
-                                          onClick={(e) => handleMerge(e, ele)}
-                                        >
-                                          <GitMerge
-                                            className="me-50"
-                                            size={15}
-                                          />{" "}
-                                          <span className="align-middle">
-                                            Replace Tag
-                                          </span>
-                                        </DropdownItem>
                                       </DropdownMenu>
                                     </UncontrolledDropdown>
                                   </td>
@@ -369,10 +292,7 @@ function TagList() {
                         currentPage={currentPage}
                         totalCount={totalCount}
                         pageSize={pageSize}
-                        onPageChange={(page) => {
-                          dispatch(getCurrentPage(page))
-                          setCurrentPage(page)
-                        }}
+                        onPageChange={(page) => setCurrentPage(page)}
                         TBLData={TBLData}
                       />
                     </div>
@@ -391,19 +311,8 @@ function TagList() {
       ) : (
         <Navigate to={"/dashboard"} />
       )}
-      <TagMergeModal
-        mergeFrom={mergeFrom}
-        setMergeFrom={setMergeFrom}
-        mergeTo={mergeTo}
-        setMergeTo={setMergeTo}
-        onMergeCloseClick={onMergeCloseClick}
-        currentPage={currentPage}
-        pageSize={pageSize}
-        setTBLData={setTBLData}
-        setTotalCount={setTotalCount}
-      />
     </>
   );
 }
 
-export default TagList
+export default UserTagList

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Controller, set, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
-import { useDispatch } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
-import { useAdminByIdQuery, useGetAdminPermissionListQuery, useSubmitAdminMutation } from "../../service";
+import { useAdminByIdQuery, useGetAdminPermissionListQuery, useSubmitAdminMutation ,useUserTagDropdownListQuery} from "../../service";
 import toast from "react-hot-toast";
 
 function AdminForm() {
@@ -14,10 +14,14 @@ function AdminForm() {
   const { state: locationState } = location;
   const [reqAdmin, resAdmin] = useSubmitAdminMutation();
   const permissionList = useGetAdminPermissionListQuery()
+  const userTagList = useUserTagDropdownListQuery();
   const resAdminById = useAdminByIdQuery(locationState?.adminID, {
     skip: !locationState?.adminID,
-  });
+  })
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const [permissionDropdown,setPermissionDropDown] = useState([])
+  const [userTagDropdowm,setUserTagDropdowm] = useState([])
+
 
 
   const {
@@ -35,6 +39,7 @@ function AdminForm() {
         name: resAdminById?.data?.data?.name,
         email: resAdminById?.data?.data?.email,
         permissions:resAdminById?.data?.data?.permissions,
+        tag: resAdminById?.data?.data?.tag
       });
     }
   }, [resAdminById]);
@@ -46,9 +51,16 @@ function AdminForm() {
     }
   },[permissionList])
 
+  useEffect(() => {
+    if(userTagList?.isSuccess && userTagList?.data?.data){
+      setUserTagDropdowm(userTagList?.data?.data)
+    }
+  },[userTagList])
+
   const onNext = (state) => {
     reqAdmin({...state,
-      permissions:state?.permissions?.map(el => el?._id)
+      permissions:state?.permissions?.map(el => el?._id),
+      tag:state?.tag?.map(el => el?._id)
     });
   };
 
@@ -70,6 +82,8 @@ function AdminForm() {
   
 
    return (
+    <>{(userInfo?.role === 'Super Admin') ?
+      <>
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -240,6 +254,39 @@ function AdminForm() {
                             )}
                           </div>
                         </div>
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label for="permissions" className="form-label">
+                              Zone Name
+                            </Label>
+                            <Controller
+                              id="tag"
+                              name="tag"
+                              control={control}
+                              render={({ field: { onChange, value } }) => (
+                                <Select
+                                  isClearable
+                                  isMulti
+                                  options={userTagDropdowm}
+                                  className="react-select"
+                                  classNamePrefix="select"
+                                  onChange={onChange}
+                                  value={value ? value : null}
+                                  menuPortalTarget={document.body}
+                                  styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                    menu: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                  }}
+                                />
+                              )}
+                            />
+                            {errors.tag && (
+                              <FormFeedback>
+                                {errors?.tag?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
                         
                       </div>                      
                       <div className="row">
@@ -267,6 +314,11 @@ function AdminForm() {
         </div>
       </div>
     </div>
+    </>
+    :
+    <Navigate to={"/dashboard"}/>
+    }
+    </>
   );
 }
 

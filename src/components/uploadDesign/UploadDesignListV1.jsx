@@ -26,6 +26,7 @@ import dayjs from "dayjs";
 // import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 // import timezone from 'dayjs/plugin/timezone'; // Import timezone plugin
 import { getTag, setSelectedTagListDesign } from "../../redux/tagSlice";
+import { getCurrentPageV1 } from "../../redux/designUploadSlice";
 import {
   setSearchDataDesign,
   setSelectedEndDateDesign,
@@ -52,6 +53,7 @@ function UploadDesignListV1() {
   const categoryDropdownRes = useCategoryDropdownListQuery();
   const colorListDropdown = useColorVariationDropdownListQuery();
 
+  const latestCurrentPage = useSelector((state) => state?.designUploadState?.currentPageV1);
   const tagList = useSelector((state) => state?.tagState.tagList);
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
@@ -84,7 +86,7 @@ function UploadDesignListV1() {
 
   // pagination
   const [TBLData, setTBLData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(latestCurrentPage);
   const pageSize = 9;
   const [totalCount, setTotalCount] = useState(0);
 
@@ -94,7 +96,6 @@ function UploadDesignListV1() {
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isMultiTagSearch, setIsMultiTagSearch] = useState(false);
-  const [searchPage, setSearchPage] = useState("");
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
   const [colorSearch, setColorSearch] = useState([]);
@@ -254,21 +255,7 @@ function UploadDesignListV1() {
     //   uploadedBy:selectedStaff ? selectedStaff : ''
     // });
   };
-  const handleSearchPageNumber = (pageNumber) => {
-    setCurrentPage(parseInt(pageNumber) ? parseInt(pageNumber) : 1);
-    setSearchPage(pageNumber);
-    // reqDesign({
-    //   page: pageNumber,
-    //   limit: pageSize,
-    //   search: search,
-    //   date_filter: startDate ? dayjs(startDate).format() : "",
-    //   tags: tagsSearch,
-    //   uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
-    //   category: Array.isArray(categorySearch)
-    //     ? categorySearch?.map((el) => el?.value)
-    //     : [],
-    // });
-  };
+ 
 
   const handleChangeVariation = (e, variation, designObj) => {
     e.preventDefault();
@@ -847,36 +834,17 @@ function UploadDesignListV1() {
                                   onPageChange={(page) => setCurrentPage(page)}
                                   TBLData={TBLData}
                                 /> */}
-                                <div className="c-maker_pag">
+                                
                                   <Pagination
                                     currentPage={currentPage}
                                     totalCount={totalCount}
                                     pageSize={pageSize}
-                                    onPageChange={(page) =>
+                                    onPageChange={(page) => {
+                                      dispatch(getCurrentPageV1(page));                                      
                                       setCurrentPage(page)
-                                    }
+                                    }}
                                     TBLData={TBLData}
                                   />
-                                  <div className="c-maker_input">
-                                    <div className="form-inline">
-                                      <div className="search-box">
-                                        <div className="position-relative">
-                                          <input
-                                            type="text"
-                                            onChange={(e) =>
-                                              handleSearchPageNumber(
-                                                e.target.value
-                                              )
-                                            }
-                                            className="form-control "
-                                            placeholder="Find by Page Number"
-                                            value={searchPage}
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
                               </div>
                             </div>
                           </div>

@@ -25,7 +25,7 @@ import {
 import { Download, Edit, Eye, Key, MoreVertical, Trash, Share2 } from "react-feather";
 import ChangePassowardModal from "../common/ChangePassowardModal";
 import { getSalesPerson } from "../../redux/salesPersonSlice";
-import { getDrive } from "../../redux/driveSlice";
+import { getCurrentPage, getDrive } from "../../redux/driveSlice";
 import PDFICON from "../../assets/images/pdf_icon.svg";
 import Pagination from "../common/Pagination";
 const cookies = new Cookies();
@@ -35,6 +35,7 @@ function DriveList() {
   const navigate = useNavigate();
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
+  const latestCurrentPage = useSelector((state) => state?.driveState?.currentPage);
   const [reqDrive, resDrive] = useDriveListMutation();
   const [reqDelete, resDelete] = useDeleteDriveMutation();
 
@@ -55,7 +56,7 @@ function DriveList() {
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(latestCurrentPage)
   const pageSize = 10
   const [totalCount, setTotalCount] = useState(0)
 
@@ -343,8 +344,11 @@ function DriveList() {
                     currentPage={currentPage}
                     totalCount={totalCount}
                     pageSize={pageSize}
-                    onPageChange={(page) => setCurrentPage(page)}
+                    onPageChange={(page) => {
+                      dispatch(getCurrentPage(page))
+                      setCurrentPage(page)}}
                     TBLData={TBLData}
+                    setCurrentPage={setCurrentPage}
                   />
                 </div>
               </div>

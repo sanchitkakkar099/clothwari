@@ -82,6 +82,7 @@ function SidebarComponent() {
                         <li><Link to="/staff-list" data-key="t-inbox">Staff</Link></li>
                         <li><Link to="/client-list" data-key="t-read-email">Client</Link></li>
                         <li><Link to="/sales-person-list" data-key="t-read-email">Marketing</Link></li>
+                        <li><Link to="/user-tag-list" data-key="t-read-email">Zone</Link></li>
                     </ul>
                 </li>
                 }

@@ -11,7 +11,7 @@ import salesPersonSlice from "./salesPersonSlice";
 import authSlice from "./authSlice";
 import adminSlice from "./adminSlice";
 import mixedSlice from "./mixedSlice";
-import { adminApi, authApi, categoryApi, clientApi, clientBagApi, colorVariationApi, dashboardApi, designTagApi, designUploadApi, designerApi, driveApi, fileApi, salesPersonApi } from "../service";
+import { adminApi, authApi, categoryApi, clientApi, clientBagApi, colorVariationApi, dashboardApi, designTagApi, designUploadApi, designerApi, driveApi, fileApi, salesPersonApi, userTagApi } from "../service";
 import driveSlice from "./driveSlice";
 import Cookies from "universal-cookie";
 const cookies = new Cookies()
@@ -43,6 +43,7 @@ const appReducer = combineReducers({
   [clientBagApi.reducerPath]: clientBagApi.reducer,
   [salesPersonApi.reducerPath]: salesPersonApi.reducer,
   [driveApi.reducerPath]: driveApi.reducer,
+  [userTagApi.reducerPath]: userTagApi.reducer,
 });
 
 const rootReducer = (state, action) => {
@@ -88,6 +89,7 @@ export const store = configureStore({
       clientBagApi.middleware,
       salesPersonApi.middleware,
       driveApi.middleware,
+      userTagApi.middleware
     ]).concat([
       unauthorizedMiddleware, // Add custom middleware
     ]),

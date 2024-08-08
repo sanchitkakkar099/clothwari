@@ -21,6 +21,7 @@ import { setSelectedStaffList } from "../../redux/adminSlice";
 import { setSelectedCategoryList } from "../../redux/categorySlice";
 import { Input } from "reactstrap";
 import MultiSelect from "../common/MultiSelect";
+import { getCurrentPage } from "../../redux/salesPersonSlice";
 // Extend Day.js with the plugins
 dayjs.extend(utc);
 // dayjs.extend(timezone);
@@ -34,6 +35,7 @@ function SalesPersonViewDesign() {
   const staffDropDownRes = useDesignerDropDownListQuery()
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqTag, resTag] = useTagListMutation();
+  const latestCurrentPage = useSelector((state) => state?.salesPersonState?.currentPage);
   const tagList = useSelector((state) => state?.tagState.tagList);
   const slectedTagList = useSelector((state) => state?.tagState.selectedTagList);
   const searchData = useSelector((state) => state?.mixedState.searchData);
@@ -51,7 +53,7 @@ function SalesPersonViewDesign() {
 
   // pagination
   const [TBLData, setTBLData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(latestCurrentPage);
   const pageSize = 9;
   const [totalCount, setTotalCount] = useState(0);
 
@@ -601,32 +603,16 @@ function SalesPersonViewDesign() {
                                 </div>
                               </div>
                             </div>
-                            <div className="c-maker_pag">
                               <Pagination
                                 currentPage={currentPage}
                                 totalCount={totalCount}
                                 pageSize={pageSize}
-                                onPageChange={(page) => setCurrentPage(page)}
+                                onPageChange={(page) => {
+                                  dispatch(getCurrentPage(page))
+                                  setCurrentPage(page)
+                                }}
                                 TBLData={TBLData}
                               />
-                              <div className="c-maker_input">
-                                <div className="form-inline">
-                                  <div className="search-box">
-                                    <div className="position-relative">
-                                      <input
-                                        type="text"
-                                        onChange={(e) =>
-                                          handleSearchPageNumber(e.target.value)
-                                        }
-                                        className="form-control "
-                                        placeholder="Find by Page Number"
-                                        value={searchPage}
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>

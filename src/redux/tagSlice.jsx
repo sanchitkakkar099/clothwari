@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
+  currentPage:1,
   tagList: [],
   selectedTagList: [],
   selectedTagListDesign: [],
@@ -10,6 +11,9 @@ export const tagSlice = createSlice({
   name: "tag",
   initialState: initState,
   reducers: {
+    getCurrentPage: (state, { payload }) => {
+      state.currentPage = payload;
+    },
     getTag: (state, { payload }) => {
       state.tagList = payload;
     },
@@ -26,6 +30,7 @@ export const tagSlice = createSlice({
 });
 
 export const {
+  getCurrentPage,
   getTag,
   setTagList,
   setSelectedTagListDesign,

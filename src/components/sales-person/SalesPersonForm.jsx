@@ -5,7 +5,7 @@ import { FormFeedback, Label, Form, Input } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
-import {  useGetSalesPermissionListQuery, useSalesPersonByIdQuery, useSubmitSalesPersonMutation } from "../../service";
+import {  useGetSalesPermissionListQuery, useSalesPersonByIdQuery, useSubmitSalesPersonMutation, useUserTagDropdownListQuery } from "../../service";
 import toast from "react-hot-toast";
 
 function SalesPersonForm() {
@@ -18,8 +18,10 @@ function SalesPersonForm() {
     skip: !locationState?.salesPersonID,
   });
   const permissionList = useGetSalesPermissionListQuery()
+  const userTagList = useUserTagDropdownListQuery();
 
   const [permissionDropdown,setPermissionDropDown] = useState([])
+  const [userTagDropdowm,setUserTagDropdowm] = useState([])
   const userInfo = useSelector((state) => state?.authState.userInfo)
 
 
@@ -38,7 +40,8 @@ function SalesPersonForm() {
         name: resSalesPersonById?.data?.data?.name,
         email: resSalesPersonById?.data?.data?.email,
         phone: resSalesPersonById?.data?.data?.phone,
-        permissions:resSalesPersonById?.data?.data?.permissions
+        permissions:resSalesPersonById?.data?.data?.permissions,
+        tag:resSalesPersonById?.data?.data?.tag
       });
     }
   }, [resSalesPersonById]);
@@ -49,11 +52,18 @@ function SalesPersonForm() {
     }
   },[permissionList])
 
+  useEffect(() => {
+    if(userTagList?.isSuccess && userTagList?.data?.data){
+      setUserTagDropdowm(userTagList?.data?.data)
+    }
+  },[userTagList])
+
 
   const onNext = (state) => {
     reqSalesPerson({
       ...state,
-      permissions:state?.permissions?.map(el => el?.value)
+      permissions:state?.permissions?.map(el => el?.value),
+      tag: state?.tag?.map(el => el?._id)
     });
   };
 
@@ -268,6 +278,41 @@ function SalesPersonForm() {
                             {errors.permissions && (
                               <FormFeedback>
                                 {errors?.permissions?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                      }
+                      {userInfo?.role === 'Super Admin' &&
+                      <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label for="permissions" className="form-label">
+                              Zone Name
+                            </Label>
+                            <Controller
+                              id="tag"
+                              name="tag"
+                              control={control}
+                              render={({ field: { onChange, value } }) => (
+                                <Select
+                                  isClearable
+                                  isMulti
+                                  options={userTagDropdowm}
+                                  className="react-select"
+                                  classNamePrefix="select"
+                                  onChange={onChange}
+                                  value={value ? value : null}
+                                  menuPortalTarget={document.body}
+                                  styles={{
+                                    menuPortal: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                    menu: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                  }}
+                                />
+                              )}
+                            />
+                            {errors.tag && (
+                              <FormFeedback>
+                                {errors?.tag?.message}
                               </FormFeedback>
                             )}
                           </div>

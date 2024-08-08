@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Controller, set, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input } from "reactstrap";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { handleValidatePhone } from "../../constant/formConstant";
-import { useClientByIdQuery, useSubmitClientMutation } from "../../service";
+import { useClientByIdQuery, useSubmitClientMutation, useUserTagDropdownListQuery } from "../../service";
 import toast from "react-hot-toast";
 import ReactDatePicker from "react-datepicker";
 import dayjs from "dayjs";
@@ -30,10 +30,12 @@ function ClientForm() {
   const resClientById = useClientByIdQuery(locationState?.clientID, {
     skip: !locationState?.clientID,
   });
-
+  const userTagList = useUserTagDropdownListQuery();
+  const [userTagDropdowm,setUserTagDropdowm] = useState([])
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   console.log("startTime", startTime, "endTime", endTime);
+  const userInfo = useSelector((state) => state?.authState.userInfo)
 
   const {
     control,
@@ -45,13 +47,20 @@ function ClientForm() {
   } = useForm();
 
   useEffect(() => {
+    if(userTagList?.isSuccess && userTagList?.data?.data){
+      setUserTagDropdowm(userTagList?.data?.data)
+    }
+  },[userTagList])
+
+  useEffect(() => {
     if (resClientById?.isSuccess && resClientById?.data?.data) {
       reset({
         _id: resClientById?.data?.data?._id,
         name: resClientById?.data?.data?.name,
         email: resClientById?.data?.data?.email,
         to_time:resClientById?.data?.data?.to_time ? new Date(resClientById?.data?.data?.to_time) : null,
-        from_time:resClientById?.data?.data?.from_time ? new Date(resClientById?.data?.data?.from_time) : null
+        from_time:resClientById?.data?.data?.from_time ? new Date(resClientById?.data?.data?.from_time) : null,
+        tag: resClientById?.data?.data?.tag
       });
       setStartTime(resClientById?.data?.data?.from_time ? new Date(resClientById?.data?.data?.from_time) : null)
       setEndTime(resClientById?.data?.data?.to_time ? new Date(resClientById?.data?.data?.to_time) : null)
@@ -61,11 +70,13 @@ function ClientForm() {
   const onNext = (state) => {
     console.log('state',{...state,
         to_time:endTime,
-        from_time:startTime});
+        from_time:startTime,
+        tag:state?.tag?.map((el) => el._id)});
     reqClient({ 
       ...state,
       to_time:dayjs(endTime).format(),
-      from_time:dayjs(startTime).format()
+      from_time:dayjs(startTime).format(),
+      tag:state?.tag?.map((el) => el._id)
      });
   };
 
@@ -308,6 +319,41 @@ function ClientForm() {
                             </div>
                           </div>
                         )}
+                        {userInfo?.role === 'Super Admin' &&
+                          <div className="col-md-6">
+                            <div className="mb-3">
+                              <Label for="permissions" className="form-label">
+                                Zone Name
+                              </Label>
+                              <Controller
+                                id="tag"
+                                name="tag"
+                                control={control}
+                                render={({ field: { onChange, value } }) => (
+                                  <Select
+                                    isClearable
+                                    isMulti
+                                    options={userTagDropdowm}
+                                    className="react-select"
+                                    classNamePrefix="select"
+                                    onChange={onChange}
+                                    value={value ? value : null}
+                                    menuPortalTarget={document.body}
+                                    styles={{
+                                      menuPortal: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                      menu: base => ({ ...base, zIndex: 9999 }), // Set a high z-index
+                                    }}
+                                  />
+                                )}
+                              />
+                              {errors.tag && (
+                                <FormFeedback>
+                                  {errors?.tag?.message}
+                                </FormFeedback>
+                              )}
+                            </div>
+                          </div>
+                        }
                       </div>
                       <div className="row">
                         <div className="col text-end">

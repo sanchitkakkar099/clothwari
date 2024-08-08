@@ -30,7 +30,6 @@ function DesignApprovalList() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-
   // pagination 
   const [TBLData, setTBLData] = useState([]);
   const [TBLEditData, setTBLEditData] = useState([])
@@ -394,6 +393,7 @@ function DesignApprovalList() {
                       setCurrentPage(page)}
                     }
                     TBLData={TBLEditData}
+                    setCurrentPage={setCurrentPage}
                   />
               </div>
             </div>

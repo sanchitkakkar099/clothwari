@@ -198,6 +198,23 @@ function AdmintList() {
      : 'No Permissions',
     },
     {
+      Header: "Zones",
+      accessor: "tag",
+      Filter: TextSearchFilter,
+      filter: (rows, columnIds, filterValue) => {
+        return rows.filter(row => {
+          if (row?.original?.tag && Array.isArray(row?.original?.tag)) {
+            return row?.original?.tag?.some(tg => tg?.label?.toLowerCase()?.includes(filterValue?.toLowerCase()));
+          } else {
+            return false;
+          }
+        });
+      },
+      Cell: ({row}) => (row?.original?.tag && Array.isArray(row?.original?.tag) && row?.original?.tag?.length > 0) ? 
+      <li className="list-group-item">{row?.original?.tag?.map(el => el?.label)?.join(", ")}</li>
+     : '',
+    },
+    {
       Header: "Session",
       accessor: "isDel",
       Filter: SessionDropDown,

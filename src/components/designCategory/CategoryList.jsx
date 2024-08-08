@@ -8,7 +8,7 @@ import {
   useCategoryListV2Mutation,
   useDeleteCategoryMutation,
 } from "../../service";
-import { getCategory } from "../../redux/categorySlice";
+import { getCategory, getCurrentPage } from "../../redux/categorySlice";
 import VerifyDeleteModal from "../common/VerifyDeleteModal";
 import toast from "react-hot-toast";
 import { CSVLink, CSVDownload } from "react-csv";
@@ -36,6 +36,7 @@ function CategoryList() {
   const location = useLocation();
   const btnRef = useRef(null);
   const userInfo = useSelector((state) => state?.authState.userInfo);
+  const latestCurrentPage = useSelector((state) => state?.categoryState?.currentPage)
   const [reqCategory, resCategory] = useCategoryListV2Mutation();
   const [reqDelete, resDelete] = useDeleteCategoryMutation();
   const categoryDropdownRes = useCategoryDropdownListQuery();
@@ -54,7 +55,7 @@ function CategoryList() {
 
   // pagination
   const [TBLData, setTBLData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(latestCurrentPage);
   const pageSize = 10;
   const [totalCount, setTotalCount] = useState(0);
 
@@ -389,8 +390,12 @@ function CategoryList() {
                         currentPage={currentPage}
                         totalCount={totalCount}
                         pageSize={pageSize}
-                        onPageChange={(page) => setCurrentPage(page)}
+                        onPageChange={(page) => {
+                          dispatch(getCurrentPage(page))
+                          setCurrentPage(page)
+                        }}
                         TBLData={TBLData}
+                        setCurrentPage={setCurrentPage}
                       />
                     </div>
                   </div>
