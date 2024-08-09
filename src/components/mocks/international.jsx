@@ -232,7 +232,7 @@ function international() {
     } else if (temp === 2) {
       return "31rem";
     } else if (temp === 3) {
-      return "0rem";
+      return "1rem";
     }
     return 0;
   };
@@ -251,8 +251,10 @@ function international() {
         });
         const imgData = canvas.toDataURL("image/png");
 
+        // const customPdfWidth = 792.96 * 72 / 96;
+        // const customPdfHeight = 900.87 * 72 / 96;
         const customPdfWidth = 792.96 * 72 / 96;
-        const customPdfHeight = 900.87 * 72 / 96;
+        const customPdfHeight = 1062.12 * 72 / 96;
 
         const pdf = new jsPDF({
           orientation: "portrait",
@@ -277,8 +279,8 @@ function international() {
         }
 
         const pdfBlob = pdf.output("blob");
-        await handleUpload(pdfBlob);
-        // pdf.save(`${title}.pdf`);
+        // await handleUpload(pdfBlob);
+        pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("somthing went wrong", {
             position: "top-center",
@@ -736,7 +738,7 @@ function international() {
                                                                 <div className="c-text_rotate-bottom-first">7.5 INCHES</div>
                                                             </Col> : ''}
                                                         {imgIndex === 0 && imagePreviews[`${imgKey}_${index}`] && rowBackgrounds[index] ?
-                                                            <Col md={12} key={imgIndex} style={{ marginTop: '6px', marginBottom: '3.9rem', padding: '2px' }}>
+                                                            <Col md={12} key={imgIndex} style={{ marginTop: '6px', marginBottom: '8rem', padding: '2px' }}>
                                                                 {imagePreviews[`${imgKey}_${index}`] && (
                                                                     <>
                                                                         <div className=' text-center fs-1 m-1'>Design No: {imageNames[`firstimage_${index}`]}</div>
