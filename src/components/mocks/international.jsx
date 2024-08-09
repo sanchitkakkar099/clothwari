@@ -17,6 +17,7 @@ import html2canvas from 'html2canvas';
 import { toast } from "react-hot-toast";
 import jsPDF from 'jspdf';
 import logo from "../../assets/images/logoww (1).jpg";
+import PdfGeneratorLoader from "../common/PdfGeneratorLoader";
 const baseUrl =
   import.meta.env.MODE === "development"
     ? import.meta.env.VITE_APP_DEV_URL
@@ -231,7 +232,7 @@ function international() {
     } else if (temp === 2) {
       return "31rem";
     } else if (temp === 3) {
-      return "1rem";
+      return "0rem";
     }
     return 0;
   };
@@ -775,6 +776,7 @@ function international() {
                             </div>
                         </div>
               </div>
+              {viewButton && <PdfGeneratorLoader message={"PDF Uploading.."}/>}
             </div>
           </div>
         </div>

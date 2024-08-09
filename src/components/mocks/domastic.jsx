@@ -22,6 +22,7 @@ import { toast } from "react-hot-toast";
 import logo from "../../assets/images/logoww (1).jpg";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import PdfGeneratorLoader from "../common/PdfGeneratorLoader";
 
 const baseUrl =
   import.meta.env.MODE === "development"
@@ -286,8 +287,8 @@ function domastic() {
         }
   
         const pdfBlob = pdf.output("blob");
-        // await handleUpload(pdfBlob); 
-        pdf.save(`${title}.pdf`);
+        await handleUpload(pdfBlob); 
+        // pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("Something went wrong", {
           position: "top-center",
@@ -295,7 +296,7 @@ function domastic() {
         console.error("Error generating canvas:", error);
       } finally {
         setViewButton(false);
-        componentRef.current.style.display = "";
+        componentRef.current.style.display = "none";
       }
     }
   };
@@ -713,10 +714,10 @@ function domastic() {
                   </div>
                 </div>
                 <div id="pdf" className="w-100 ">
-                      <div ref={componentRef} style={{ display: "" }}>
+                      <div ref={componentRef} style={{ display: "none" }}>
                         <div
                           className="container-wrapper c-main-content"
-                          style={{ height: "898px" }}
+                          style={{ height: "762px" }}
                         >
                           <div className="container text-center">
                             <div className="row">
@@ -826,6 +827,7 @@ function domastic() {
                       </div>
                     </div>
               </div>
+              {viewButton && <PdfGeneratorLoader message={"PDF Uploading.."}/>}
             </div>
           </div>
         </div>
