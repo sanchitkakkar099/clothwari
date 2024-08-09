@@ -107,7 +107,8 @@ function AddDesign() {
     control,
     name: "variations",
   });
-  console.log('fields',fields);
+  const [initialData, setInitialData] = useState({});
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     if(debounceValue1 && !locationState?.designID ){
@@ -138,6 +139,7 @@ function AddDesign() {
 
   useEffect(() => {
     if (resDesignById?.isSuccess && resDesignById?.data?.data) {
+      setInitialData(resDesignById?.data?.data);
       reset({
         ...resDesignById.data.data,
         image: resDesignById?.data?.data?.image
@@ -663,6 +665,22 @@ function AddDesign() {
         display: (userInfo?.role !== "Super Admin" && resDesignById?.data?.data?.color && Array.isArray(resDesignById?.data?.data?.color) && resDesignById?.data?.data?.color?.length > 0 && resDesignById?.data?.data?.color?.some(option => option.value === data.value)) ? 'none' : 'block'
     })
   };
+
+  const handleInputChange = () => {
+      const currentValues = getValues();
+      const hasChanged = JSON.stringify(currentValues) !== JSON.stringify(initialData);
+      setHasChanges(hasChanged);
+  };
+  const subscription = watch();
+  useEffect(() => {
+    const timer = setTimeout(()=>{
+      handleInputChange();;
+    },1000)
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [subscription]);
+
 
   return (
     <div className="page-content">
@@ -1466,7 +1484,7 @@ function AddDesign() {
                           <button
                             type="submit"
                             className="btn btn-success m-1"
-                            disabled={resDesignUpload?.isLoading}
+                            disabled={resDesignUpload?.isLoading || !hasChanges}
                           >
                             <i className=" bx bx-file me-1"></i> Save{" "}
                           </button>
