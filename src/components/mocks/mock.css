@@ -6,7 +6,7 @@
   }
   
   .c-mask-image {
-      height: 100%;
+      height: 117.9%;
       width: 100%;
       position: relative;
       z-index: 10;
@@ -16,7 +16,7 @@
     left: 2px;
       top: 1px;
       width: 92%;
-      height: 90%;
+      height: 100%;
       position: absolute;
       background-size: 18%;
       background-repeat: repeat;
@@ -338,7 +338,7 @@
   }
   
   .container-wrapper {
-    height: 1540px;
+    height: 1815px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -385,7 +385,7 @@
     object-fit: cover;
   }
   .c-box_item-cover{
-    height: 1305px;
+    height: 1538px;
     width: 100%;
     overflow: hidden;
   }
@@ -397,7 +397,7 @@
   }
   
   .c-box_item-3-cover{
-    height: 455px;
+    height: 536px;
       width: 98%;
       overflow: hidden;
       margin-left: 2%;
