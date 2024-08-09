@@ -717,7 +717,7 @@ function domastic() {
                       <div ref={componentRef} style={{ display: "none" }}>
                         <div
                           className="container-wrapper c-main-content"
-                          style={{ height: "762px" }}
+                          style={{ height: "901px" }}
                         >
                           <div className="container text-center">
                             <div className="row">
