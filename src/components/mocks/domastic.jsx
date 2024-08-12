@@ -125,7 +125,6 @@ function domastic() {
       toast.success("Uploaded SuccessFully", {
         position: "top-center",
       });
-      navigate("/drive-list");
     }
     if (resDriveUpload?.isError) {
       toast.error("Something went wrong", {
@@ -185,9 +184,6 @@ function domastic() {
       }
     }
   };
-  useEffect(() => {
-    console.log("id", id);
-  }, [id]);
 
   const handleChangePrimary = (e) => {
     e.preventDefault();

@@ -111,10 +111,9 @@ function international() {
 
   useEffect(() => {
     if (resDriveUpload?.isSuccess) {
-      toast.success("Uploaded SuccessFully", {
+      toast.success("Uploaded SuccessFully ", {
         position: "top-center",
       });
-      navigate("/drive-list");
     }
     if (resDriveUpload?.isError) {
       toast.error("Something went wrong", {
@@ -139,7 +138,6 @@ function international() {
   };
 
   const handleSearchClick = (data, key) => {
-    console.log("data", data);
     setImagePreviews((prevState) => ({
       ...prevState,
       [key]: `${proxyUrl}${data?.thumbnail[0]?.pdf_extract_img}`,
@@ -174,9 +172,6 @@ function international() {
       }
     }
   };
-  useEffect(() => {
-    console.log("Images", imagePreviews);
-  }, [imagePreviews]);
 
   const handleChangePrimary = (e) => {
     e.preventDefault();
@@ -279,8 +274,8 @@ function international() {
         }
 
         const pdfBlob = pdf.output("blob");
-        // await handleUpload(pdfBlob);
-        pdf.save(`${title}.pdf`);
+        await handleUpload(pdfBlob);
+        // pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("somthing went wrong", {
             position: "top-center",
@@ -302,7 +297,6 @@ function international() {
         file: formData,
         type: 99,
     };
-    console.log("reqData", reqData)
 
     try {
         const fileResponse = await reqFile({
@@ -757,7 +751,6 @@ function international() {
                                                         {imgIndex === 0  && imagePreviews[`secondimage_${index}`] && <div className='text-center fs-1 m-1 mt-6'>Design No: {imageNames[`firstimage_${index}`]}</div>}
                                                         {imagePreviews[`${imgKey}_${index}`] && (rowBackgrounds[`${index}`] !== imagePreviews[`${imgKey}_${index}`]) && (
                                                             <>
-                                                                {console.log("I am under the water")}
                                                                 <Col md={12} key={imgIndex} style={{ marginTop: '1px', marginBottom: '1px', padding: '2px' }}>
                                                                     <div className='img-dis c-box-item-3 c-box_item-3-cover'>
                                                                         <div className='c-border_style-a'><span>{String.fromCharCode(66 + temp)}</span></div>
