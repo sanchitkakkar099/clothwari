@@ -228,11 +228,11 @@ function international() {
   };
   const getMarginButtom = (temp) => {
     if (temp === 1) {
-      return "70.74rem";
+      return "72rem";
     } else if (temp === 2) {
-      return "36.5rem";
+      return "37rem";
     } else if (temp === 3) {
-      return "1.1rem";
+      return "1.6rem";
     }
     return 0;
   };
@@ -738,7 +738,7 @@ function international() {
                                                                 <div className="c-text_rotate-bottom-first">7.5 INCHES</div>
                                                             </Col> : ''}
                                                         {imgIndex === 0 && imagePreviews[`${imgKey}_${index}`] && rowBackgrounds[index] ?
-                                                            <Col md={12} key={imgIndex} style={{ marginTop: '6px', marginBottom: '7.6rem', padding: '2px' }}>
+                                                            <Col md={12} key={imgIndex} style={{ marginTop: '6px', marginBottom: '7rem', padding: '2px' }}>
                                                                 {imagePreviews[`${imgKey}_${index}`] && (
                                                                     <>
                                                                         <div className=' text-center fs-1 m-1'>Design No: {imageNames[`firstimage_${index}`]}</div>
