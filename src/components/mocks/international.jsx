@@ -228,11 +228,11 @@ function international() {
   };
   const getMarginButtom = (temp) => {
     if (temp === 1) {
-      return "60rem";
+      return "70.74rem";
     } else if (temp === 2) {
-      return "31rem";
+      return "36.5rem";
     } else if (temp === 3) {
-      return "1rem";
+      return "1.18rem";
     }
     return 0;
   };
@@ -251,10 +251,10 @@ function international() {
         });
         const imgData = canvas.toDataURL("image/png");
 
-        const customPdfWidth = 792.96 * 72 / 96;
-        const customPdfHeight = 900.87 * 72 / 96;
         // const customPdfWidth = 792.96 * 72 / 96;
-        // const customPdfHeight = 1062.12 * 72 / 96;
+        // const customPdfHeight = 900.87 * 72 / 96;
+        const customPdfWidth = 792.96 * 72 / 96;
+        const customPdfHeight = 1062.12 * 72 / 96;
 
         const pdf = new jsPDF({
           orientation: "portrait",
