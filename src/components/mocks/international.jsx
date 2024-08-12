@@ -230,9 +230,9 @@ function international() {
     if (temp === 1) {
       return "70.74rem";
     } else if (temp === 2) {
-      return "36.5rem";
+      return "36rem";
     } else if (temp === 3) {
-      return "1.18rem";
+      return "1rem";
     }
     return 0;
   };
@@ -251,10 +251,10 @@ function international() {
         });
         const imgData = canvas.toDataURL("image/png");
 
-        const customPdfWidth = 792.96 * 72 / 96;
-        const customPdfHeight = 900.87 * 72 / 96;
         // const customPdfWidth = 792.96 * 72 / 96;
-        // const customPdfHeight = 1062.12 * 72 / 96;
+        // const customPdfHeight = 900.87 * 72 / 96;
+        const customPdfWidth = 792.96 * 72 / 96;
+        const customPdfHeight = 1062.12 * 72 / 96;
 
         const pdf = new jsPDF({
           orientation: "portrait",
@@ -738,7 +738,7 @@ function international() {
                                                                 <div className="c-text_rotate-bottom-first">7.5 INCHES</div>
                                                             </Col> : ''}
                                                         {imgIndex === 0 && imagePreviews[`${imgKey}_${index}`] && rowBackgrounds[index] ?
-                                                            <Col md={12} key={imgIndex} style={{ marginTop: '6px', marginBottom: '8rem', padding: '2px' }}>
+                                                            <Col md={12} key={imgIndex} style={{ marginTop: '6px', marginBottom: '6.1rem', padding: '2px' }}>
                                                                 {imagePreviews[`${imgKey}_${index}`] && (
                                                                     <>
                                                                         <div className=' text-center fs-1 m-1'>Design No: {imageNames[`firstimage_${index}`]}</div>

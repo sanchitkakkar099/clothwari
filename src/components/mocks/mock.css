@@ -110,7 +110,7 @@
   .c-text_rotate div::after {
     content: "";
       display: block;
-      width: 245%;
+      width: 270%;
       height: 2px;
       background-color: #000;
       position: absolute;
@@ -120,7 +120,7 @@
   .c-text_rotate div::before {
     content: "";
       display: block;
-      width: 245%;
+      width: 270%;
       height: 2px;
       background-color: #000;
       position: absolute;
@@ -131,7 +131,7 @@
   .c-text_rotate-second div::after {
     content: "";
       display: block;
-      width: 941%;
+      width: 963%;
       height: 2px;
       background-color: #000;
       position: absolute;
@@ -141,7 +141,7 @@
   .c-text_rotate-second div::before {
     content: "";
       display: block;
-      width: 941%;
+      width: 963%;
       height: 2px;
       background-color: #000;
       position: absolute;
@@ -152,7 +152,7 @@
   .c-text_rotate-first div::after {
     content: "";
       display: block;
-      width: 931%;
+      width: 965%;
       height: 2px;
       background-color: #000;
       position: absolute;
@@ -162,7 +162,7 @@
   .c-text_rotate-first div::before {
     content: "";
       display: block;
-      width: 780%;
+      width: 965%;
       height: 2px;
       background-color: #000;
       position: absolute;
@@ -182,12 +182,12 @@
   .c-text_rotate-bottom::after {
     content: "";
     display: block;
-    width: 38%;
+    width: 39%;
     height: 2px;
     background-color: #000;
     position: absolute;
     top: 50%;
-    right: 42px;
+    right: 32px;
   }
   .c-text_rotate-bottom::before {
     content: "";
@@ -197,7 +197,7 @@
     background-color: #000;
     position: absolute;
     bottom: 42%;
-    left: 12px;
+    left: 7px;
   }
   
   .c-text_rotate-bottom-second{
@@ -212,12 +212,12 @@
   .c-text_rotate-bottom-first::after {
     content: "";
     display: block;
-    width: 39%;
+    width: 40%;
     height: 2px;
     background-color: #000;
     position: absolute;
     top: 50%;
-    right: 39px;
+    right: 27px;
   }
   .c-text_rotate-bottom-first::before {
     content: "";
@@ -241,12 +241,12 @@
   .c-text_rotate-bottom-second::after {
     content: "";
     display: block;
-    width: 38%;
+    width: 39%;
     height: 2px;
     background-color: #000;
     position: absolute;
     top: 50%;
-    right: 52px;
+    right: 47px;
   }
   .c-text_rotate-bottom-second::before {
     content: "";
