@@ -230,9 +230,9 @@ function international() {
     if (temp === 1) {
       return "70.74rem";
     } else if (temp === 2) {
-      return "36rem";
+      return "36.5rem";
     } else if (temp === 3) {
-      return "1rem";
+      return "1.1rem";
     }
     return 0;
   };
