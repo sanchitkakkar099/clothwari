@@ -2,12 +2,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import imagepath from "../../assets/images/CAD-with-Shirt-1.png";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {  Link, useLocation, useNavigate } from "react-router-dom";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
 import { getDesignUpload } from "../../redux/designUploadSlice";
 import { setPageStyle } from "../../utils/customPageSize";
-import { Button, Col, Input, Label, Row } from "reactstrap";
+import { Button, Col, Input, Label, Row, Form, FormFeedback } from "reactstrap";
 import "./mock.css";
 import { Plus, X } from "react-feather";
 import Select from "react-select";
@@ -47,7 +47,7 @@ function domastic() {
     skip: !locationState?._id,
   });
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit,formState: { errors }, } = useForm({
     defaultValues: {
       image_data: [
         {
@@ -282,9 +282,9 @@ function domastic() {
           heightLeft -= customPdfHeight;
         }
   
-        const pdfBlob = pdf.output("blob");
+        // const pdfBlob = pdf.output("blob");
         await handleUpload(pdfBlob); 
-        // pdf.save(`${title}.pdf`);
+        pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("Something went wrong", {
           position: "top-center",
@@ -384,6 +384,8 @@ function domastic() {
                     </button>
                   </div>
                   <div>
+                  <Form onSubmit={handleSubmit(handleGeneratePDF)}>
+
                     <Input
                       type="text"
                       placeholder="Input Title"
@@ -551,6 +553,7 @@ function domastic() {
                                 id={`image${index}`}
                                 name={`image${index}`}
                                 control={control}
+                                rules={{ required: "This field is required"}}
                                 render={({ field: { onChange, value } }) => (
                                   <Select
                                     isClearable
@@ -586,6 +589,11 @@ function domastic() {
                                   />
                                 )}
                               />
+                            {errors[`image${index}`] && (
+                              <FormFeedback>
+                                {errors[`image${index}`]?.message}
+                              </FormFeedback>
+                            )}
                             </Col>
                             <Col
                               md={12}
@@ -677,23 +685,21 @@ function domastic() {
                         </Col>
                       </div>
                     ))}
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <div className="d-flex justify-content-end">
-                    <Button
-                      color="primary"
-                      className="me-5"
-                      onClick={() =>
-                        append({
-                          firstimage: "",
-                          secondimage: "",
-                          thirdimage: "",
-                          forthimage: "",
-                          fifthimage: "",
-                        })
-                      }
-                    >
+                    <div className="mt-3">
+                      <div className="d-flex justify-content-end">
+                        <Button
+                          color="primary"
+                          className="me-5"
+                          onClick={() =>
+                            append({
+                            firstimage: "",
+                            secondimage: "",
+                            thirdimage: "",
+                            forthimage: "",
+                            fifthimage: "",
+                          })
+                        }
+                      >
                       <Plus size={14} />
                       <span className="align-middle ms-25">Add Section</span>
                     </Button>
@@ -701,12 +707,15 @@ function domastic() {
                       type="submit"
                       color="primary"
                       disabled={viewButton}
-                      onClick={handleGeneratePDF}
+                      // onClick={handleGeneratePDF}
                     >
                       <span className="align-middle d-sm-inline-block d-none">
                         Create PDF
                       </span>
                     </Button>
+                  </div>
+                </div>
+                    </Form>
                   </div>
                 </div>
                 <div id="pdf" className="w-100 ">
