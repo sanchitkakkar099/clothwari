@@ -251,10 +251,10 @@ function international() {
         });
         const imgData = canvas.toDataURL("image/png");
 
-        // const customPdfWidth = 792.96 * 72 / 96;
-        // const customPdfHeight = 900.87 * 72 / 96;
         const customPdfWidth = 792.96 * 72 / 96;
-        const customPdfHeight = 1062.12 * 72 / 96;
+        const customPdfHeight = 900.87 * 72 / 96;
+        // const customPdfWidth = 792.96 * 72 / 96;
+        // const customPdfHeight = 1062.12 * 72 / 96;
 
         const pdf = new jsPDF({
           orientation: "portrait",
