@@ -249,7 +249,9 @@ function domastic() {
       componentRef.current.style.display = 'block';
       
       try {
+        const scale = 2;
         const canvas = await html2canvas(componentRef.current, {
+          scale: scale,
           useCORS: true,
           logging: true,
           letterRendering: 1,
@@ -721,14 +723,13 @@ function domastic() {
                 <div id="pdf" className="w-100 ">
                       <div ref={componentRef} style={{ display: "none" }}>
                         <div
-                          className="container-wrapper c-main-content"
-                          style={{ height: "760px" }}
+                          className="d-container-wrapper c-main-content"
                         >
                           <div className="container text-center">
                             <div className="row">
                               <div className="col">
                                 <h1>
-                                  <img src={logo} alt="logo" width="20%" />
+                                  <img src={logo} alt="logo" className="img-logo"/>
                                 </h1>
                                 <h1 className="c-text-style">Textile Design</h1>
                                 <h2 className="c-text-style c-text-style-h2">
@@ -764,12 +765,7 @@ function domastic() {
                                     <Col
                                       md={6}
                                       key={imgIndex}
-                                      style={{
-                                        marginTop: "15px",
-                                        marginBottom: "10px",
-                                        padding: "2px",
-                                        width: "49.8%",
-                                      }}
+                                      className="col-img"
                                     >
                                       <div>
                                         <div className="img-dis c-img_cover">
@@ -798,12 +794,7 @@ function domastic() {
                                     <Col
                                       md={6}
                                       key={imgIndex + 1}
-                                      style={{
-                                        marginTop: "20px",
-                                        marginBottom: "10px",
-                                        padding: "2px",
-                                        width: "49.8%",
-                                      }}
+                                      className="col-img"
                                     >
                                       <div className="c-main_div img-dis c-img_cover">
                                         <img

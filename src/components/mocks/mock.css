@@ -345,18 +345,25 @@
     justify-content: center;
     align-items: center;
   }
-  .c-text-style{
+  /* .d-container-wrapper {
+    height: 760px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  } */
+  /* .c-text-style{
     font-size: 5rem;
     color: #eabaa5;
     -webkit-text-stroke: 2px #c3673f;
-    /* text-shadow: -2px -2px 0 #c3673f, 2px -2px 0 #c3673f, -2px 2px 0 #c3673f, 2px 0px 0 #c3673f; */
   }
   .c-text-style-h2 {
     margin-bottom: 40px;
     border-bottom: 3px solid #e7e7e7;
     display: inline-block;  
     line-height: 5rem;
-  }
+  } */
+
   .c-main-content {
     position: relative;
   }
@@ -377,14 +384,14 @@
   .c-pattern_back-ing {
     top: 65px;
   }
-  .c-img_cover{
+  /* .c-img_cover{
     height:856px;
     width: 100%;
   }
   .c-img_cover img{
     height: 100%;
     object-fit: cover;
-  }
+  } */
   .c-box_item-cover{
     height: 1538px;
     width: 100%;
@@ -422,5 +429,139 @@
     .box-list {
         flex: 100%;
         max-width: 100%;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    .box-list {
+        flex: 100%;
+        max-width: 100%;
+    }
+  }
+
+  @media only screen and (min-width: 1366px) {
+    .container-wrapper {
+      height: 901px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .d-container-wrapper {
+      height: 589px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .img-logo{
+      width: 10%;;
+    }
+    .c-text-style{
+      font-size: 3rem;
+      color: #eabaa5;
+      -webkit-text-stroke: 2px #c3673f;
+      /* text-shadow: -2px -2px 0 #c3673f, 2px -2px 0 #c3673f, -2px 2px 0 #c3673f, 2px 0px 0 #c3673f; */
+    }
+    .c-text-style-h2 {
+      margin-bottom: 20px;
+      border-bottom: 3px solid #e7e7e7;
+      display: inline-block;  
+      line-height: 5rem;
+    }
+    .c-img_cover{
+      height:551px;
+      width: 100%;
+    }
+    .col-img{
+      margin-top: 15px;
+      margin-bottom: 15px;
+      padding: 2px;
+      width: 49.8%;
+    }
+    .c-img_cover img{
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  /* Media query for 1680px and above */
+  @media only screen and (min-width: 1680px) {
+    .container-wrapper {
+      height: 901px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .d-container-wrapper {
+      height: 786px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .img-logo{
+      width: 16%;;
+    }
+    .c-text-style{
+      font-size: 5rem;
+      color: #eabaa5;
+      -webkit-text-stroke: 2px #c3673f;
+      /* text-shadow: -2px -2px 0 #c3673f, 2px -2px 0 #c3673f, -2px 2px 0 #c3673f, 2px 0px 0 #c3673f; */
+    }
+    .c-text-style-h2 {
+      margin-bottom: 40px;
+      border-bottom: 3px solid #e7e7e7;
+      display: inline-block;  
+      line-height: 5rem;
+    }
+    .c-img_cover{
+      height:748px;
+      width: 100%;
+    }
+    .c-img_cover img{
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  
+  /* Media query for 1920px and above */
+  @media only screen and (min-width: 1920px) {
+    .container-wrapper {
+      height: 901px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .d-container-wrapper {
+      height: 900px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .img-logo{
+      width: 20%;;
+    }
+    .c-text-style{
+      font-size: 5rem;
+      color: #eabaa5;
+      -webkit-text-stroke: 2px #c3673f;
+      /* text-shadow: -2px -2px 0 #c3673f, 2px -2px 0 #c3673f, -2px 2px 0 #c3673f, 2px 0px 0 #c3673f; */
+    }
+    .c-text-style-h2 {
+      margin-bottom: 40px;
+      border-bottom: 3px solid #e7e7e7;
+      display: inline-block;  
+      line-height: 5rem;
+    }
+    .c-img_cover{
+      height:856px;
+      width: 100%;
+    }
+    .c-img_cover img{
+      height: 100%;
+      object-fit: cover;
     }
   }
