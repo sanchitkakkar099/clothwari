@@ -282,8 +282,8 @@ function domastic() {
           heightLeft -= customPdfHeight;
         }
   
-        // const pdfBlob = pdf.output("blob");
-        await handleUpload(pdfBlob); 
+        const pdfBlob = pdf.output("blob");
+        // await handleUpload(pdfBlob); 
         pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("Something went wrong", {
@@ -722,7 +722,7 @@ function domastic() {
                       <div ref={componentRef} style={{ display: "none" }}>
                         <div
                           className="container-wrapper c-main-content"
-                          style={{ height: "901px" }}
+                          style={{ height: "760px" }}
                         >
                           <div className="container text-center">
                             <div className="row">
