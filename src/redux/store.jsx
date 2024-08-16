@@ -5,6 +5,7 @@ import designerSlice from "./designerSlice";
 import categorySlice from "./categorySlice";
 import colorVariationSlice from "./colorVariationSlice";
 import tagSlice from "./tagSlice";
+import userTagSlice from "./userTagSlice";
 import clientSlice from "./clientSlice";
 import dashboardSlice from "./dashboardSlice";
 import salesPersonSlice from "./salesPersonSlice";
@@ -25,6 +26,7 @@ const appReducer = combineReducers({
   categoryState: categorySlice,
   colorVariationState: colorVariationSlice,
   tagState: tagSlice,
+  userTagState: userTagSlice,
   mixedState: mixedSlice,
   clientState: clientSlice,
   dashboardState: dashboardSlice,

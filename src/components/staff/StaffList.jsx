@@ -425,7 +425,7 @@ function StaffList() {
                   )}
                   {/* <div id="table-ecommerce-orders"></div> */}
                   {/* {Array.isArray(designList) && designList?.length > 0 && ( */}
-                  <DataTable data={designerList} columns={(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === 'Staff Active/Deactive')) ? columns : columns?.filter(el => el?.accessor  !== "session")} />
+                  <DataTable data={designerList} columns={(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === 'Staff Active/Deactive')) ? columns : columns?.filter(el => el?.accessor  !== "session")} view="staff" />
                   {/* )} */}
                 </div>
               </div>

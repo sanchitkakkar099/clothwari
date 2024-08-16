@@ -314,7 +314,7 @@ function AdmintList() {
                       </button>
                     </div>
                   </div>
-                  <DataTable data={adminList} columns={columns} />
+                  <DataTable data={adminList} columns={columns} view="admin" />
                 </div>
               </div>
             </div>

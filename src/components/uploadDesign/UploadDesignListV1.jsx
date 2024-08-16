@@ -11,6 +11,7 @@ import {
   useDesignUploadListMutation,
   useDesignerDropDownListQuery,
   useTagListMutation,
+  useUserTagDropdownListQuery,
 } from "../../service";
 import { Button } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,6 +36,7 @@ import {
 import { setSelectedCategoryListDesign } from "../../redux/categorySlice";
 import { setSelectedColorVariationListDesign } from "../../redux/colorVariationSlice";
 import { setSelectedStaffListDesign } from "../../redux/adminSlice";
+import { setSelectedUserTagList } from "../../redux/userTagSlice";
 
 // Extend Day.js with the plugins
 // dayjs.extend(utc);
@@ -52,6 +54,7 @@ function UploadDesignListV1() {
   const staffDropDownRes = useDesignerDropDownListQuery();
   const categoryDropdownRes = useCategoryDropdownListQuery();
   const colorListDropdown = useColorVariationDropdownListQuery();
+  const zoneListDropdown = useUserTagDropdownListQuery();
 
   const latestCurrentPage = useSelector((state) => state?.designUploadState?.currentPageV1);
   const tagList = useSelector((state) => state?.tagState.tagList);
@@ -77,9 +80,13 @@ function UploadDesignListV1() {
   const selectedColorList = useSelector(
     (state) => state?.colorVariationState.selectedColorVariationListDesign
   );
+  const selectedZoneList = useSelector(
+    (state) => state?.userTagState.selectedUserTagList
+  );
   const [staffDropdown, setStaffDropdown] = useState([]);
   const [categoryDropdown, setCategoryDropdown] = useState([]);
   const [colorDropdown, setColorDropdown] = useState([]);
+  const [zoneDropdown, setZoneDropdown] = useState([]);
 
   const [designID, setDesignId] = useState(null);
   const [variationImg, setVariationImg] = useState(null);
@@ -99,6 +106,7 @@ function UploadDesignListV1() {
   const [tagsSearch, setTagSearch] = useState([]);
   const [categorySearch, setCategorySearch] = useState([]);
   const [colorSearch, setColorSearch] = useState([]);
+  const [zoneSearch, setZoneSearch] = useState(selectedZoneList);
 
   const [selectedStaff, setSelectedStaff] = useState([]);
 
@@ -146,15 +154,7 @@ function UploadDesignListV1() {
   }, []);
 
   useEffect(() => {
-    if (
-      search ||
-      (startDate && endDate) ||
-      tagsSearch ||
-      selectedStaff ||
-      categorySearch ||
-      colorSearch ||
-      isMultiTagSearch
-    ) {
+    if (search || (startDate && endDate) || tagsSearch || selectedStaff || categorySearch || colorSearch || isMultiTagSearch || zoneSearch) {
       reqDesign({
         page: currentPage,
         limit: pageSize,
@@ -164,6 +164,9 @@ function UploadDesignListV1() {
         start_date: startDate && endDate ? dayjs(startDate).format() : "",
         end_date: startDate && endDate ? dayjs(endDate).format() : "",
         tags: tagsSearch,
+        userTags: Array.isArray(zoneSearch)
+         ? zoneSearch?.map((el) => el?.value)
+         : [],
         uploadedBy: Array.isArray(selectedStaff)
           ? selectedStaff?.map((el) => el?.value)
           : [],
@@ -184,22 +187,13 @@ function UploadDesignListV1() {
         start_date: "",
         end_date: "",
         tags: [],
+        userTags: [],
         uploadedBy: [],
         category: [],
         color: [],
       });
     }
-  }, [
-    currentPage,
-    search,
-    startDate,
-    endDate,
-    tagsSearch,
-    selectedStaff,
-    categorySearch, 
-    colorSearch,
-    isMultiTagSearch,
-  ]);
+  }, [currentPage, search, startDate, endDate, tagsSearch, selectedStaff, categorySearch, colorSearch, isMultiTagSearch, zoneSearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -242,6 +236,12 @@ function UploadDesignListV1() {
       setColorDropdown(colorListDropdown?.data?.data);
     }
   }, [colorListDropdown]);
+
+  useEffect(() => {
+    if (zoneListDropdown?.isSuccess && zoneListDropdown?.data?.data) {
+      setZoneDropdown(zoneListDropdown?.data?.data);
+    }
+  }, [zoneListDropdown]);
 
   const handleSearch = (search) => {
     dispatch(setSearchDataDesign(search));
@@ -321,6 +321,11 @@ function UploadDesignListV1() {
   const handleColorSelection = (selected) => {
     dispatch(setSelectedColorVariationListDesign(selected));
     setColorSearch(selected);
+  };
+
+  const handleZoneSelection = (selected) => {
+    dispatch(setSelectedUserTagList(selected));
+    setZoneSearch(selected);
   };
 
   const handleStaffSelection = (selected) => {
@@ -478,7 +483,7 @@ function UploadDesignListV1() {
                         </div>
                       </div>
                       <div className="row m-4">
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                           <div className="form-inline">
                             <div className="search-box ms-2">
                               <MultiSelect
@@ -499,37 +504,33 @@ function UploadDesignListV1() {
                             </div>
                           </div>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                           <div className="form-inline">
-                            <div className="search-box ms-2">
-                              <Typeahead
-                                allowNew={false}
-                                id="custom-selections-example"
-                                labelKey={"label"}
-                                multiple
+                            <div className="search-box ms-2">                    
+                              <MultiSelect
+                                key="example_id"
                                 options={
                                   categoryDropdown &&
                                   Array.isArray(categoryDropdown) &&
                                   categoryDropdown?.length > 0
-                                    ? categoryDropdown
+                                  ? categoryDropdown
                                     : []
                                 }
-                                placeholder="Search category..."
                                 onChange={handleCategorySelection}
-                                selected={categorySearch}
+                                value={categorySearch}
+                                isSelectAll={true}
+                                menuPlacement={"bottom"}
+                                placeholder="Search category..."
                               />
                             </div>
                           </div>
                         </div>
 
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                           <div className="form-inline">
                             <div className="search-box ms-2">
-                              <Typeahead
-                                allowNew={false}
-                                id="custom-selections-example"
-                                labelKey={"label"}
-                                multiple
+                              <MultiSelect
+                                key="example_id"
                                 options={
                                   colorDropdown &&
                                   Array.isArray(colorDropdown) &&
@@ -537,13 +538,37 @@ function UploadDesignListV1() {
                                     ? colorDropdown
                                     : []
                                 }
-                                placeholder="Search color..."
                                 onChange={handleColorSelection}
-                                selected={colorSearch}
+                                value={colorSearch}
+                                isSelectAll={true}
+                                menuPlacement={"bottom"}
+                                placeholder="Search color..."
                               />
                             </div>
                           </div>
                         </div>
+                        {userInfo?.role === "Super Admin" &&
+                        <div className="col-md-3">
+                          <div className="form-inline">
+                            <div className="search-box ms-2">
+                              <MultiSelect
+                                key="example_id"
+                                options={
+                                  zoneDropdown &&
+                                  Array.isArray(zoneDropdown) &&
+                                  zoneDropdown?.length > 0
+                                    ? zoneDropdown
+                                    : []
+                                }
+                                onChange={handleZoneSelection}
+                                value={zoneSearch}
+                                isSelectAll={true}
+                                menuPlacement={"bottom"}
+                                placeholder="Search Zone..."
+                              />
+                            </div>
+                          </div>
+                        </div>}
                       </div>
                       <div className="tab-content text-muted">
                         <div

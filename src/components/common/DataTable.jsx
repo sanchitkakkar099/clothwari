@@ -4,8 +4,13 @@ import { useTable, useFilters, usePagination,useRowSelect } from "react-table";
 // utilities
 import { matchSorterFn } from "../common/Filter";
 import Pagination from "./DataTablePagination";
+import { setPageNo } from "../../redux/mixedSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const DataTable = (props) => {
+  const dispatch = useDispatch();
+  const view = props.view;
+  const pageNo = useSelector((state) => state?.mixedState[`${view}PageNo`])
   // MEMOS
   const data = React.useMemo(() => props?.data, [props.data]);
   const columns = React.useMemo(() => props?.columns, [props.columns]);
@@ -65,6 +70,7 @@ const DataTable = (props) => {
       data,
       defaultColumn,
       filterTypes,
+      initialState: { pageIndex: pageNo }
     },
     useFilters,
     usePagination,
@@ -122,7 +128,9 @@ const DataTable = (props) => {
     //   ]);
     // }
   );
-
+  React.useEffect(() => {
+    dispatch(setPageNo({view,pageNo:pageIndex}));
+  }, [pageIndex, dispatch]);
   // RENDERING
   return (
     <>

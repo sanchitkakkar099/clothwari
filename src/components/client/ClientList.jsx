@@ -328,7 +328,7 @@ function ClientList() {
                   </div>
                 </div>
               }
-                  <DataTable data={designerList} columns={(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === 'Staff Active/Deactive')) ? columns : columns?.filter(el => el?.accessor  !== "session")} />
+                  <DataTable data={designerList} columns={(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === 'Staff Active/Deactive')) ? columns : columns?.filter(el => el?.accessor  !== "session")} view="client" />
               </div>
             </div>
           </div>

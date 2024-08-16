@@ -393,7 +393,7 @@ function SalesPersonList() {
                       </div>
                     </div>
                   )}
-                  <DataTable data={salesPersonList} columns={columns}/>
+                  <DataTable data={salesPersonList} columns={columns} view="marketing" />
                 </div>
               </div>
             </div>

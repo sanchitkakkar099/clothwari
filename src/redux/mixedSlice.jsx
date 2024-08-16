@@ -5,7 +5,11 @@ const initState = {
   selectedEndDateDesign: '',
   selectedDate: '',
   searchData: '',
-  searchDataDesign: ''
+  searchDataDesign: '',
+  staffPageNo: 0,
+  adminPageNo: 0,
+  clientPageNo: 0,
+  marketing: 0,
 };
 
 export const mixedSlice = createSlice({
@@ -27,6 +31,10 @@ export const mixedSlice = createSlice({
     setSearchData: (state, { payload }) => {
       state.searchData = payload;
     },
+    setPageNo: (state, { payload }) => {
+      const { view, pageNo } = payload;
+      state[`${view}PageNo`] = pageNo;
+    }
   },
 });
 
@@ -35,7 +43,8 @@ export const {
   setSelectedEndDateDesign,
   setSelectedDate,
   setSearchDataDesign,
-  setSearchData
+  setSearchData,
+  setPageNo
 } = mixedSlice.actions;
 
 export default mixedSlice.reducer;
