@@ -15,7 +15,7 @@
   .c-pattern-background-image{
     left: 2px;
       top: 1px;
-      width: 92%;
+      width: 91%;
       height: 90%;
       position: absolute;
       background-size: 18%;
@@ -60,7 +60,7 @@
       justify-content: center;
   }
   .c-box-item-3{
-    height: 1538px;
+    height: 906px;
     display: flex;
     gap: 10px;
   }
@@ -162,7 +162,7 @@
   .c-text_rotate-first div::before {
     content: "";
       display: block;
-      width: 965%;
+      width: 544%;
       height: 2px;
       background-color: #000;
       position: absolute;
@@ -212,12 +212,12 @@
   .c-text_rotate-bottom-first::after {
     content: "";
     display: block;
-    width: 40%;
+    width: 35%;
     height: 2px;
     background-color: #000;
     position: absolute;
     top: 50%;
-    right: 27px;
+    right: 85px;
   }
   .c-text_rotate-bottom-first::before {
     content: "";
@@ -393,7 +393,7 @@
     object-fit: cover;
   } */
   .c-box_item-cover{
-    height: 1538px;
+    height: 908px;
     width: 100%;
     overflow: hidden;
   }
@@ -405,7 +405,7 @@
   }
   
   .c-box_item-3-cover{
-    height: 536px;
+    height: 339.6px;
       width: 98%;
       overflow: hidden;
       margin-left: 2%;
@@ -440,7 +440,7 @@
 
   @media only screen and (min-width: 1366px) {
     .container-wrapper {
-      height: 901px;
+      height: 1172px;
       display: flex;
       flex-direction: column;
       justify-content: center;

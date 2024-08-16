@@ -221,16 +221,16 @@ function international() {
   const onNext = (state) => {
     console.log("state", state);
   };
-  const getMarginButtom = (temp) => {
-    if (temp === 1) {
-      return "72rem";
-    } else if (temp === 2) {
-      return "37rem";
-    } else if (temp === 3) {
-      return "1.6rem";
+  const getMarginButtom = (temp) =>{
+    if(temp===1){
+        return '46rem';
+    }else if (temp === 2){
+        return '23.8rem';
+    }else if( temp === 3){
+        return '1rem';
     }
     return 0;
-  };
+}
 
   const handleGeneratePDF = async () => {
     if (componentRef.current) {
