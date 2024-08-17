@@ -77,7 +77,7 @@ function DashboardComponent() {
                     </div>
                     }
                     {/* {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download")) && */}
-                    {((userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Client' || userInfo?.role === 'Designer')) &&
+                    {((userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Client' )) &&
                     
                     <div className="col-lg-3 col-md-6">
                         <div className="card" style={{cursor: 'pointer'}} onClick={() => navigateToPage('/design-list-v1')}>
