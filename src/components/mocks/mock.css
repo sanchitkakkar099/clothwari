@@ -15,7 +15,7 @@
   .c-pattern-background-image{
     left: 2px;
       top: 1px;
-      width: 91%;
+      width: 90%;
       height: 90%;
       position: absolute;
       background-size: 18%;
@@ -447,7 +447,7 @@
       align-items: center;
     }
     .d-container-wrapper {
-      height: 589px;
+      height: 586px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -469,12 +469,18 @@
       line-height: 5rem;
     }
     .c-img_cover{
-      height:551px;
+      height:551.2px;
       width: 100%;
     }
     .col-img{
       margin-top: 15px;
       margin-bottom: 15px;
+      padding: 2px;
+      width: 49.8%;
+    }
+    .col-img2{
+      margin-top: 16px;
+      margin-bottom: 14px;
       padding: 2px;
       width: 49.8%;
     }

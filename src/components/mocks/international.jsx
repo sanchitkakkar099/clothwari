@@ -274,8 +274,8 @@ function international() {
         }
 
         const pdfBlob = pdf.output("blob");
-        // await handleUpload(pdfBlob);
-        pdf.save(`${title}.pdf`);
+        await handleUpload(pdfBlob);
+        // pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("somthing went wrong", {
             position: "top-center",

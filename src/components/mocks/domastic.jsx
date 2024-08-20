@@ -285,8 +285,8 @@ function domastic() {
         }
   
         const pdfBlob = pdf.output("blob");
-        // await handleUpload(pdfBlob); 
-        pdf.save(`${title}.pdf`);
+        await handleUpload(pdfBlob); 
+        // pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("Something went wrong", {
           position: "top-center",
@@ -794,7 +794,7 @@ function domastic() {
                                     <Col
                                       md={6}
                                       key={imgIndex + 1}
-                                      className="col-img"
+                                      className="col-img2"
                                     >
                                       <div className="c-main_div img-dis c-img_cover">
                                         <img
