@@ -37,6 +37,7 @@ function domastic() {
   const navigate = useNavigate();
   const location = useLocation();
   const { state: locationState } = location;
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const componentRef = useRef(null);
   const divRef = useRef();
   const dispatch = useDispatch();

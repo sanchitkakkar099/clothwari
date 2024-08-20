@@ -33,6 +33,7 @@ function international() {
   const componentRef = useRef();
   const location = useLocation();
   const { state: locationState } = location;
+  const userInfo = useSelector((state) => state?.authState.userInfo)
   const dispatch = useDispatch();
   const [reqDesign, resDesign] = useDesignUploadListMutation();
   const [reqUploadDrive, resDriveUpload] = useUploadCreateDriveMutation();
