@@ -268,7 +268,7 @@ function SidebarComponent() {
                     </Link>
                 </li>
                 }
-                {(userInfo?.role === 'Super Admin' ) &&
+                {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer' ) &&
                  <li>
                     <Link to="/view-mocks-domestic">
                         <span className="menu-item" data-key="t-dashboards">Create Mocks</span>

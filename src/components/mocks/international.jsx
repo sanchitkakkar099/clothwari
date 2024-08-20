@@ -341,6 +341,8 @@ function international() {
 };
 
   return (
+    <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer' ) ?
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -786,6 +788,10 @@ function international() {
         </div>
       </div>
     </div>
+          :
+          <Navigate to={"/dashboard"}/>
+          }
+        </>
   );
 }
 

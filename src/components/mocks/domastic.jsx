@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import imagepath from "../../assets/images/CAD-with-Shirt-1.png";
-import {  Link, useLocation, useNavigate } from "react-router-dom";
+import {  Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
 import { getDesignUpload } from "../../redux/designUploadSlice";
@@ -351,6 +351,8 @@ function domastic() {
   };
 
   return (
+    <>
+    {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Admin' || userInfo?.role === 'Designer' ) ?
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
@@ -829,6 +831,10 @@ function domastic() {
         </div>
       </div>
     </div>
+      :
+      <Navigate to={"/dashboard"}/>
+      }
+    </>
   );
 }
 
