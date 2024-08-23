@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { FormFeedback, Label, Form, Input, Button, Progress } from "reactstrap";
+import { FormFeedback, Label, Form, Input, Button, Progress, Modal, ModalBody, ModalFooter } from "reactstrap";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Link,
@@ -25,6 +25,8 @@ import {
   useUniqueDesignNumberCheckMutation,
 } from "../../service";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
+import ReactDatePicker from "react-datepicker";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { alphaNumericPattern } from "../common/InputValidation";
 import PDFICON from "../../assets/images/pdf_icon.svg";
@@ -33,7 +35,7 @@ import {
   bulkMainFilesDownload,
   bulkThumbnailFilesDownload,
 } from "../../utils/bulkFileDownload";
-import { ArrowDownCircle, Download, X } from "react-feather";
+import { ArrowDownCircle, Download, Flag, X } from "react-feather";
 import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
 import { useDebounce } from "../../hook/useDebpunce";
 import VerifyCreateTagModal from "../common/VerifyCreateTagModal";
@@ -77,6 +79,11 @@ function AddDesign() {
   const [reqSearchTag, resSearchTag] = useSearchTagMutation();
 
   const [mainFile, setMainFile] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+  const [isHidden, setIsHidden] = useState(false)
+  const [isHiddenTime, setIsHiddenTime] = useState(false)
   const [thumbnailFile, setThumbnailFile] = useState([]);
   const [variationMainFile, setVariationMainFile] = useState([]);
   const [variationThumbnailFile, setVariationThumbnailFile] = useState([]);
@@ -151,6 +158,9 @@ function AddDesign() {
         variations: resDesignById?.data?.data?.variations
           ? resDesignById?.data?.data?.variations
           : [],
+        from_time:  resDesignById?.data?.data?.from_time ? new Date(resDesignById?.data?.data?.from_time) : null,
+        to_time:  resDesignById?.data?.data?.to_time ? new Date(resDesignById?.data?.data?.to_time) : null,
+        
       });
       if(resDesignById?.data?.data?.tag && Array.isArray(resDesignById?.data?.data?.tag) && resDesignById?.data?.data?.tag?.length > 0){
         setTags(resDesignById?.data?.data?.tag)
@@ -160,6 +170,12 @@ function AddDesign() {
       }
       if (resDesignById?.data?.data?.thumbnail) {
         setThumbnailFile(resDesignById?.data?.data?.thumbnail);
+      }
+      if(resDesignById?.data?.data?.isHidden){
+        setIsHidden(resDesignById?.data?.data?.isHidden)
+      }
+      if(resDesignById?.data?.data?.from_time && resDesignById?.data?.data?.to_time){
+        setIsHiddenTime(true);
       }
     }
   }, [resDesignById]);
@@ -315,6 +331,7 @@ function AddDesign() {
     console.log("state", {
       ...state,
       category: state?.category?.value,
+      isHidden:isHidden,
       tag: state?.tag,
       image:
         mainFile && Array.isArray(mainFile) && mainFile?.length > 0
@@ -340,6 +357,7 @@ function AddDesign() {
     reqDesignUpload({
       ...state,
       category: state?.category?.value,
+      isHidden:isHidden,
       tag: state?.tag,
       image:
         mainFile && Array.isArray(mainFile) && mainFile?.length > 0
@@ -370,7 +388,7 @@ function AddDesign() {
         position: "top-center",
       });
       reset();
-      navigate("/design-list-v2");
+      navigate(locationState?.isHiddenPage ? '/hidden-design-list' : '/design-list-v2');
     }
     if (resDesignUpload?.isError) {
       setError("name", {
@@ -668,6 +686,7 @@ function AddDesign() {
 
   const handleInputChange = () => {
       const currentValues = getValues();
+      currentValues.isHidden = isHidden;
       const hasChanged = JSON.stringify(currentValues) !== JSON.stringify(initialData);
       setHasChanges(hasChanged);
   };
@@ -680,6 +699,53 @@ function AddDesign() {
       clearTimeout(timer)
     }
   }, [subscription]);
+
+  const handleClick = (e, key) => {
+    const isChecked = e.target.checked;
+  
+    if (key === "isHidden") {
+      setIsHidden(isChecked);
+      setIsHiddenTime(false);
+  
+      if (isChecked) {
+        setValue('from_time', '');
+        setValue('to_time', '');
+        setError('from_time', '');
+        setError('to_time', '');
+      }
+    } else if (key === "isHiddenTime") {
+      setIsHiddenTime(isChecked);
+      setValue('from_time', '');
+      setValue('to_time', '');
+      setIsHidden(false);
+    }
+  };
+  const handleStartTimeChange = (date) => {
+    setStartTime(date);
+    if (endTime && dayjs(endTime).isBefore(date)) {
+      setEndTime(null);
+      setValue("to_time", "");
+    }
+  };
+
+  const handleOk = () => {
+    if (isHiddenTime) {
+      const from_time = getValues("from_time");
+      const to_time = getValues("to_time");
+      if (!from_time || !to_time) {
+        setError('from_time', from_time ? '' : { type: 'custom', message: 'From Time is required' });
+        setError('to_time', to_time ? '' : { type: 'custom', message: 'To Time is required' });
+        return;
+      }
+  
+      setError('from_time', '');
+      setError('to_time', '');
+    } else {
+      setError('from_time', "");
+      setError('to_time', "");
+    }
+    setIsOpen(!isOpen);
+  }
 
 
   return (
@@ -1471,11 +1537,127 @@ function AddDesign() {
                           </div>
                         );
                       })}
+                      {(userInfo?.role === 'Super Admin' || (userInfo?.permissions?.some((el) => el === "Design View/Hide") && userInfo?.role === 'Admin')) &&
+                      <div className="m-1 text-end">
+                      <span className="text-primary" style={{ cursor: 'pointer', width:'auto'}} onClick={(e) => setIsOpen(!isOpen)}>Advance Setting</span>
+                      {isOpen && (
+                              <Modal
+                              isOpen={isOpen}
+                            >
+                              <ModalBody>
+                              <label className="option">
+                                  <input
+                                    type="checkbox"
+                                    name="isHidden"
+                                    value={"isHidden"}
+                                    checked={isHidden}
+                                    onChange={(e) => handleClick(e, "isHidden")}
+                                  />{" "}
+                                  Hide Design
+                              </label>
+                              <br/>
+                              <label className="option">
+                                  <input
+                                    type="checkbox"
+                                    name="isHiddenTime"
+                                    value={"isHiddenTime"}
+                                    checked={isHiddenTime}
+                                    onChange={(e) => handleClick(e, "isHiddenTime")}
+                                  />{" "}
+                                  Hide Design Time Dependency
+                              </label>
+                              {!isHidden && (
+                              <div className="row">
+                              <div className="col-md-6">
+                                <div className="mb-3">
+                                  <Label className="form-label" htmlFor="from_time">
+                                    From:
+                                  </Label>
 
+                                  <Controller
+                                    id="from_time"
+                                    name="from_time"
+                                    control={control}
+                                    defaultValue={null}
+                                    render={({ field: { onChange, value } }) => (
+                                      <ReactDatePicker
+                                        selected={value}
+                                        onChange={(date) => {
+                                        onChange(date)
+                                        handleStartTimeChange(date)
+                                        }
+                                        }
+                                      timeIntervals={30}
+                                      className="form-control"
+                                      minDate={new Date()}
+                                      // minTime={MIN_TIME}
+                                      // maxTime={MAX_TIME}
+                                      dateFormat="MMMM d, yyyy"
+                                    />
+                                  )}
+                                />
+                            {errors.from_time && (
+                              <FormFeedback>
+                                {errors?.from_time?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <Label className="form-label" for="to_time">
+                              To:
+                            </Label>
+                            <Controller
+                              id="to_time"
+                              name="to_time"
+                              control={control}
+                              defaultValue={null}
+
+                              render={({ field: { onChange, value } }) => (
+                                <ReactDatePicker
+                                  selected={value}
+                                  onChange={(date) => {
+                                    onChange(date)
+                                    setEndTime(date)
+                                    }
+                                  }
+                                  timeIntervals={30}
+                                  className="form-control"
+                                  minDate={startTime ? startTime : new Date()}
+                                  // maxDate={startTime ? startTime : new Date()}
+                                  // minTime={startTime ? startTime : new Date()}
+                                  // maxTime={MAX_TIME}
+                                  dateFormat="MMMM d, yyyy"
+                                  // disabled={!startTime}
+                                />
+                              )}
+                            />
+                            {errors.to_time && (
+                              <FormFeedback>
+                                {errors?.to_time?.message}
+                              </FormFeedback>
+                            )}
+                          </div>
+                        </div>
+                        </div>
+                        )}
+                                                  
+                              </ModalBody>
+                              <ModalFooter>
+                                <Button color="secondary" onClick={(e) => handleOk()}>
+                                  Ok
+                                </Button>
+                              </ModalFooter>
+                            </Modal>
+                      )}
+                      </div>
+                      }
+                      
                       <div className="row">
                         <div className="col text-end">
                           <Link
-                            to="/design-list-v2"
+                            to={`${locationState?.isHiddenPage ? '/hidden-design-list' : '/design-list-v2'}`}
                             className="btn btn-danger m-1"
                           >
                             {" "}

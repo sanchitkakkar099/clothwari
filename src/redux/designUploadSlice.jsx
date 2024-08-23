@@ -1,14 +1,15 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 const initState = {
-  currentPageV1:1,
-  currentPageV2:1,
   designUploadList: [],
   designUploadApprovalList: [],
   designUploadView: null,
   designUploadEdit: null,
   uploadProgress:null,
-  uploadTag:null
+  uploadTag:null,
+  currentPageV1:1,
+  currentPageV2:1,
+  currentPageHidden:1,
 };
 
 export const designSlice = createSlice({
@@ -38,6 +39,9 @@ export const designSlice = createSlice({
     },
     getCurrentPageV2: (state, { payload }) => {
       state.currentPageV2 = payload;
+    },
+    getCurrentPageHidden: (state, { payload }) => {
+      state.currentPageHidden = payload;
     }
   },
 });
@@ -50,7 +54,8 @@ export const {
   setUploadProgress,
   setUploadTag,
   getCurrentPageV1,
-  getCurrentPageV2
+  getCurrentPageV2,
+  getCurrentPageHidden
 } = designSlice.actions;
 
 export default designSlice.reducer;

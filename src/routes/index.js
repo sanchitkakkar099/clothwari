@@ -7,6 +7,7 @@ const LoginComponent = lazy(() => import("../components/auth/login"));
 const Dashboard = lazy(() => import("../components/dashboard"));
 const UploadDesignListV1 = lazy(() => import("../components/uploadDesign/UploadDesignListV1"));
 const UploadDesignListV2 = lazy(() => import("../components/uploadDesign/UploadDesignListV2"));
+const HiddenDesignList = lazy(() => import("../components/hiddenDesign/HiddenDesignList"))
 const UploadDesignForm = lazy(() => import("../components/uploadDesign/UploadDesignForm"));
 const StaffForm = lazy(() => import("../components/staff/StaffForm"));
 const StaffList = lazy(() => import("../components/staff/StaffList"));
@@ -64,6 +65,7 @@ export const privateRoutes = [
   { path: "/product-view/:id", Component: ProductView },
   { path: "/design-approval-list", Component: DesignApprovalList },
   { path: "/design-approval-form", Component: DesignApprovalForm },
+  { path: "/hidden-design-list", Component: HiddenDesignList },
 
 
   { path: "/staff-form", Component: StaffForm },

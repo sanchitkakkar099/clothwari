@@ -459,6 +459,14 @@ export const designUploadApi = createApi({
       }),
       providesTags: ["designeUpload"],
     }),
+    designUploadHiddenList: builder.mutation({
+      query: (payload) => ({
+        url: "designupload/hidden/list",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["designeUpload"],
+    }),
     designUploadApprovalList: builder.mutation({
       query: (payload) => ({
         url: "designupload/list/approval",
@@ -557,6 +565,7 @@ export const {
   useReportDesignUploadListMutation,
   useCSVDesignUploadListMutation,
   useDesignUploadList2Mutation,
+  useDesignUploadHiddenListMutation,
   useDesignUploadApprovalListMutation,
   useSubmitDesignUploadMutation,
   useSubmitMultipleDesignUploadMutation,

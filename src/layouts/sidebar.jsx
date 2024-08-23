@@ -237,6 +237,15 @@ function SidebarComponent() {
                     </Link>
                 </li>
                 }
+                {(userInfo?.role === 'Super Admin' || (userInfo?.permissions?.some((el) => el === "Design View/Hide") && userInfo?.role === 'Admin')) &&
+                 <li>
+                    <Link to="/hidden-design-list">
+                        {/* <i className="bx bx-store icon nav-icon"></i> */}
+                        <span className="menu-item" data-key="t-dashboards">Classified Design</span>
+                        {/* <span className="badge rounded-pill bg-success">5+</span> */}
+                    </Link>
+                </li>
+                }
 
                 {/* {(userInfo?.role === 'Super Admin') &&
                 <li>
