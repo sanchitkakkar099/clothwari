@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDesignUploadByIdQuery, useStaffApprovalBySuperAdminMutation } from '../../service';
 import { Link, useParams } from 'react-router-dom';
 
 function ProductView() {
     const params = useParams()
+    const watermarkRef = useRef(null);
     const resDesignById = useDesignUploadByIdQuery(params?.id, {
         skip: !params?.id,
       });
@@ -29,6 +30,14 @@ function ProductView() {
     e.preventDefault()
     setVariationImg(null)
   }
+
+  const handleImageLoad = (e) => {
+    const width = e.target.naturalWidth;
+    const fontSize = width * 0.09;
+    if (watermarkRef.current) {
+      watermarkRef.current.style.fontSize = `${fontSize}px`;
+    }
+  };
 
     
   return (
@@ -58,10 +67,11 @@ function ProductView() {
                 
                 <div className="post-image">
                 {Array.isArray(productView?.thumbnail) && productView?.thumbnail[0]?.pdf_extract_img  ? 
-                  <img src={variationImg ? variationImg : productView?.thumbnail[0]?.pdf_extract_img} className="image" alt="image post"/>
+                  <img src={variationImg ? variationImg : productView?.thumbnail[0]?.pdf_extract_img} onLoad={handleImageLoad} className="image" alt="image post"/>
 :
                     <img src="https://www.bootdey.com/image/400x200/FFB6C1/000000" className="image" alt="image post"/>
                 }
+                <div ref={watermarkRef} className="watermark">Clothwari</div>
                 </div>
                 <div className='product_details'>
                 <div className="post-description">

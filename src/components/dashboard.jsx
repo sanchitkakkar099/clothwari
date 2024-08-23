@@ -111,6 +111,38 @@ function DashboardComponent() {
                     </div>
                     }
 
+                    {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Design Approval")) &&
+                    <div className="col-lg-3 col-md-6">
+                        <div className="card" style={{cursor: 'pointer'}} onClick={() => navigateToPage('/design-approval-list')}>
+                            <div className="card-body">
+                                <div className="avatar">
+                                    <span className="avatar-title bg-soft-success rounded">
+                                        <i className="mdi mdi-eye-outline text-success font-size-24"></i>
+                                    </span>
+                                </div>
+                                <p className="text-muted mt-4 mb-0">Pending Design</p>
+                                <h4 className="mt-1 mb-0">{dashData?.uploaddesignPending ? dashData?.uploaddesignPending : 0}</h4> 
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    {(userInfo?.role === 'Designer' ) && !userInfo?.permissions?.some((el) => el === "Design Approval")  &&
+                    <div className="col-lg-3 col-md-6">
+                        <div className="card" style={{cursor: 'pointer'}} onClick={() => navigateToPage('/design-list-v2')}>
+                            <div className="card-body">
+                                <div className="avatar">
+                                    <span className="avatar-title bg-soft-success rounded">
+                                        <i className="mdi mdi-eye-outline text-success font-size-24"></i>
+                                    </span>
+                                </div>
+                                <p className="text-muted mt-4 mb-0">Pending Design</p>
+                                <h4 className="mt-1 mb-0">{dashData?.uploaddesignPending ? dashData?.uploaddesignPending : 0}</h4> 
+                            </div>
+                        </div>
+                    </div>
+                    }
+
                     {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el => el === "Staff Create" || el === "Staff View" || el === "Staff Edit" || el === "Staff Delete")) &&
                     <div className="col-lg-3 col-md-6">
                         <div className="card" style={{cursor: 'pointer'}} onClick={() => navigateToPage('/staff-list')}>
