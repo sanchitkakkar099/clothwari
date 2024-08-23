@@ -12,6 +12,7 @@ import ReactDatePicker from "react-datepicker";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'; // Import UTC plugin
 import '../uploadDesign/dropdown-filter.css';
+import ReportTooltip from "../common/ReportTooltip";
 
 // Extend dayjs with the utc plugin
 dayjs.extend(utc);
@@ -24,7 +25,11 @@ function HiddenDesignList() {
   const latestCurrentPage = useSelector((state) => state?.designUploadState?.currentPageHidden);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-
+  
+  //tooltip
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [imageurl, setImageurl] = useState("");
+  const [target, setTarget] = useState("");
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
@@ -156,8 +161,18 @@ function HiddenDesignList() {
     }
   }
 
+  const toggle = (tag, id, img) => {
+    if (tag === "open") {
+      setTooltipOpen(true);
+      setTarget(null);
+      setTarget(`design-${id}`);
+      setImageurl(img);
+    } else {
+      setTooltipOpen(false);
+      setTarget(`design-${id}`);
+    }
+  };
   
-
   return (
     <>
     {(userInfo?.role === 'Super Admin' || (userInfo?.permissions?.some((el) => el === "Design View/Hide") && userInfo?.role === 'Admin')) ?
@@ -231,7 +246,24 @@ function HiddenDesignList() {
                       TBLData?.map((ele) => {
                         return(
                           <tr key={ele?._id}>
-                          <td>{(userInfo?.role === 'Super Admin' || (userInfo?.permissions?.some((el) => el === "Design View/Hide") && userInfo?.role === 'Admin')) ? <Link to={""} onClick={(e) => onEditAction(e,ele?._id)} >{ele?.name}</Link> : ele?.name}</td>
+                          <td id={`design-${ele?._id}`}>{(userInfo?.role === 'Super Admin' || (userInfo?.permissions?.some((el) => el === "Design View/Hide") && userInfo?.role === 'Admin')) ? 
+                            <Link
+                              onClick={(e) => onEditAction(e,ele?._id)}
+                              id={`design-${ele?._id}`}
+                               onMouseEnter={() =>
+                                toggle(
+                                  "open",
+                                  ele?._id,
+                                  ele?.thumbnail?.length > 0 && ele.thumbnail[0]?.pdf_extract_img ? ele?.thumbnail[0]?.pdf_extract_img : 'https://www.bootdey.com/image/250x200/FFB6C1/000000'
+                                  )
+                                }
+                                  onMouseLeave={() =>
+                                    toggle("close", ele?._id)
+                                  }
+                                >
+                              {ele?.name}
+                            </Link> 
+                            : ele?.name}</td>
                           <td>{ele?.category?.label}</td>
                           <td>{ele?.uploadedBy?.name}</td>
                           <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
@@ -292,6 +324,14 @@ function HiddenDesignList() {
       :
       <Navigate to={"/dashboard"} />
     }
+    {target && (
+        <ReportTooltip
+          imageurl={imageurl}
+          target={target}
+          setTooltipOpen={setTooltipOpen}
+          tooltipOpen={tooltipOpen}
+        />
+      )}
     </>
   );
 }

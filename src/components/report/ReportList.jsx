@@ -292,7 +292,7 @@ function ReportList() {
                                         toggle(
                                           "open",
                                           ele?._id,
-                                          ele?.thumbnail[0]?.pdf_extract_img
+                                          ele?.thumbnail?.length > 0 && ele.thumbnail[0]?.pdf_extract_img ? ele?.thumbnail[0]?.pdf_extract_img : 'https://www.bootdey.com/image/250x200/FFB6C1/000000'
                                         )
                                       }
                                       onMouseLeave={() =>
