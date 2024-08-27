@@ -50,8 +50,9 @@ object-fit: cover;
   position: absolute;
   top: 50%;
   left: 50%;
+  font-size: 300px;
   transform: translate(-50%, -50%);
-  color: rgba(132, 119, 119, 0.5); /* White with 50% transparency */
+  color: rgba(184, 180, 180,); /* White with 50% transparency */
   pointer-events: none; /* Ensure watermark doesn't interfere with any click events */
   user-select: none; /* Prevent text selection */
   font-weight: bold;

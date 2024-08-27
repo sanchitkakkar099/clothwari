@@ -81,6 +81,21 @@
     }
 }
 
+.product-box .product-img {
+    position: relative;
+}
+
+.product-box .watermark {
+    position: absolute;
+    top: 51%;
+    left: 30%;
+    font-size: 40px;
+    transform: translate(-50%, -50%);
+    color: rgb(184, 180, 180); /* White with 50% transparency */
+    pointer-events: none; /* Ensure watermark doesn't interfere with any click events */
+    user-select: none; /* Prevent text selection */
+    font-weight: bold;
+}
 
 
 .product-wishlist{

@@ -19,6 +19,17 @@
     width: calc(50% - 20px); /* Limit the maximum width */
     height: 350px; /* Decreased height */
   }
+  .watermark {
+    position: absolute;
+    top: 44%;
+    left: 52%;
+    font-size: 120px;
+    transform: translate(-50%, -50%);
+    color: rgb(184, 180, 180); /* White with 50% transparency */
+    pointer-events: none; /* Ensure watermark doesn't interfere with any click events */
+    user-select: none; /* Prevent text selection */
+    font-weight: bold;
+}
   .pdf-image-wrapper img {
     width: 100%; /* Make the image fill its container */
     height: 100%; /* Make the image fill its container */

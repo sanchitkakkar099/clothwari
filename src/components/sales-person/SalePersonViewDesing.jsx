@@ -457,6 +457,7 @@ function SalesPersonViewDesign() {
                                                   ) &&
                                                   el?.thumbnail[0]
                                                     ?.pdf_extract_img ? (
+                                                    <>
                                                     <img
                                                       src={
                                                         variationImg &&
@@ -470,6 +471,8 @@ function SalesPersonViewDesign() {
                                                       width={250}
                                                       className="image"
                                                     />
+                                                    <div className="watermark">Clothwari</div>
+                                                    </>
                                                   ) : (
                                                     <img
                                                       src="https://www.bootdey.com/image/250x200/FFB6C1/000000"

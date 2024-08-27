@@ -31,14 +31,6 @@ function ProductView() {
     setVariationImg(null)
   }
 
-  const handleImageLoad = (e) => {
-    const width = e.target.naturalWidth;
-    const fontSize = width * 0.09;
-    if (watermarkRef.current) {
-      watermarkRef.current.style.fontSize = `${fontSize}px`;
-    }
-  };
-
     
   return (
     <div className="page-content">
@@ -67,11 +59,13 @@ function ProductView() {
                 
                 <div className="post-image">
                 {Array.isArray(productView?.thumbnail) && productView?.thumbnail[0]?.pdf_extract_img  ? 
-                  <img src={variationImg ? variationImg : productView?.thumbnail[0]?.pdf_extract_img} onLoad={handleImageLoad} className="image" alt="image post"/>
+                <>
+                  <img src={variationImg ? variationImg : productView?.thumbnail[0]?.pdf_extract_img} className="image" alt="image post"/>
+                  <div ref={watermarkRef} className="watermark">Clothwari</div>
+                </> 
 :
                     <img src="https://www.bootdey.com/image/400x200/FFB6C1/000000" className="image" alt="image post"/>
                 }
-                <div ref={watermarkRef} className="watermark">Clothwari</div>
                 </div>
                 <div className='product_details'>
                 <div className="post-description">

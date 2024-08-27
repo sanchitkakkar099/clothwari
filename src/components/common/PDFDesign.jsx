@@ -111,10 +111,13 @@ function PDFDesign() {
                         return (
                         <div className="pdf-image-wrapper" key={inx}>
                         {item?.thumbnail && Array.isArray(item?.thumbnail) && item?.thumbnail?.length > 0 && item?.thumbnail?.some(im => im?.pdf_extract_img) &&
+                        <>
                         <img
                           src={item?.thumbnail[0]?.pdf_extract_img}
                           alt="Image 1"
                         />
+                        <div className="watermark">Clothwari</div>                       
+                        </>
                         }
                         <div className="pdf-remove-icon">
                             <X size={20} onClick={(e) => handleRemove(e,item)} />

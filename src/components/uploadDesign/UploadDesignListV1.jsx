@@ -653,6 +653,7 @@ function UploadDesignListV1() {
                                                           to={`/product-view/${el?._id}`}
                                                           target="_blank"
                                                         >
+                                                          <>
                                                           <img
                                                             src={
                                                               variationImg &&
@@ -673,6 +674,8 @@ function UploadDesignListV1() {
                                                                 "cover",
                                                             }}
                                                           />
+                                                            <div className="watermark">Clothwari</div>
+                                                          </>
                                                         </Link>
                                                       ) : (
                                                         <Link

@@ -112,6 +112,7 @@ function DesignVariationList() {
                   <div className="post-image">
                     {Array.isArray(data?.thumbnail) &&
                     data?.thumbnail[0]?.pdf_extract_img ? (
+                    <>
                       <img
                         src={data?.thumbnail[0]?.pdf_extract_img}
                         // className="image"
@@ -120,6 +121,8 @@ function DesignVariationList() {
                         width={"100%"}
                         style={{objectFit:'cover'}}
                       />
+                      <div className="watermark" style={{ fontSize:'90px'}}>Clothwari</div>
+                    </>
                     ) : (
                       <img
                         src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
@@ -200,6 +203,7 @@ function DesignVariationList() {
                   <div className="post-image">
                     {Array.isArray(ver?.variation_thumbnail) &&
                     ver?.variation_thumbnail[0]?.pdf_extract_img ? (
+                    <>
                       <img
                         src={ver?.variation_thumbnail[0]?.pdf_extract_img}
                         alt="image post"
@@ -207,6 +211,8 @@ function DesignVariationList() {
                         width={"100%"}
                         style={{objectFit:'cover'}}
                       />
+                      <div className="watermark" style={{ fontSize:'90px'}}>Clothwari</div>
+                    </>
                     ) : (
                       <img
                         src="https://www.bootdey.com/image/400x200/FFB6C1/000000"
