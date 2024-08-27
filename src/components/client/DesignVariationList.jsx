@@ -121,7 +121,7 @@ function DesignVariationList() {
                         width={"100%"}
                         style={{objectFit:'cover'}}
                       />
-                      <div className="watermark" style={{ fontSize:'90px'}}>Clothwari</div>
+                      <div className="watermark" style={{ fontSize:'5vw'}}>Clothwari</div>
                     </>
                     ) : (
                       <img
@@ -211,7 +211,7 @@ function DesignVariationList() {
                         width={"100%"}
                         style={{objectFit:'cover'}}
                       />
-                      <div className="watermark" style={{ fontSize:'90px'}}>Clothwari</div>
+                      <div className="watermark" style={{ fontSize:'5vw'}}>Clothwari</div>
                     </>
                     ) : (
                       <img

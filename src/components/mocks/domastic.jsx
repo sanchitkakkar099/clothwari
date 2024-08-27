@@ -248,8 +248,17 @@ function domastic() {
     if (componentRef.current) {
       setViewButton(true);
       componentRef.current.style.display = 'block';
-      
+  
       try {
+        // Ensure consistent rendering across different screen resolutions
+        const originalWidth = componentRef.current.offsetWidth;
+        const originalHeight = componentRef.current.offsetHeight;
+  
+        // Fix the component's width and height
+        componentRef.current.style.width = `${originalWidth}px`;
+        componentRef.current.style.height = `${originalHeight}px`;
+  
+        // Set a fixed scale for html2canvas to ensure consistent rendering
         const scale = 2;
         const canvas = await html2canvas(componentRef.current, {
           scale: scale,
@@ -257,11 +266,15 @@ function domastic() {
           logging: true,
           letterRendering: 1,
           allowTaint: false,
+          width: originalWidth,
+          height: originalHeight,
         });
+  
         const imgData = canvas.toDataURL("image/png");
   
-        const customPdfWidth = 13.33 * 72;  
-        const customPdfHeight = 7.5 * 72;   
+        // Define custom PDF dimensions
+        const customPdfWidth = 13.33 * 72;  // PDF width in points (1pt = 1/72 inch)
+        const customPdfHeight = 7.5 * 72;   // PDF height in points
   
         const pdf = new jsPDF({
           orientation: "landscape",
@@ -286,8 +299,8 @@ function domastic() {
         }
   
         const pdfBlob = pdf.output("blob");
-        await handleUpload(pdfBlob); 
-        // pdf.save(`${title}.pdf`);
+        // await handleUpload(pdfBlob);  // Uncomment if you need to upload the PDF
+        pdf.save(`${title}.pdf`);
       } catch (error) {
         toast.error("Something went wrong", {
           position: "top-center",
@@ -295,10 +308,14 @@ function domastic() {
         console.error("Error generating canvas:", error);
       } finally {
         setViewButton(false);
+
+        // componentRef.current.style.width = '';   
+        // componentRef.current.style.height = '';
         componentRef.current.style.display = "none";
       }
     }
   };
+  
 
   const handleUpload = async (pdfBlob) => {
     const formData = new FormData();
