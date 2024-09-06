@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FormFeedback, Label, Form, Input, Progress } from "reactstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {   useEditDriveMutation, useUploadCreateDriveMutation, useUploadMarketingPDFFileMutation } from "../../service";
+import {   useEditDriveMutation, useUploadCreateDriveMutation, useUploadMarketingPDFFileMutation, useDeleteDriveUnsubmittedFileMutation } from "../../service";
 import toast from "react-hot-toast";
 import { setUploadProgress, setUploadTag } from "../../redux/designUploadSlice";
 import { X } from "react-feather";
@@ -25,6 +25,7 @@ function DriveForm() {
   // });
   const [reqUploadDrive, resDriveUpload] = useUploadCreateDriveMutation();
   const [reqEditDrive, resEditDrive] = useEditDriveMutation();
+  const [reqDeleteUnsubmittedFile, resDeleteUnsubmittedFile] = useDeleteDriveUnsubmittedFileMutation();
 
   const uploadProgress = useSelector(
     (state) => state?.designUploadState.uploadProgress
@@ -33,6 +34,7 @@ function DriveForm() {
     (state) => state?.designUploadState.uploadTag
   );
   const [mainFile, setMainFile] = useState(null);
+  const [key, setKey] = useState('');
   const [reqFile,resFile] = useUploadMarketingPDFFileMutation();
 
   const {
@@ -53,6 +55,7 @@ function DriveForm() {
     }else{
       reqUploadDrive({
         ...state,
+        key:key,
         data:[],
       });
     }
@@ -84,6 +87,7 @@ function DriveForm() {
     }
   }, [resDriveUpload?.isSuccess,resDriveUpload?.isError]);
 
+
   useEffect(() => {
     if (resEditDrive?.isSuccess) {
       toast.success("Drive Name Updated SuccessFully", {
@@ -101,11 +105,28 @@ function DriveForm() {
       }
     }
     if (resEditDrive?.isError) {
-      toast.error("Something went wrong", {
+      toast.error(resEditDrive?.error?.data?.message ? 
+        resEditDrive?.error?.data?.message : "Something went wrong", {
         position: "top-center",
       });
     }
   }, [resEditDrive?.isSuccess,resEditDrive?.isError,location])
+
+  useEffect(() => {
+    if (resDeleteUnsubmittedFile?.isSuccess) {
+      toast.success("Deleted SuccessFully", {
+        position: "top-center",
+      });
+      setValue('pdfurl', "");
+      setMainFile(null)
+      setKey(null);
+    }
+    if (resDeleteUnsubmittedFile?.isError) {
+      toast.error("Something went wrong", {
+        position: "top-center",
+      });
+    }
+  }, [resDeleteUnsubmittedFile?.isSuccess,resDeleteUnsubmittedFile?.isError]);
 
   const handleFile = async (e, name) => {
     if (name === "pdfurl" && e.target.files) {
@@ -119,9 +140,10 @@ function DriveForm() {
       const fileResponse =  await reqFile({ url:`${baseUrl}/uploads/drive/pdf/?type=${reqData?.type}`, data:reqData?.file });
       if(fileResponse?.data?.code === 200 && fileResponse?.data?.data){
       if (fileResponse?.data?.data) {
-              setValue(name, fileResponse?.data?.data);
+              setValue(name, fileResponse?.data?.data?.pdfurl);
               setError(name, "");
-              setMainFile(fileResponse?.data?.data);
+              setKey(fileResponse?.data?.data?.key)
+              setMainFile(fileResponse?.data?.data?.pdfurl);
               dispatch(setUploadProgress(null))
               dispatch(setUploadTag(null))
             }
@@ -136,8 +158,12 @@ function DriveForm() {
   };
 
   const removeFile = (e, name) => {
-    setValue(name, "");
-    setMainFile(null)
+    if(!key){
+      return 
+    };
+    reqDeleteUnsubmittedFile({
+      key:key
+    }) 
   }
   
 

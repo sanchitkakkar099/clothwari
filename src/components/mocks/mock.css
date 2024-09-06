@@ -99,6 +99,15 @@
       gap: 10px;
       position: relative;
   }
+
+  .pdf-remove-icon {
+    padding: 4px;
+    background-color: rgba(7, 6, 6, 0.7);
+    color: white;
+    border-radius: 40%;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
   
   .c-text_rotate-first div{
     transform: rotate(270deg);
@@ -437,39 +446,8 @@
         max-width: 100%;
     }
   }
-
-  /* @media only screen and (min-width: 1366px) { */
-    .container-wrapper {
-      height: 1172px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .d-container-wrapper {
-      height: 898px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .img-logo{
-      width: 20%;
-    }
-    .c-text-style{
-      font-size: 3rem;
-      color: #eabaa5;
-      -webkit-text-stroke: 2px #c3673f;
-      /* text-shadow: -2px -2px 0 #c3673f, 2px -2px 0 #c3673f, -2px 2px 0 #c3673f, 2px 0px 0 #c3673f; */
-    }
-    .c-text-style-h2 {
-      margin-bottom: 20px;
-      border-bottom: 3px solid #e7e7e7;
-      display: inline-block;  
-      line-height: 5rem;
-    }
     .c-img_cover{
-      height:862.6px;
+      height:685.6px;
       width: 100%;
     }
     .col-img{
@@ -488,5 +466,4 @@
       height: 100%;
       object-fit: cover;
     }
-  /* } */
   

@@ -138,7 +138,7 @@ function DriveList() {
           isEdit:true,
         } 
       });
-    }else{
+    }else if(st?.typeOfPdf === 'International'){
       navigate("/view-mocks-international", {
         state: {
           _id: st?._id,
@@ -146,6 +146,15 @@ function DriveList() {
         }
       })
     }  
+    else{
+      navigate("/pdf-upload-form", {
+        state: {
+          data: st,
+          isEdit:true,
+          currentPage:currentPage
+        },
+      });
+    }
   }
 
   const handleDelete = (e, st) => {

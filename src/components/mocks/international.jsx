@@ -1,82 +1,87 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useRef, useState } from "react";
-import imagepath from "../../assets/images/international.png";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import imagepath from "../../assets/images/CAD-with-Shirt-1.png";
+import {  Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { useReactToPrint } from "react-to-print";
 import { getDesignUpload } from "../../redux/designUploadSlice";
-import { setPageStyle } from "../../utils/customPageSize";
-import { Button, Col, Form, FormFeedback, Input, Label, Row } from "reactstrap";
+import { Button, Col, Input, Label, Row, Form, FormFeedback, Spinner } from "reactstrap";
 import "./mock.css";
 import { Plus, X } from "react-feather";
 import Select from "react-select";
-import { useDesignUploadListMutation, useUploadCreateDriveMutation, useUploadMarketingPDFFileMutation,useDriveByIdQuery  } from "../../service";
+import {
+  useDesignUploadListMutation,
+  useDriveByIdQuery,
+  useUploadInternationalDriveMutation
+} from "../../service";
 import { useDispatch, useSelector } from "react-redux";
-import html2canvas from 'html2canvas';
 import { toast } from "react-hot-toast";
-import jsPDF from 'jspdf';
-import logo from "../../assets/images/logoww (1).jpg";
-import PdfGeneratorLoader from "../common/PdfGeneratorLoader";
-const baseUrl =
-  import.meta.env.MODE === "development"
-    ? import.meta.env.VITE_APP_DEV_URL
-    : import.meta.env.VITE_APP_PROD_URL;
-
-const proxyUrl =
-  import.meta.env.MODE === "development"
-    ? import.meta.env.VITE_APP_DEV_PROXYURL
-    : import.meta.env.VITE_APP_PROD_PROXYURL;
+import { useDebounce } from "../../hook/useDebpunce";
 
 function international() {
   const navigate = useNavigate();
-  const componentRef = useRef();
   const location = useLocation();
   const { state: locationState } = location;
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const dispatch = useDispatch();
   const [reqDesign, resDesign] = useDesignUploadListMutation();
-  const [reqUploadDrive, resDriveUpload] = useUploadCreateDriveMutation();
-  const [reqFile, resFile] = useUploadMarketingPDFFileMutation();
-
-
-  const { control, handleSubmit, formState: { errors }, } = useForm({
-    defaultValues: {
-      image_data: [
-        { firstimage: "", secondimage: "", thirdimage: "", forthimage: "" },
-      ],
-    },
-  });
-  const designUploadList = useSelector(
-    (state) => state?.designUploadState.designUploadList
-  );
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "image_data",
-  });
-  const [imagePreviews, setImagePreviews] = useState({});
-  const [title, setTitle] = useState("");
-  const [id, setId] = useState("");
-  const [imageNames, setImageNames] = useState({});
-  const [rowBackgrounds, setRowBackgrounds] = useState({});
-  const [rowImageName, setRowImageName] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState({});
-  const [visibleDivs, setVisibleDivs] = useState({});
-  const [productView, setProductView] = useState({});
-  const [variationImg, setVariationImg] = useState(null);
-  const [viewButton, setViewButton] = useState(false);
+  const [reqUploadDriveInternational, resDriveUploadInternational] = useUploadInternationalDriveMutation();
   const resDriveById = useDriveByIdQuery(locationState?._id, {
     skip: !locationState?._id,
   });
-  let temp = 0;
+
+  const { 
+    control, 
+    handleSubmit,
+    formState: { errors }, 
+    getValues, 
+    setValue,
+    reset,
+    watch,
+  } = useForm();
+  const designUploadList = useSelector(
+    (state) => state?.designUploadState.designUploadList
+  );
+  
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "imageSection",
+  });
+  const [imagePreviews, setImagePreviews] = useState({});
+  const [id, setId] = useState("");
+  const [imageNames, setImageNames] = useState({});
+  const [selectedDesignNo, setSelectedDesignNo] = useState({});
+  const [rowBackgrounds, setRowBackgrounds] = useState({});
+  const [rowImageName, setRowImageName] = useState({});
+  const [search, setSearch] = useState({});
+  const [searchDb, setDearchDb] = useState(null);
+  const [visibleDivs, setVisibleDivs] = useState({});
+  const [productView, setProductView] = useState({});
+  const [options, setOptions] = useState([]);
 
   // pagination
   const [TBLData, setTBLData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 9;
   const [totalCount, setTotalCount] = useState(0);
+
+  const debounceValue1 = useDebounce(watch('imageSection'),500)
+  const debounceSearch =useDebounce(searchDb, 500)
+
+  useEffect(() => {
+    const transformedData = debounceValue1?.map((item, index) => {
+      return Object.keys(item).reduce((accumulater, key) => {
+        if(item[key] && item[key]?.pdf_extract_img) {
+          accumulater.push({
+            label: item[key]?.designNo,
+            value: item[key]?.pdf_extract_img
+          })
+        }
+        return accumulater;
+      }, []);
+    });
+    setOptions(transformedData);
+  },[debounceValue1])
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -89,59 +94,118 @@ function international() {
 
   useEffect(() => {
     if (resDriveById?.isSuccess && resDriveById?.data?.data) {
-      const data = Object.keys(resDriveById?.data?.data?.rowBackgroundsData);
-      const length = data.length;
-      for (let i = 1; i <= length; i++) {
-        if (i === 1) {
-          continue;
-        } else {
-          append({
-            firstimage: "",
-            secondimage: "",
-            thirdimage: "",
-            forthimage: "",
-          });
-        }
-      }
+      reset({
+        ...resDriveById?.data?.data,
+      })
+      resDriveById?.data?.data?.imageSection?.map((data, index) => {
+        [
+          "firstimage",
+          "secondimage",
+          "thirdimage",
+          "forthimage",
+          "fifthimage",
+        ].map((imgKey) => {
+          if(data[imgKey]){
+            const key = `imageSection_${index}_${imgKey}`;
+            setImagePreviews((prevState) => ({
+              ...prevState,
+              [key] : data[imgKey]?.pdf_extract_img
+            }))
+            setSelectedDesignNo((prevState) => ({
+              ...prevState,
+              [key]: data[imgKey]?.designNo,
+            }));
+            setImageNames((prevState) => ({
+              ...prevState,
+              [key]: data[imgKey]?.designNo,
+            }))
+            setSearch((prevState) => ({
+              ...prevState,
+              [key]: data[imgKey]?.designNo,
+            }));
+            setVisibleDivs((prevState) => ({
+              ...prevState,
+              [key]: "search_click_data",
+            }));
+          }
+        });
+        setRowImageName((prevState) => ({
+          ...prevState,
+          [`image_${index}`]: resDriveById?.data?.data?.rowBackgroundsData?.[`image_${index}`]?.label
+        }))
+        setValue(`image_${index}`, resDriveById?.data?.data?.rowBackgroundsData?.[`image_${index}`])
+      })
       setId(resDriveById?.data?.data?._id);
-      setTitle(resDriveById?.data?.data?.title || "");
+      setOptions(resDriveById?.data?.data?.rowBackgroundsData ? resDriveById?.data?.data?.rowBackgroundsData : [])
       setRowBackgrounds(resDriveById?.data?.data?.rowBackgroundsData || {});
-      setImagePreviews(resDriveById?.data?.data?.ImagesPreviewsData || {});
+
     }
   }, [resDriveById]);
 
   useEffect(() => {
-    if (resDriveUpload?.isSuccess) {
-      toast.success("Uploaded SuccessFully ", {
+    if (resDriveUploadInternational?.isSuccess) {
+      toast.success("Uploaded SuccessFully", {
         position: "top-center",
       });
     }
-    if (resDriveUpload?.isError) {
-      toast.error("Something went wrong", {
+    if (resDriveUploadInternational?.isError) {
+      console.log("resDriveUploadInternational",resDriveUploadInternational)
+      toast.error(resDriveUploadInternational?.error?.data?.message ? resDriveUploadInternational?.error?.data?.message : "Something went wrong" , {
         position: "top-center",
       });
     }
-  }, [resDriveUpload?.isSuccess,resDriveUpload?.isError]);
+  }, [resDriveUploadInternational?.isSuccess, resDriveUploadInternational?.isError]);
+
+  useEffect(() => {
+    reqDesign({
+      search: debounceSearch || "",
+    });
+  }, [ debounceSearch]);
 
   const handleSearch = (search, index) => {
+    console.log("search",search)
     setSearch((prevState) => ({
       ...prevState,
       [index]: search,
     }));
-    reqDesign({
-      search: search,
-    });
-
+    setDearchDb(search);
     setVisibleDivs((prevState) => ({
       ...prevState,
       [index]: "search_all_data",
     }));
   };
 
-  const handleSearchClick = (data, key) => {
+  const handleSearchClick = (e, data, key, index, imgKey) => {
+    e.preventDefault()
+    const object = {
+      "pdf_extract_img": data?.thumbnail[0]?.pdf_extract_img,
+      "designNo": data?.designNo
+    }
+    const existingVal = getValues("imageSection")[index];
+    const variationCopys = getValues("imageSection");
+    if(object){
+      const updatedFields = [...variationCopys];
+      if (existingVal) {
+        updatedFields[index] = {
+          ...existingVal,
+          [imgKey] : object
+        };
+        
+        setValue(`imageSection`, updatedFields)
+      }
+    }
+    setSelectedDesignNo((prevState) => ({
+      ...prevState,
+      [key]: data?.designNo,
+    }));
+    setImageNames((prevState) => ({
+      ...prevState,
+      [key]: data?.designNo,
+    }))
+
     setImagePreviews((prevState) => ({
       ...prevState,
-      [key]: `${proxyUrl}${data?.thumbnail[0]?.pdf_extract_img}`,
+      [key]: `${data?.thumbnail[0]?.pdf_extract_img}`,
     }));
     setProductView((prevState) => ({
       ...prevState,
@@ -153,8 +217,10 @@ function international() {
     }));
   };
 
-  const handleChangeVariation = (e, variation, key) => {
+  const handleChangeVariation = (e, variation, key, index, imgKey) => {
     e.preventDefault();
+    const existingVal = getValues("imageSection")[index];
+    const variationCopys = getValues("imageSection");
     if (
       variation?.label &&
       productView[key]?.variations &&
@@ -165,181 +231,218 @@ function international() {
         (el) => el?.color === variation?.label
       );
       if (variationObj?.variation_thumbnail[0]?.pdf_extract_img) {
-        setVariationImg(variationObj?.variation_thumbnail[0]?.pdf_extract_img),
-          setImagePreviews((prevState) => ({
-            ...prevState,
-            [key]: `${proxyUrl}${variationObj?.variation_thumbnail[0]?.pdf_extract_img}`,
-          }));
+        const object = {
+          "pdf_extract_img": variationObj?.variation_thumbnail[0]?.pdf_extract_img,
+          "designNo": variationObj?.variation_designNo
+        }
+        if(object){
+          const updatedFields = [...variationCopys];
+          if (existingVal) {
+            updatedFields[index] = {
+              ...existingVal,
+              [imgKey] : object
+            };
+            setValue(`imageSection`, updatedFields)
+          }
+        }
+        setSelectedDesignNo((prevState) => ({
+          ...prevState,
+          [key]: variationObj?.variation_designNo,
+        }));
+        setImageNames((prevState) => ({
+          ...prevState,
+          [key]: variationObj?.variation_designNo,
+        }))
+        setImagePreviews((prevState) => ({
+          ...prevState,
+          [key]: `${variationObj?.variation_thumbnail[0]?.pdf_extract_img}`,
+        }));
       }
     }
   };
 
-  const handleChangePrimary = (e) => {
+  const handleChangePrimary = (e, data,key, index, imgKey) => {
     e.preventDefault();
-    setVariationImg(null);
+    const object = {
+      "pdf_extract_img": data?.thumbnail[0]?.pdf_extract_img,
+      "designNo": data?.designNo
+    }
+    const existingVal = getValues("imageSection")[index];
+    const variationCopys = getValues("imageSection");
+    if(object){
+      const updatedFields = [...variationCopys];
+      if (existingVal) {
+        updatedFields[index] = {
+          ...existingVal,
+          [imgKey] : object
+        };
+        
+        setValue(`imageSection`, updatedFields)
+      }
+    }
+    setSelectedDesignNo((prevState) => ({
+      ...prevState,
+      [key]: data?.name,
+    }));
   };
 
-  const handleSelectedImage = (fieldId) => {
-    if (!fieldId?.value) return;
-    const rowIndex = fieldId?.value.split("_")[1];
+  const handleSelectedImage = (field, key) => {
+    if (!field?.value || !field?.label) return;
     setRowBackgrounds((prev) => ({
       ...prev,
-      [rowIndex]: `${imagePreviews[fieldId?.value]}`,
+      [key]: field,
     }));
     setRowImageName((prev) => ({
       ...prev,
-      [rowIndex]: imageNames[fieldId?.value],
+      [key]: field?.label,
     }));
   };
 
-  const handleRemove = (index) => {
-    const newImagePreviews = { ...imagePreviews };
-    ["firstimage", "secondimage", "thirdimage", "forthimage"].forEach(
-      (imgKey) => {
-        delete newImagePreviews[`${imgKey}_${index}`];
-      }
-    );
-    const newImageNames = { ...imageNames };
-    ["firstimage", "secondimage", "thirdimage", "forthimage"].forEach(
-      (imgKey) => {
-        delete newImageNames[`${imgKey}_${index}`];
-      }
-    );
 
-    Object.keys(newImagePreviews).forEach((key) => {
-      const [imgKey, imgIndex] = key.split("_");
-      if (parseInt(imgIndex) > index) {
-        const newIndex = parseInt(imgIndex) - 1;
-        newImagePreviews[`${imgKey}_${newIndex}`] = newImagePreviews[key];
-        delete newImagePreviews[key];
-      }
+  const handleRemove = (e, index) => {
+    e.preventDefault();
+    console.log("index",index)
+    const newSerach = { ...search };
+    [
+      "firstimage",
+      "secondimage",
+      "thirdimage",
+      "forthimage",
+    ].forEach((imgKey) => {
+      delete newSerach[`imageSection_${index}_${imgKey}`];
     });
+    const newImagePreviews = { ...imagePreviews };
+    [
+      "firstimage",
+      "secondimage",
+      "thirdimage",
+      "forthimage",
+    ].forEach((imgKey) => {
+      delete newImagePreviews[`imageSection_${index}_${imgKey}`];
+    });
+    const newImageNames = { ...imageNames };
+    [
+      "firstimage",
+      "secondimage",
+      "thirdimage",
+      "forthimage",
+    ].forEach((imgKey) => {
+      delete newImageNames[`imageSection_${index}_${imgKey}`];
+    });
+    const newDesignNumber = { ...selectedDesignNo };
+    [
+      "firstimage",
+      "secondimage",
+      "thirdimage",
+      "forthimage",
+    ].forEach((imgKey) => {
+      delete newDesignNumber[`imageSection_${index}_${imgKey}`];
+    });
+    const newProductView = { ...productView };
+    [
+      "firstimage",
+      "secondimage",
+      "thirdimage",
+      "forthimage",
+    ].forEach((imgKey) => {
+      delete newProductView[`imageSection_${index}_${imgKey}`];
+    });
+
+    const newVisibleDivs = { ...visibleDivs };
+    [
+      "firstimage",
+      "secondimage",
+      "thirdimage",
+      "forthimage",
+    ].forEach((imgKey) => {
+      delete newVisibleDivs[`imageSection_${index}_${imgKey}`];
+    });
+    const newRowBackgrounds = { ...rowBackgrounds };
+    delete newRowBackgrounds[`image_${index}`];
+    // Object.keys(newImagePreviews).forEach((key) => {
+    //   const [imgKey, imgIndex] = key.split(".");
+    //   if (parseInt(imgIndex) > index) {
+    //     const newIndex = parseInt(imgIndex) - 1;
+    //     newImagePreviews[`imageSection_${index}_${imgKey}`] = newImagePreviews[key];
+    //     delete newImagePreviews[key];
+    //   }
+    // });
+    setSearch(newSerach);
+    setVisibleDivs(newVisibleDivs)
+    setProductView(newProductView)
+    setSelectedDesignNo(newDesignNumber)
     setImageNames(newImageNames);
     setImagePreviews(newImagePreviews);
-    remove(index);
+    setRowBackgrounds(newRowBackgrounds);
+    setValue(`image_${index}`, "");
+    remove(index); 
   };
-
-  const onNext = (state) => {
-    console.log("state", state);
-  };
-  const getMarginButtom = (temp) =>{
-    if(temp===1){
-        return '46rem';
-    }else if (temp === 2){
-        return '23.8rem';
-    }else if( temp === 3){
-        return '1rem';
-    }
-    return 0;
-}
-
-  const handleGeneratePDF = async () => {
-    if (componentRef.current) {
-      setViewButton(true);
-      componentRef.current.style.display = 'block';
-        
-      try {
-        const canvas = await html2canvas(componentRef.current, {
-          useCORS: true,
-          logging: true,
-          letterRendering: 1,
-          allowTaint: false,
-        });
-        const imgData = canvas.toDataURL("image/png");
-
-        const customPdfWidth = 792.96 * 72 / 96;
-        const customPdfHeight = 900.87 * 72 / 96;
-        // const customPdfWidth = 792.96 * 72 / 96;
-        // const customPdfHeight = 1062.12 * 72 / 96;
-
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "pt",
-          format: [customPdfWidth, customPdfHeight],
-        });
-
-        const imgWidth = customPdfWidth;
-        const imgHeight = (canvas.height * customPdfWidth) / canvas.width;
-
-        let position = 0;
-        let heightLeft = imgHeight;
-
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= customPdfHeight;
-
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage([customPdfWidth, customPdfHeight]);
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-          heightLeft -= customPdfHeight;
+  useEffect(() => {
+    console.log('fields after update', fields);
+  }, [fields]);
+  
+  const handleRemoveSingle = (e,key, index, imgKey) => {
+    e.preventDefault();
+    const existingVal = getValues("imageSection")[index];
+    const selectDesign = getValues(`image_${index}`);
+    const variationCopys = getValues("imageSection");
+      const updatedFields = [...variationCopys];
+      if (existingVal && existingVal[imgKey]) {
+        if(selectDesign?.label === existingVal[imgKey]?.designNo){
+          setValue(`image_${index}`,'')
         }
-
-        const pdfBlob = pdf.output("blob");
-        await handleUpload(pdfBlob);
-        // pdf.save(`${title}.pdf`);
-      } catch (error) {
-        toast.error("somthing went wrong", {
-            position: "top-center",
-        });
-        console.error("Error generating canvas:", error);
-      } finally {
-        setViewButton(false);
-        componentRef.current.style.display = "none";
+        existingVal[imgKey] = "";
+        updatedFields[index] = {
+          ...existingVal,
+        }; 
+        setValue(`imageSection`, updatedFields)
       }
+    setSearch(prevState => {
+      const newState = { ...prevState }; 
+      delete newState[key];               
+      return newState;                    
+    });
+    setVisibleDivs(prevState => {
+      const newState = { ...prevState }; 
+      delete newState[key];               
+      return newState;                    
+    });
+    setSelectedDesignNo(prevState => {
+      const newState = { ...prevState }; 
+      delete newState[key];               
+      return newState;                    
+    });
+    setImageNames(prevState => {
+      const newState = { ...prevState }; 
+      delete newState[key];               
+      return newState;                    
+    });
+    setImagePreviews(prevState => {
+      const newState = { ...prevState }; 
+      delete newState[key];               
+      return newState;                    
+    });
+    setRowBackgrounds(prevState => {
+      const newState = { ...prevState }; 
+      delete newState[`image_${index}`];               
+      return newState;                    
+    });
+  }
+  
+
+  
+
+  const handleUplodPdf = (state) => {
+    if(locationState?.isEdit){
+      delete state?.rowBackgroundsData;
     }
-  };
+    console.log("After state",state)
+    reqUploadDriveInternational({
+      ...state,
+      rowBackgroundsData:rowBackgrounds
+    })
+  }
 
-
-  const handleUpload = async (pdfBlob) => {
-    const formData = new FormData();
-    formData.append('file', pdfBlob, 'document.pdf');
-
-    const reqData = {
-        file: formData,
-        type: 99,
-    };
-
-    try {
-        const fileResponse = await reqFile({
-            url: `${baseUrl}/uploads/drive/pdf/?type=${reqData.type}`,
-            data: reqData.file,
-        });
-
-        if (fileResponse?.data?.code === 200 && fileResponse?.data?.data) {
-            if(locationState?.isEdit  || id){
-                reqUploadDrive({
-                    _id: id,
-                    pdfName: title ? title : "Default",
-                    pdfurl: fileResponse?.data?.data,
-                    ImagesPreviewsData: imagePreviews,
-                    rowBackgroundsData: rowBackgrounds,
-                    title: title,
-                    typeOfPdf: "International",
-                    data: [],
-                });
-            }else{
-                reqUploadDrive({
-                    pdfName: title ? title : "Default",
-                    pdfurl: fileResponse?.data?.data,
-                    ImagesPreviewsData: imagePreviews,
-                    rowBackgroundsData: rowBackgrounds,
-                    title: title,
-                    typeOfPdf: "International",
-                    data: [],
-                });
-            }
-        }else{
-            toast.error('Something went wrong',{
-              position:"top-center"
-            })
-        }
-    } catch (error) {
-        toast.error('Something went wrong',{
-            position:"top-center"
-        })
-        console.log("error", error);
-    }
-};
 
   return (
     <>
@@ -362,7 +465,6 @@ function international() {
             </div>
           </div>
         </div>
-
         <div className="row">
           <div className="col-12">
             <div className="card">
@@ -379,420 +481,362 @@ function international() {
                       Go To Domestic
                     </button>
                   </div>
-                </div>
-                <div>
-                <Form onSubmit={handleSubmit(handleGeneratePDF)}>
-                  <Input
-                    type="text"
-                    value={title}
-                    placeholder="Input Title"
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                  {fields.map((field, index) => (
-                    <div
-                      key={index}
-                      className="border-bottom border-dark border-2 pb-1 w-100 d-flex"
-                    >
-                      <Col md={5}>
-                        <Row
-                          key={field.id}
-                          className="justify-content-between align-items-center"
-                        >
-                          {[
-                            "firstimage",
-                            "secondimage",
-                            "thirdimage",
-                            "forthimage",
-                          ].map((imgKey, imgIndex) => (
-                            <Col md={12} key={imgIndex}>
-                              <div className="form-inline mt-2">
-                                <div className="search-box">
-                                  <div className="position-relative">
+                  <div>
+                  <Form onSubmit={handleSubmit(handleUplodPdf)}>
+                    <Controller
+                      id='pdfName'
+                      name='pdfName'
+                      control={control}
+                      rules={{ required: "Title is required"}}
+                      render={({ field }) => (
+                        <Input
+                          type="text"
+                          placeholder="Input Title"
+                          {...field}
+                          disabled={locationState?.isEdit}
+                        />           
+                        )}
+                    />
+                    {errors?.pdfName && (
+                      <FormFeedback>
+                        {errors?.pdfName?.message}
+                      </FormFeedback>
+                    )}
+                    {fields.map((field, index) => (
+                      <div
+                        key={field.id}
+                        className="border-bottom border-dark border-2 pb-1 w-100 d-flex"
+                      >
+
+                        <Col md={5} key={index}>
+                          <Row
+                            className="justify-content-between align-items-center"
+                          >
+                            {[
+                              "firstimage",
+                              "secondimage",
+                              "thirdimage",
+                              "forthimage",
+                            ].map((imgKey, imgIndex) => (
+                              <Col md={12} key={imgIndex}>
+                                <div className="form-inline mt-2">
+                                  <div className="search-box">
+                                    <div className="position-relative">
                                     <input
-                                      type="text"
-                                      onChange={(e) =>
-                                        handleSearch(
-                                          e.target.value,
-                                          `${imgKey}_${index}`
-                                        )
-                                      }
-                                      className="form-control "
-                                      placeholder={`Search Image ${
-                                        imgIndex + 1
-                                      }`}
-                                      // value={search}
-                                    />
-                                    <i className="bx bx-search search-icon"></i>
+                                          type="text"
+                                          onChange={(e) =>
+                                            handleSearch(
+                                              e.target.value,
+                                              `imageSection_${index}_${imgKey}`,
+                                              index,
+                                            )
+                                          }
+                                          className="form-control "
+                                          placeholder={`Search Image ${
+                                            imgIndex + 1
+                                          }`}
+                                          // value={search}
+                                        />
+                                      <i className="bx bx-search search-icon"></i>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                              {search[`${imgKey}_${index}`] &&
-                                (visibleDivs[`${imgKey}_${index}`] ===
-                                "search_all_data" ? (
-                                  <div className="c-search-data mt-2 mb-2">
-                                    <div className="row">
-                                      {designUploadList &&
-                                      Array.isArray(designUploadList) &&
-                                      designUploadList?.length > 0 ? (
-                                        designUploadList?.map((el, i) => {
-                                          return (
-                                            <div
-                                              className="col-xl-11 col-sm-6 d-flex custom-hover"
-                                              key={i}
-                                            >
-                                              <Link
-                                                to={""}
-                                                onClick={() =>
-                                                  handleSearchClick(
-                                                    el,
-                                                    `${imgKey}_${index}`
-                                                  )
-                                                }
-                                                className="text-dark font-size-16 ms-3"
-                                              >
-                                                {el?.name}
-                                              </Link>
-                                            </div>
-                                          );
-                                        })
-                                      ) : (
-                                        <h4 className="text-center mt-5">
-                                          No Design Found
-                                        </h4>
-                                      )}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="c-search-click-data mt-2 mb-2">
-                                    <div className="product_details">
-                                      <div className="post-description">
-                                        <h4>
-                                          {
-                                            productView[`${imgKey}_${index}`]
-                                              ?.name
-                                          }
-                                        </h4>
-                                      </div>
-                                      <div className="stats">
-                                        {productView[`${imgKey}_${index}`]
-                                          ?.primary_color_code && (
-                                          <Link
-                                            to=""
-                                            className="stat-item"
-                                            style={{
-                                              backgroundColor:
-                                                productView[
-                                                  `${imgKey}_${index}`
-                                                ]?.primary_color_code,
-                                              fontSize: "18px",
-                                              width: "17px",
-                                              height: "17px",
-                                              borderRadius: "50%",
-                                              border: "1px solid #c7c7c7",
-                                            }}
-                                            onClick={(e) =>
-                                              handleChangePrimary(
-                                                e,
-                                                `${imgKey}_${index}`
-                                              )
-                                            }
-                                          >
-                                            <span className="" />
-                                          </Link>
-                                        )}
-                                        {productView[`${imgKey}_${index}`]
-                                          ?.color &&
-                                          Array.isArray(
-                                            productView[`${imgKey}_${index}`]
-                                              ?.color
-                                          ) &&
-                                          productView[`${imgKey}_${index}`]
-                                            ?.color?.length > 0 &&
-                                          productView[
-                                            `${imgKey}_${index}`
-                                          ]?.color?.map((cl, cinx) => {
+                                {search[`imageSection_${index}_${imgKey}`] &&
+                                  (visibleDivs[`imageSection_${index}_${imgKey}`] ===
+                                  "search_all_data" ? (
+                                    <div className="c-search-data mt-2 mb-2">
+                                      <div className="row">
+                                        {designUploadList &&
+                                        Array.isArray(designUploadList) &&
+                                        designUploadList?.length > 0 ? (
+                                          designUploadList?.map((el, i) => {
                                             return (
-                                              <Link
-                                                to=""
-                                                className="stat-item"
-                                                style={{
-                                                  backgroundColor: cl?.value,
-                                                  fontSize: "18px",
-                                                  width: "17px",
-                                                  height: "17px",
-                                                  borderRadius: "50%",
-                                                  border: "1px solid #c7c7c7",
-                                                }}
-                                                key={cinx}
-                                                onClick={(e) =>
-                                                  handleChangeVariation(
-                                                    e,
-                                                    cl,
-                                                    `${imgKey}_${index}`
-                                                  )
-                                                }
+                                              <div
+                                                className="col-xl-11 col-sm-6 d-flex custom-hover"
+                                                key={i}
                                               >
-                                                <span className="" />
-                                              </Link>
+                                                <Link
+                                                  to={""}
+                                                  onClick={(e) =>
+                                                    handleSearchClick(
+                                                      e,
+                                                      el,
+                                                      `imageSection_${index}_${imgKey}`,
+                                                      index,
+                                                      imgKey,
+                                                    )
+                                                  }
+                                                  className="text-dark font-size-16 ms-3"
+                                                >
+                                                  {el?.name}
+                                                </Link>
+                                              </div>
                                             );
-                                          })}
+                                          })
+                                        ) : (
+                                          <h4 className="text-center mt-5">
+                                            No Design Found
+                                          </h4>
+                                        )}
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
-                            </Col>
-                          ))}
-                          <Col md="12" sm="12" className="mb-1">
-                            <Label for="role">Image Select</Label>
-                            <Controller
-                              id={`image${index}`}
-                              name={`image${index}`}
-                              control={control}
-                              rules={{ required: "This field is required" }}
-                              render={({ field: { onChange, value } }) => (
-                                <Select
-                                  isClearable
-                                  options={[
-                                    {
-                                      label: "Image 1",
-                                      value: `firstimage_${index}`,
-                                    },
-                                    {
-                                      label: "Image 2",
-                                      value: `secondimage_${index}`,
-                                    },
-                                    {
-                                      label: "Image 3",
-                                      value: `thirdimage_${index}`,
-                                    },
-                                    {
-                                      label: "Image 4",
-                                      value: `forthimage_${index}`,
-                                    },
-                                  ]}
-                                  className="react-select"
-                                  classNamePrefix="select"
-                                  onChange={(selectedOption) => {
-                                    onChange(selectedOption);
-                                    handleSelectedImage(selectedOption);
-                                  }}
-                                  value={value ? value : null}
-                                />
-                              )}
-                            />
-                            {errors[`image${index}`] && (
+                                  ) : (
+                                    <div className="c-search-click-data mt-2 mb-2">
+                                      <div className="product_details">
+                                      <div className="pdf-remove-icon">
+                                        <X size={20} onClick={(e) => handleRemoveSingle(
+                                          e, 
+                                          `imageSection_${index}_${imgKey}`,
+                                          index,
+                                          imgKey,
+                                          )} />
+                                      </div>
+                                        <div className="post-description">
+                                          <h4>
+                                            {
+                                              selectedDesignNo[`imageSection_${index}_${imgKey}`]
+                                            }
+                                          </h4>
+                                        </div>
+                                        <div className="stats">
+                                          {productView[`imageSection_${index}_${imgKey}`]
+                                            ?.primary_color_code && (
+                                            <Link
+                                              to=""
+                                              className="state-item"
+                                              style={{
+                                                backgroundColor:
+                                                  productView[
+                                                    `imageSection${index}_${imgKey}`
+                                                  ]?.primary_color_code,
+                                                fontSize: "18px",
+                                                width: "17px",
+                                                height: "17px",
+                                                borderRadius: "50%",
+                                                border: "1px solid #c7c7c7",
+                                              }}
+                                              onClick={(e) =>
+                                                handleChangePrimary(
+                                                  e,
+                                                  productView[`imageSection_${index}_${imgKey}`],
+                                                  `imageSection_${index}_${imgKey}`,
+                                                  index,
+                                                  imgKey,
+                                                )
+                                              }
+                                            >
+                                              <span className="" />
+                                            </Link>
+                                          )}
+                                          {productView[`imageSection_${index}_${imgKey}`]
+                                            ?.color &&
+                                            Array.isArray(
+                                              productView[`imageSection_${index}_${imgKey}`]
+                                                ?.color
+                                            ) &&
+                                            productView[`imageSection_${index}_${imgKey}`]
+                                              ?.color?.length > 0 &&
+                                            productView[
+                                              `imageSection_${index}_${imgKey}`
+                                            ]?.color?.map((cl, cinx) => {
+                                              return (
+                                                <Link
+                                                  to=""
+                                                  className="stat-item"
+                                                  style={{
+                                                    backgroundColor: cl?.value,
+                                                    fontSize: "18px",
+                                                    width: "17px",
+                                                    height: "17px",
+                                                    borderRadius: "50%",
+                                                    border: "1px solid #c7c7c7",
+                                                  }}
+                                                  key={cinx}
+                                                  onClick={(e) =>
+                                                    handleChangeVariation(
+                                                      e,
+                                                      cl,
+                                                      `imageSection_${index}_${imgKey}`,
+                                                      index,
+                                                      imgKey,
+                                                    )
+                                                  }
+                                                >
+                                                  <span className="" />
+                                                </Link>
+                                              );
+                                            })}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                              </Col>
+                            ))}
+                            <Col md="12" sm="12" className="mb-1">
+                              <Label for="role">Image Select</Label>
+                              <Controller
+                                id={`image_${index}`}
+                                name={`image_${index}`}
+                                control={control}
+                                rules={{ required: "This field is required"}}
+                                render={({ field: { onChange, value } }) => (
+                                  <Select
+                                    isClearable
+                                    options={options[index]}
+                                    className="react-select"
+                                    classNamePrefix="select"
+                                    onChange={(selectedOption) => {
+                                      onChange(selectedOption);
+                                      handleSelectedImage(selectedOption, `image_${index}`);
+                                    }}
+                                    value={value ? value : null}
+                                  />
+                                )}
+                              />
+                            {errors[`image_${index}`] && (
                               <FormFeedback>
-                                {errors[`image${index}`]?.message}
+                                {errors[`image_${index}`]?.message}
                               </FormFeedback>
                             )}
-                          </Col>
-                          <Col
-                            md={12}
-                            className="md-0 mt-2 mb-2 d-flex justify-content-end"
-                          >
-                            <Button
-                              className="btn-icon"
-                              color="danger"
-                              outline
-                              onClick={() => handleRemove(index)}
-                            >
-                              <X size={14} />
-                              <span className="align-middle ms-25"></span>
-                            </Button>
-                          </Col>
-                        </Row>
-                      </Col>
-                      {/* {loading ? <LoaderComponet loading /> : " "} */}
-                      <Col
-                        md={7}
-                        style={{ paddingLeft: "1rem", paddingTop: "1rem" }}
-                      >
-                        <Row
-                          key={field.id}
-                          className="justify-content-between align-items-center gy-1"
-                        >
-                          {[
-                            "firstimage",
-                            "secondimage",
-                            "thirdimage",
-                            "forthimage",
-                          ].map((imgKey, imgIndex) => (
-                            <>
+                            </Col>
+                            {fields.length === index+1 && (
                               <Col
-                                md={6}
-                                key={imgIndex}
-                                style={{ marginTop: "0px", padding: "2px" }}
+                              md={12}
+                              className="md-0 mt-2 mb-2 d-flex justify-content-end"
+                            >
+                              <Button
+                                className="btn-icon"
+                                color="danger"
+                                outline
+                                onClick={(e) => handleRemove(e,index)}
                               >
-                                <div>
-                                  {imagePreviews[`${imgKey}_${index}`] && (
-                                    <div className="img-dis">
-                                      <img
-                                        src={
-                                          imagePreviews[`${imgKey}_${index}`]
-                                        }
-                                        alt={`Preview ${imgIndex + 1}`}
-                                        style={{
-                                          width: "100%",
-                                          border: "1px solid black",
-                                        }}
-                                      />
-                                      <p>{imageNames[`${imgKey}_${index}`]}</p>
-                                    </div>
-                                  )}
-                                </div>
-                              </Col>
-                              {imgIndex === 0 &&
-                              imagePreviews[`${imgKey}_${index}`] ? (
+                                <X size={14} />
+                                <span className="align-middle ms-25"></span>
+                              </Button>
+                            </Col>
+                            )}
+                          </Row>
+                        </Col>
+                        <Col
+                          md={7}
+                          style={{ paddingLeft: "1rem", paddingTop: "1rem" }}
+                        >
+                          <Row
+                            key={field.id}
+                            className="justify-content-between align-items-center gy-1"
+                          >
+                            {[
+                              "firstimage",
+                              "secondimage",
+                              "thirdimage",
+                              "forthimage",
+                            ].map((imgKey, imgIndex) => (
+                              <>
                                 <Col
                                   md={6}
-                                  key={imgIndex + 1}
-                                  style={{ marginTop: "5px", padding: "2px" }}
+                                  key={imgIndex}
+                                  style={{ marginTop: "0px", padding: "2px" }}
                                 >
-                                  <div className="c-main_div img-dis">
-                                    <img
-                                      src={imagepath}
-                                      alt=""
-                                      className="c-mask-image"
-                                      style={{ border: "1px solid black" }}
-                                    />
-                                    <div
-                                      className="c-pattern-background-image"
-                                      style={{
-                                        backgroundImage: `url(${rowBackgrounds[index]})`,
-                                      }}
-                                    ></div>
-                                    <p>{rowImageName[`${index}`]}</p>
+                                  <div>
+                                    {imagePreviews[`imageSection_${index}_${imgKey}`] && (
+                                      <div className="img-dis">
+                                        <img
+                                          src={
+                                            imagePreviews[`imageSection_${index}_${imgKey}`]
+                                          }
+                                          alt={`Preview ${imgIndex + 1}`}
+                                          style={{
+                                            width: "100%",
+                                            border: "1px solid black",
+                                          }}
+                                        />
+                                        <p>
+                                          {imageNames[`imageSection_${index}_${imgKey}`]}
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
                                 </Col>
-                              ) : (
-                                ""
-                              )}
-                            </>
-                          ))}
-                        </Row>
-                      </Col>
+                                {imgIndex === 0 &&
+                                imagePreviews[`imageSection_${index}_${imgKey}`] ? (
+                                  <Col
+                                    md={6}
+                                    key={imgIndex + 1}
+                                    style={{ marginTop: "5px", padding: "2px" }}
+                                  >
+                                    <div className="c-main_div img-dis">
+                                      <img
+                                        src={imagepath}
+                                        alt=""
+                                        className="c-mask-image"
+                                        style={{ border: "1px solid black" }}
+                                      />
+                                      <div
+                                        className="c-pattern-background-image-second"
+                                        style={{
+                                          backgroundImage: `url(${rowBackgrounds[`image_${index}`]?.value})`,
+                                        }}
+                                      ></div>
+                                      <p>{rowImageName[`image_${index}`]}</p>
+                                    </div>
+                                  </Col>
+                                ) : (
+                                  ""
+                                )}
+                              </>
+                            ))}
+                          </Row>
+                        </Col>
+                      </div>
+                    ))}
+                    <div className="mt-3">
+                      {resDriveUploadInternational?.isLoading ? (
+                        <Button className="btn btn-primary w-100 waves-effect waves-light " color="primary">
+                          <Spinner className="spinner-border-sm">
+                            Loading...
+                          </Spinner>
+                        </Button>
+                        ) :(
+                        <div className="d-flex justify-content-end">
+                          <Button
+                            color="primary"
+                            className="me-5"
+                            onClick={() =>
+                              append({
+                                firstimage: "",
+                                secondimage: "",
+                                thirdimage: "",
+                                forthimage: "",
+                              })
+                            }
+                          >
+                            <Plus size={14} />
+                            <span className="align-middle ms-25">Add Section</span>
+                          </Button>
+                          <Button
+                            type="submit"
+                            color="primary"
+                          >
+                            <span className="align-middle d-sm-inline-block d-none">
+                              Create PDF
+                            </span>
+                          </Button>
+                        </div>          
+                      )}
                     </div>
-                  ))}
-                  <div className="mt-3">
-                    <div className="d-flex justify-content-end">
-                      <Button
-                        color="primary"
-                        className="me-5"
-                        onClick={() =>
-                          append({
-                            firstimage: "",
-                            secondimage: "",
-                            thirdimage: "",
-                            forthimage: "",
-                          })
-                        }
-                      >
-                        <Plus size={14} />
-                        <span className="align-middle ms-25">Add Section</span>
-                      </Button>
-                      <Button
-                        type="submit"
-                        color="primary"
-                        disabled={viewButton}
-                        // onClick={handleGeneratePDF}
-                      >
-                        <span className="align-middle d-sm-inline-block d-none">
-                          Create PDF
-                        </span>
-                      </Button>
-                    </div>
+                    </Form>
                   </div>
-                  </Form>
                 </div>
-                
-                <div id="pdf"  className='w-100'>
-                            <div ref={componentRef} style={{ display: "none" }}>
-                                <div className="container-wrapper c-main-content">
-                                    <div className="container text-center">
-                                        <div className="row">
-                                            <div className="col">
-                                                <h1><img src={logo} alt='logo' width='20%'/></h1>
-                                                <h1 className='c-text-style'>Digital Print</h1>
-                                                <h2 className='c-text-style c-text-style-h2'>{title}</h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <span className='c-span_div-bott'></span>
-                                </div>
-                                {fields.map((field, index) => (
-                                    <div className="w-100 d-flex p-1">
-                                        <Col md={12} >
-                                        {(() => { temp = 0; return null; })()}
-                                            <Row key={field.id} className="justify-content-between align-items-center gy-1" style={{ marginTop: '2px', paddingLeft: '11px', paddingRight: '11px' }}>
-                                                {['firstimage', 'secondimage', 'thirdimage', 'forthimage'].map((imgKey, imgIndex) => (
-                                                    <>
-                                                        {imgIndex === 0 && imagePreviews[`${imgKey}_${index}`] ?
-                                                            <Col md={12} key={imgIndex + 1} style={{ marginTop: '6px', marginBottom: '8rem',padding: '2px' }}>
-                                                                <div className='text-center fs-1'>Design No: {imageNames[`firstimage.${index}`]}</div>
-                                                                <div className="c-main_div img-dis c-a_box_style-2">
-                                                                <div className='c-border_style-a c-single_border_style'><span>A</span></div>
-                                                                <div className='c-box-item-3' >
-                                                                    <div  style={{ border: '2px solid black' }}>
-                                                                        <img src={imagepath} alt='' class="c-mask-image" />
-                                                                        <div className="c-pattern-background-image c-pattern_back-ing" style={{
-                                                                            backgroundImage: `url(${rowBackgrounds[index]})`,
-                                                                        }}></div>
-                                                                    </div>
-                                                                    <div className='c-text_rotate-first'><div><span> 10 </span><span> INCHES  </span></div></div>
-                                                                </div>
-                                                                </div>
-                                                                <div className="c-text_rotate-bottom-first">7.5 INCHES</div>
-                                                            </Col> : ''}
-                                                        {imgIndex === 0 && imagePreviews[`${imgKey}_${index}`] && rowBackgrounds[index] ?
-                                                            <Col md={12} key={imgIndex} style={{ marginTop: '6px', marginBottom: '7rem', padding: '2px' }}>
-                                                                {imagePreviews[`${imgKey}_${index}`] && (
-                                                                    <>
-                                                                        <div className=' text-center fs-1 m-1'>Design No: {imageNames[`firstimage_${index}`]}</div>
-                                                                        <div className='img-dis c-a_box-style'>
-                                                                            <div className='c-border_style-a c-single_border_style'><span>A</span></div>
-                                                                            <div className='c-box-item-3 c-box_item-cover'>
-                                                                                <img src={rowBackgrounds[`${index}`]} alt={`Preview ${imgIndex + 1}`} style={{ width: '96%', border: '1px solid black' }} />
-                                                                                <div className='c-text_rotate-second'><div><span> 10 </span><span> INCHES  </span></div></div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </>
-                                                                )}
-                                                                <div class="c-text_rotate-bottom-second">7.5 INCHES</div>
-                                                            </Col>
-                                                             : ' '}
-                                                        {imgIndex === 0  && imagePreviews[`secondimage_${index}`] && <div className='text-center fs-1 m-1 mt-6'>Design No: {imageNames[`firstimage_${index}`]}</div>}
-                                                        {imagePreviews[`${imgKey}_${index}`] && (rowBackgrounds[`${index}`] !== imagePreviews[`${imgKey}_${index}`]) && (
-                                                            <>
-                                                                <Col md={12} key={imgIndex} style={{ marginTop: '1px', marginBottom: '1px', padding: '2px' }}>
-                                                                    <div className='img-dis c-box-item-3 c-box_item-3-cover'>
-                                                                        <div className='c-border_style-a'><span>{String.fromCharCode(66 + temp)}</span></div>
-                                                                        <img src={imagePreviews[`${imgKey}_${index}`]} alt={`Preview ${imgIndex + 1}`}/>
-                                                                        <div className='c-text_rotate'><div><span> 3.5 </span><span> INCHES  </span></div></div>
-                                                                    </div>
-                                                                </Col>
-                                                                {(() => { temp += 1; return null; })()}
-                                                            </>
-                                                        )}
-                                                    </>
-                                                ))}
-                                                {temp >= 1 && <div className="c-text_rotate-bottom" style={{marginBottom:getMarginButtom(temp)}}>7 INCHES</div>}
-                                            </Row>
-                                        </Col>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
               </div>
-              {viewButton && <PdfGeneratorLoader message={"PDF Uploading.."}/>}
             </div>
           </div>
         </div>
       </div>
     </div>
-          :
-          <Navigate to={"/dashboard"}/>
-          }
-        </>
+      :
+      <Navigate to={"/dashboard"}/>
+      }
+    </>
   );
 }
 

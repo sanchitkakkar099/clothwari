@@ -590,6 +590,8 @@ function AddDesign() {
       const fIndex = fields.findIndex(
         (fld) => fld?.color === context?.removedValue?.label
       );
+    console.log("fIndex",fIndex)
+      
       remove(fIndex);
       
     }

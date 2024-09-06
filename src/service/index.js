@@ -1213,11 +1213,35 @@ export const driveApi = createApi({
       }),
       providesTags: ["drive"],
     }),
+    uploadDomesticDrive: builder.mutation({
+      query: (payload) => ({
+        url: "market/drive/domestic/create",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["drive"],
+    }),
+    uploadInternationalDrive: builder.mutation({
+      query: (payload) => ({
+        url: "market/drive/international/create",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["drive"],
+    }),
     deleteDrive: builder.mutation({
       query: (id) => ({
         url: `market/drive/delete`,
         method: "POST",
         body: {id},
+      }),
+      invalidatesTags: ["drive"],
+    }),
+    deleteDriveUnsubmittedFile: builder.mutation({
+      query: (payload) => ({
+        url: `market/drive/delete/unsubmittedfile`,
+        method: "POST",
+        body: payload,
       }),
       invalidatesTags: ["drive"],
     }),
@@ -1236,6 +1260,9 @@ export const {
   useDriveByIdQuery,
   useCreateDriveMutation,
   useUploadCreateDriveMutation,
+  useUploadDomesticDriveMutation,
+  useUploadInternationalDriveMutation,
   useDeleteDriveMutation,
+  useDeleteDriveUnsubmittedFileMutation,
   useEditDriveMutation
 } = driveApi;
