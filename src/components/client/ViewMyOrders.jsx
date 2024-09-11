@@ -1,27 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {  Link, useLocation, useNavigate } from "react-router-dom";
-import { useApproveClientMutation, useMyAllOrdersMutation } from "../../service";
+import ReactDatePicker from "react-datepicker";
+import { CSVLink, CSVDownload } from "react-csv";
+import { useApproveClientMutation, useMyAllOrdersMutation, useMyAllOrdersReportMutation } from "../../service";
 import { CheckCircle, Edit, Eye, MoreVertical, XCircle } from "react-feather";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import Pagination from "../common/Pagination";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc"; 
+import useLoader from "../../hook/useLoader";
+import PdfGeneratorLoader from "../common/PdfGeneratorLoader";
+
+
+dayjs.extend(utc);
 
 
 function ViewMyOrders() {
+  const btnRef = useRef(null);
   const navigate = useNavigate()
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
 
   const [reqOrders, resOrders] = useMyAllOrdersMutation();
   const [reqApproveClient, resApproveClient] = useApproveClientMutation();
+  const [reqCSVDesign, resCSVDesign] = useMyAllOrdersReportMutation();
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [csvData, setCsvData] = useState([]);
+  const { isLoading, showLoader ,hideLoader } = useLoader();
 
   // pagination 
   const [TBLData, setTBLData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 9
   const [totalCount, setTotalCount] = useState(0)
-  console.log('TBLData',TBLData,totalCount);
+  // console.log('TBLData',TBLData,totalCount);
 
   // filter
   const [searchCustomerName, setSearchCustomerName] = useState('');
@@ -30,7 +45,7 @@ function ViewMyOrders() {
   const [searchSalesOrder, setSearchSalesOrder] = useState('');
 
   useEffect(() => {
-    if(searchCustomerName || searchMarketerName || searchSalesOrder || searchCustomerCode){
+    if(searchCustomerName || searchMarketerName || searchSalesOrder || searchCustomerCode || startDate || endDate){
       reqOrders({
         page: currentPage,
         limit: pageSize,
@@ -39,6 +54,9 @@ function ViewMyOrders() {
         marketingPersonName:searchMarketerName,
         salesOrderNumber:searchSalesOrder,
         customerCode:searchCustomerCode,
+        start_date: startDate && endDate ? dayjs(startDate).format() : "",
+        end_date: startDate && endDate ? dayjs(endDate).format() : "",
+
       });
     }else{
       reqOrders({
@@ -47,7 +65,7 @@ function ViewMyOrders() {
         // user_id:userInfo?.role !== 'Super Admin' ? userInfo?._id : "",
       });
     }
-  }, [currentPage,searchCustomerName,searchMarketerName,searchSalesOrder,searchCustomerCode]);
+  }, [currentPage,searchCustomerName,searchMarketerName,searchSalesOrder,searchCustomerCode,startDate,endDate]);
 
   useEffect(() => {
     if (resOrders?.isSuccess) {
@@ -55,6 +73,14 @@ function ViewMyOrders() {
       setTotalCount(resOrders?.data?.data?.total)
     }
   }, [resOrders]);
+
+  const handleDateFilter = (tag, date) => {
+    if (tag === "start") {
+      setStartDate(date);
+    } else {
+      setEndDate(date);
+    }
+  };
 
   const onViewAction = (e,el) => {
     e.preventDefault()
@@ -111,6 +137,52 @@ function ViewMyOrders() {
     }
   },[resApproveClient?.isSuccess,resApproveClient?.isError])
 
+  const handleDownloadCSV = async () => {
+    try {
+      showLoader()
+      const response = await reqCSVDesign({
+        start_date: startDate && endDate ? dayjs(startDate).format() : "",
+        end_date: startDate && endDate ? dayjs(endDate).format() : "",
+      });
+      
+      if (response?.data?.code === 200) {
+        const responseTBLData = response?.data?.data?.docs || [];
+
+        const csvDataTemp = [
+          [
+            "Customer Name",
+            "Customer Code",
+            "Marketing Person Name",
+            "Sales Order Number",
+            "Design Number"
+          ],
+        ];
+        if(Array.isArray(responseTBLData)){
+          responseTBLData?.forEach((data) => {
+          const designs = data?.cartItem?.map((tag) => tag?.designNo).join(", ");
+            csvDataTemp.push([
+              data?.customerName,
+              data?.customerCode,
+              data?.marketingPersonName,
+              data?.salesOrderNumber,
+              designs,
+            ]);
+          });
+        }else{
+          console.log("Error in array")
+        }
+        setCsvData(csvDataTemp);
+        setTimeout(() => {
+          btnRef.current.link.click();
+          hideLoader();
+        }, 1000);
+      }
+    } catch (error) {
+      hideLoader();
+      console.error("Error fetching CSV data:", error);
+    }
+  };
+
 
   return (
     <>
@@ -122,6 +194,47 @@ function ViewMyOrders() {
               <h4 className="mb-0">Orders</h4>
             </div>
           </div>
+        </div>
+        <div className="position-relative">
+          {userInfo?.role === "Super Admin" && (
+            <div className=" mt-2 d-flex align-items-baseline justify-content-end gap-5">
+              <ReactDatePicker
+                selected={startDate}
+                onChange={(date) =>
+                  handleDateFilter("start", date)
+                }
+                placeholderText="Select From Date"
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                />
+                <ReactDatePicker
+                selected={endDate}
+                onChange={(date) => handleDateFilter("end", date)}
+                placeholderText="Select To Date"
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                />
+                <button
+                  type="button"
+                  className="btn btn-success waves-effect waves-light mb-4 me-2"
+                  data-bs-toggle="modal"
+                  data-bs-target=".add-new-order"
+                  onClick={handleDownloadCSV}
+                >
+                  Download CSV
+                </button>
+                <CSVLink
+                  data={csvData}
+                  filename="data.csv"
+                  className="hidden"
+                  ref={btnRef}
+                  target="_blank"
+                />
+            </div>
+          )}
         </div>
         <div className="row">
         <div className="col-12">
@@ -155,6 +268,7 @@ function ViewMyOrders() {
                         <th>Customer Code</th>
                         <th>Marketing Person Name</th>
                         <th>Sales Order Number</th>
+                        <th>Design Number</th>
                         {userInfo?.role === "Super Admin" && <th>Approved By</th>}                        
                         {userInfo?.role === "Client" && <th>My Status</th>}
                         {(userInfo?.role === "Super Admin" || userInfo?.role === "SalesPerson") && <th>Client Status</th>}
@@ -182,6 +296,22 @@ function ViewMyOrders() {
                           <td>{ele?.customerCode}</td>
                           <td>{ele?.marketingPersonName}</td>
                           <td>{ele?.salesOrderNumber}</td>
+                          <td>
+                            {Array.isArray(ele?.cartItem) &&
+                              ele?.cartItem?.length > 0 ?
+                              ele?.cartItem?.map((cart) => {
+                                return (
+                                  <span
+                                  key={cart?._id}
+                                  className="tag"
+                                  >
+                                    {cart?.designNo}
+                                  </span>
+                                );
+                              }):
+                              ''
+                            }
+                          </td>
                           {userInfo?.role === "Super Admin" && <td>{ele?.reviewedBy?.name}</td>}
                           {(userInfo?.role === "Super Admin" || userInfo?.role === "Admin" || userInfo?.role === "Client" || userInfo?.role === "SalesPerson") && <td>{ele?.isClientApproved || "In Review"}</td>}
                           <td>{ele?.status !== "" ? ele?.status : "In Review"}</td>
@@ -255,7 +385,7 @@ function ViewMyOrders() {
       </div>
       </div>
     </div>
-  
+    {isLoading && <PdfGeneratorLoader message={"CSV Generating.."}/>}
     </>
   );
 }

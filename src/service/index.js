@@ -1052,6 +1052,14 @@ export const clientBagApi = createApi({
       }),
       providesTags: ["clientBag"],
     }),
+    myAllOrdersReport: builder.mutation({
+      query: (payload) => ({
+        url: "client/my/design/report",
+        method: "POST",
+        body: payload,
+      }),
+      providesTags: ["clientBag"],
+    }),
     notificationRead: builder.mutation({
       query: (payload) => ({
         url: "admin/read/notification",
@@ -1092,6 +1100,7 @@ export const {
  useMyBagListMutation,
  useMyBagCountingQuery,
  useMyAllOrdersMutation,
+ useMyAllOrdersReportMutation,
  useNotificationReadMutation,
  useClientEditByIdQuery,
  useOrderUpdateByMarketerMutation,
