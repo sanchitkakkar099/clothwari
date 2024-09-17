@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useApproveOrderMutation, useClientOrderByIdQuery } from "../../service";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import "./orderDetail.css";
 import dayjs from "dayjs"; // For date formatting
+import { CSVLink, CSVDownload } from "react-csv";
 import DatePicker from "react-datepicker"; // For date selection in search
 import "react-datepicker/dist/react-datepicker.css"; // Include datepicker CSS
 import { useSelector } from "react-redux";
@@ -17,6 +18,7 @@ function OrderDetials() {
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const resClientOrderById = useClientOrderByIdQuery({id:params?.id,role:userInfo?.role});
   const [data,setData] = useState([])
+  const [fileName, SetFileName] = useState('Default');
 
   const [reqApproveOrder, resApproveOrder] = useApproveOrderMutation();
 
@@ -26,6 +28,7 @@ function OrderDetials() {
 
   useEffect(() => {
     if(resClientOrderById?.isSuccess && resClientOrderById?.data){
+      SetFileName(resClientOrderById?.data?.data?.docs[0]?.customerName ? resClientOrderById?.data?.data?.docs[0]?.customerName : 'Default')
       setData(resClientOrderById?.data?.data?.docs?.map(el => el?.cartItem))
     }
   },[resClientOrderById?.isSuccess])
@@ -34,6 +37,7 @@ function OrderDetials() {
   // Define the columns for the table
   const headers = [
     { header: "Name", accessorKey: "name" },
+    { header: "Designer Name", accessorKey: "uploadedByDesign" },
     { header: "Design No.", accessorKey: "designNo" },
     { header: "Thumbnail", accessorKey: "thumbnail" },
     { header: "Quantity/Combo", accessorKey: "quantityPerCombo" },
@@ -52,7 +56,7 @@ function OrderDetials() {
   const [searchTerms, setSearchTerms] = useState(
     Array(headers.length).fill("")
   );
-  console.log('searchTerms',searchTerms);
+  // console.log('searchTerms',searchTerms);
   const [formattedData, setFormattedData] = useState([]);
   const [totalWidth, setTotalWidth] = useState(0);
 
@@ -146,6 +150,21 @@ function OrderDetials() {
       }
     }
   },[resApproveOrder?.isSuccess,resApproveOrder?.isError])
+
+  const handleDownloadCSV = () => {
+    const csvDataTemp = [
+      headers.map((header) => header.header),
+      ...formattedData
+        .filter((row) => filterRow(row, searchTerms, headers)) 
+        .map((row) => headers.map((header) => row[header.accessorKey])) 
+    ];
+  const csvLink = document.createElement('a');
+  csvLink.href = `data:text/csv;charset=utf-8,${encodeURI(
+    csvDataTemp.map((e) => e.join(',')).join('\n')
+  )}`;
+  csvLink.download = fileName;
+  csvLink.click();
+  };
   
   
 
@@ -178,9 +197,12 @@ function OrderDetials() {
             <div className="col-12">
               <div className="card">
                 <div className="card-body">
-                <div className="d-flex justify-content-end mb-4">
-            <button className="btn btn-primary" onClick={(e) => backToViewOrder(e)}>Back To View Order</button>
-            </div>
+                <div className="d-flex justify-content-end mb-4 gap-4">
+                  <button className="btn btn-primary" onClick={(e) => backToViewOrder(e)}>Back To View Order</button>
+                  {userInfo?.role === "Super Admin" && 
+                  <button className="btn btn-primary" onClick={handleDownloadCSV}>Download CSV</button>
+                  }
+                </div>
                 {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Order Approved/Rejected")) && (location?.state?.isClientApproved !== "Approved" && location?.state?.isClientApproved !== "Rejected") && 
                  location?.state?.from === "view-orders-request" &&
                   <>
@@ -197,9 +219,10 @@ function OrderDetials() {
                       <thead>
                         <tr className="search-row">
                           {headers.map((header, index) => {
-                            if (
-                              header.accessorKey.toLowerCase().includes("date")
-                            ) {
+                            const isDateFields = header.accessorKey.toLowerCase().includes("data");
+                            const isUploadedByDesigner = header.accessorKey === "uploadedByDesign";
+                            const isThumbnail = header.accessorKey === "thumbnail";
+                            if(isDateFields) {
                               return (
                                 <th key={index}>
                                   <DatePicker
@@ -218,27 +241,33 @@ function OrderDetials() {
                                   />
                                 </th>
                               );
-                            } else {
-                              return (
-                                (header.accessorKey === "thumbnail") ? <th key={index}/> :
-                                <th key={index}>
-                                  <input
-                                    type="text"
-                                    placeholder={`Search ${header.header}...`}
-                                    value={searchTerms[index]}
-                                    onChange={(e) =>
-                                      handleSearchChange(index, e)
-                                    }
-                                  />
-                                </th>
-                              );
                             }
+                            if(isThumbnail) {
+                              return <th key={index}/>;
+                            }
+                            if(isUploadedByDesigner && userInfo?.role !== "Super Admin") {
+                              return null;
+                            }
+                            return (
+                              <th key={index}>
+                                <input
+                                  type="text"
+                                  placeholder={`Search ${header.header}...`}
+                                  value={searchTerms[index]}
+                                  onChange={(e) => handleSearchChange(index, e)}
+                                />
+                              </th>
+                            );
                           })}
                         </tr>
                         <tr>
-                          {headers.map((header, index) => (
-                            <th key={index}>{header.header}</th>
-                          ))}
+                          {headers.map((header, index) => {
+                            const isUploadedByDesigner = header.accessorKey === "uploadedByDesign";
+                            if(isUploadedByDesigner && userInfo?.role !== "Super Admin") {
+                              return null;
+                            }
+                            return <th key={index}>{header.header}</th>
+                          })}
                         </tr>
                       </thead>
                       <tbody>
@@ -249,12 +278,21 @@ function OrderDetials() {
                               key={index}
                               className={index % 2 === 0 ? "striped" : ""}
                             >
-                              {headers.map((header, idx) => (
-                                header.accessorKey === "thumbnail" ?
-                                <td key={idx}>{row[header.accessorKey] ? <img src={row[header.accessorKey]} height={50} width={50} alt="design" /> : ""}</td>
-                                :
-                                <td key={idx}>{row[header.accessorKey]}</td>
-                              ))}
+                              {headers.map((header, idx) => {
+                                const isUploadedByDesigner = header.accessorKey === "uploadedByDesign";
+                                const isThumbnail = header.accessorKey === "thumbnail";
+                                if(isThumbnail) {
+                                  return <td key={idx}>{row[header.accessorKey] ? <img src={row[header.accessorKey]} height={50} width={50} alt="design" /> : ""}</td>;
+                                }
+                                if(isUploadedByDesigner && userInfo?.role !== "Super Admin") {
+                                  return null;
+                                }
+                                return  <td key={idx}>{row[header.accessorKey]}</td>;
+                                // header.accessorKey === "thumbnail" ?
+                                // <td key={idx}>{row[header.accessorKey] ? <img src={row[header.accessorKey]} height={50} width={50} alt="design" /> : ""}</td>
+                                // :
+                                // <td key={idx}>{row[header.accessorKey]}</td>
+                              })}
                             </tr>
                           ))}
                       </tbody>

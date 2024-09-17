@@ -268,7 +268,6 @@ function ViewMyOrders() {
                         <th>Customer Code</th>
                         <th>Marketing Person Name</th>
                         <th>Sales Order Number</th>
-                        <th>Design Number</th>
                         {userInfo?.role === "Super Admin" && <th>Approved By</th>}                        
                         {userInfo?.role === "Client" && <th>My Status</th>}
                         {(userInfo?.role === "Super Admin" || userInfo?.role === "SalesPerson") && <th>Client Status</th>}
@@ -296,22 +295,6 @@ function ViewMyOrders() {
                           <td>{ele?.customerCode}</td>
                           <td>{ele?.marketingPersonName}</td>
                           <td>{ele?.salesOrderNumber}</td>
-                          <td>
-                            {Array.isArray(ele?.cartItem) &&
-                              ele?.cartItem?.length > 0 ?
-                              ele?.cartItem?.map((cart) => {
-                                return (
-                                  <span
-                                  key={cart?._id}
-                                  className="tag"
-                                  >
-                                    {cart?.designNo}
-                                  </span>
-                                );
-                              }):
-                              ''
-                            }
-                          </td>
                           {userInfo?.role === "Super Admin" && <td>{ele?.reviewedBy?.name}</td>}
                           {(userInfo?.role === "Super Admin" || userInfo?.role === "Admin" || userInfo?.role === "Client" || userInfo?.role === "SalesPerson") && <td>{ele?.isClientApproved || "In Review"}</td>}
                           <td>{ele?.status !== "" ? ele?.status : "In Review"}</td>
