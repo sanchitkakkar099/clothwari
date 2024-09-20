@@ -14,6 +14,7 @@ import {
   Form,
   FormFeedback,
   Spinner,
+  FormGroup,
 } from "reactstrap";
 import "./mock.css";
 import { Plus, X } from "react-feather";
@@ -49,26 +50,19 @@ function domastic() {
     watch,
     reset,
   } = useForm({});
-  const designUploadList = useSelector(
-    (state) => state?.designUploadState.designUploadList
-  );
-
+  
   const { fields, append, remove } = useFieldArray({
     control,
     name: "imageSection",
   });
-  const [imagePreviews, setImagePreviews] = useState({});
-  const [id, setId] = useState("");
-  const [imageNames, setImageNames] = useState({});
-  const [selectedDesignNo, setSelectedDesignNo] = useState({});
-  const [rowBackgrounds, setRowBackgrounds] = useState({});
-  const [rowImageName, setRowImageName] = useState({});
-  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState({});
   const [searchDb, setDearchDb] = useState(null);
+  const [imageNames, setImageNames] = useState({});
   const [visibleDivs, setVisibleDivs] = useState({});
   const [productView, setProductView] = useState({});
-  const [options, setOptions] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState({});
+  const [hideSecondImage, setHideSecondImage] = useState([]);
+  const [selectedDesignNo, setSelectedDesignNo] = useState({});
 
   // pagination
   const [TBLData, setTBLData] = useState([]);
@@ -76,28 +70,12 @@ function domastic() {
   const pageSize = 9;
   const [totalCount, setTotalCount] = useState(0);
 
-  const debounceValue1 = useDebounce(watch("imageSection"), 500);
   const debounceSearch = useDebounce(searchDb, 500);
-
-  useEffect(() => {
-    const transformedData = debounceValue1?.map((item, index) => {
-      return Object.keys(item).reduce((accumulater, key) => {
-        if (item[key] && item[key]?.pdf_extract_img) {
-          accumulater.push({
-            label: item[key]?.designNo,
-            value: item[key]?.pdf_extract_img,
-          });
-        }
-        return accumulater;
-      }, []);
-    });
-    setOptions(transformedData);
-  }, [debounceValue1]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
       //   console.log("response data", resDesign?.data?.data?.docs);
-      dispatch(getDesignUpload(resDesign?.data?.data?.docs));
+      // dispatch(getDesignUpload(resDesign?.data?.data?.docs));
       setTBLData(resDesign?.data?.data?.docs);
       setTotalCount(resDesign?.data?.data?.totalDocs);
     }
@@ -112,9 +90,6 @@ function domastic() {
         [
           "firstimage",
           "secondimage",
-          "thirdimage",
-          "forthimage",
-          "fifthimage",
         ].map((imgKey) => {
           if (data[imgKey]) {
             const key = `imageSection_${index}_${imgKey}`;
@@ -140,20 +115,15 @@ function domastic() {
             }));
           }
         });
-        setRowImageName((prevState) => ({
-          ...prevState,
-          [`image_${index}`]:
-            resDriveById?.data?.data?.rowBackgroundsData?.[`image_${index}`]
-              ?.label,
-        }));
         setValue(
-          `image_${index}`,
-          resDriveById?.data?.data?.rowBackgroundsData?.[`image_${index}`]
+          `sectionType_${index}`,
+          data?.[`sectionType_${index}`]
         );
+        setHideSecondImage(prevState => ({
+          ...prevState, 
+          [index]: data?.[`sectionType_${index}`],
+        }));
       });
-      setId(resDriveById?.data?.data?._id);
-      setOptions(resDriveById?.data?.data?.rowBackgroundsData);
-      setRowBackgrounds(resDriveById?.data?.data?.rowBackgroundsData || {});
     }
   }, [resDriveById]);
 
@@ -181,6 +151,31 @@ function domastic() {
       search: debounceSearch || "",
     });
   }, [debounceSearch]);
+
+  const handleSelectSectionType = (e, name, label, index) => {
+    e.preventDefault();
+    const existingVal = getValues("imageSection")[index];
+    const variationCopys = getValues("imageSection");
+    if (label) {
+      const updatedFields = [...variationCopys];
+      if (existingVal) {
+        updatedFields[index] = {
+          ...existingVal,
+          [name]: label,
+          ...(label !== "Only Design View" && { secondimage: "" })
+        };
+        setValue(name,label)
+        setValue(`imageSection`, updatedFields);
+      }
+      setHideSecondImage((prevState) => ({
+        ...prevState,
+        [index]: label,
+      }))
+    }
+    if(label !== "Only Design View") { 
+      handleClearFields(index, ["secondimage"]);
+    }
+  }
 
   const handleSearch = (search, index) => {
     setSearch((prevState) => ({
@@ -304,17 +299,13 @@ function domastic() {
       ...prevState,
       [key]: data?.name,
     }));
-  };
-
-  const handleSelectedImage = (field, key) => {
-    if (!field?.value || !field?.label) return;
-    setRowBackgrounds((prev) => ({
-      ...prev,
-      [key]: field,
+    setImageNames((prevState) => ({
+      ...prevState,
+      [key]: data?.designNo,
     }));
-    setRowImageName((prev) => ({
-      ...prev,
-      [key]: field?.label,
+    setImagePreviews((prevState) => ({
+      ...prevState,
+      [key]: data?.thumbnail[0]?.pdf_extract_img,
     }));
   };
 
@@ -322,84 +313,7 @@ function domastic() {
     e.preventDefault();
     setValue(`image_${index}`, "");
     remove(index);
-    const newSerach = { ...search };
-    [
-      "firstimage",
-      "secondimage",
-      "thirdimage",
-      "forthimage",
-      "fifthimage",
-    ].forEach((imgKey) => {
-      delete newSerach[`imageSection_${index}_${imgKey}`];
-    });
-    const newImagePreviews = { ...imagePreviews };
-    [
-      "firstimage",
-      "secondimage",
-      "thirdimage",
-      "forthimage",
-      "fifthimage",
-    ].forEach((imgKey) => {
-      delete newImagePreviews[`imageSection_${index}_${imgKey}`];
-    });
-    const newImageNames = { ...imageNames };
-    [
-      "firstimage",
-      "secondimage",
-      "thirdimage",
-      "forthimage",
-      "fifthimage",
-    ].forEach((imgKey) => {
-      delete newImageNames[`imageSection_${index}_${imgKey}`];
-    });
-    const newDesignNumber = { ...selectedDesignNo };
-    [
-      "firstimage",
-      "secondimage",
-      "thirdimage",
-      "forthimage",
-      "fifthimage",
-    ].forEach((imgKey) => {
-      delete newDesignNumber[`imageSection_${index}_${imgKey}`];
-    });
-    const newProductView = { ...productView };
-    [
-      "firstimage",
-      "secondimage",
-      "thirdimage",
-      "forthimage",
-      "fifthimage",
-    ].forEach((imgKey) => {
-      delete newProductView[`imageSection_${index}_${imgKey}`];
-    });
-
-    const newVisibleDivs = { ...visibleDivs };
-    [
-      "firstimage",
-      "secondimage",
-      "thirdimage",
-      "forthimage",
-      "fifthimage",
-    ].forEach((imgKey) => {
-      delete newVisibleDivs[`imageSection_${index}_${imgKey}`];
-    });
-    const newRowBackgrounds = { ...rowBackgrounds };
-    delete newRowBackgrounds[`image_${index}`];
-    // Object.keys(newImagePreviews).forEach((key) => {
-    //   const [imgKey, imgIndex] = key.split(".");
-    //   if (parseInt(imgIndex) > index) {
-    //     const newIndex = parseInt(imgIndex) - 1;
-    //     newImagePreviews[`imageSection_${index}_${imgKey}`] = newImagePreviews[key];
-    //     delete newImagePreviews[key];
-    //   }
-    // });
-    setSearch(newSerach);
-    setVisibleDivs(newVisibleDivs);
-    setProductView(newProductView);
-    setSelectedDesignNo(newDesignNumber);
-    setImageNames(newImageNames);
-    setImagePreviews(newImagePreviews);
-    setRowBackgrounds(newRowBackgrounds);
+    handleClearFields(index, ["firstimage", "secondimage"]);
   };
 
   const handleRemoveSingle = (e, key, index, imgKey, fields) => {
@@ -443,21 +357,36 @@ function domastic() {
       delete newState[key];
       return newState;
     });
-    setRowBackgrounds((prevState) => {
-      const newState = { ...prevState };
-      delete newState[`image_${index}`];
-      return newState;
+  };
+  const handleClearFields = (index, imageKeys) => {
+    const clearFields = {
+      newSearch: { ...search },
+      newImagePreviews: { ...imagePreviews },
+      newImageNames: { ...imageNames },
+      newDesignNumber: { ...selectedDesignNo },
+      newProductView: { ...productView },
+      newVisibleDivs: { ...visibleDivs }
+    };
+  
+    imageKeys.forEach(imageKey => {
+      const fieldKey = `imageSection_${index}_${imageKey}`;
+      Object.keys(clearFields).forEach(key => {
+        delete clearFields[key][fieldKey]; 
+      });
     });
+  
+    setSearch(clearFields.newSearch);
+    setVisibleDivs(clearFields.newVisibleDivs);
+    setProductView(clearFields.newProductView);
+    setSelectedDesignNo(clearFields.newDesignNumber);
+    setImageNames(clearFields.newImageNames);
+    setImagePreviews(clearFields.newImagePreviews);
   };
 
   const handleUplodPdf = (state) => {
-    if (locationState?.isEdit) {
-      delete state?.rowBackgroundsData;
-    }
-    console.log("After state", state);
+    // console.log("After state", state);
     reqUploadDriveDomestic({
       ...state,
-      rowBackgroundsData: rowBackgrounds,
     });
   };
 
@@ -522,20 +451,53 @@ function domastic() {
                             </FormFeedback>
                           )}
                           {fields.map((field, index) => (
-                            <div
-                              key={field.id}
-                              className="border-bottom border-dark border-2 pb-1 w-100 d-flex"
-                            >
+                            <div key={field.id} className="border-bottom border-dark border-2 pb-1 w-100 d-flex">
                               <Col md={5}>
+                                <Row className="m-1">
+                                  {["Only Mock View", "Mock + Design View", "Only Design View"].map((label, secIndex) =>(
+                                    <Col key={secIndex} md={4}>
+                                      <FormGroup check>
+                                        <Controller
+                                          id={`sectionType-${secIndex}`}
+                                          name={`sectionType_${index}`}
+                                          control={control}
+                                          rules={{ required: "Fields is required" }}
+                                          render={({ field }) => (
+                                            <Input
+                                            type="checkbox"
+                                            placeholder="Input Title"
+                                            {...field}
+                                            checked={field.value === label}
+                                            onChange={(e) => handleSelectSectionType(
+                                              e,
+                                              `sectionType_${index}`,
+                                              label,
+                                              index
+                                            )}
+                                            />
+                                          )}
+                                        />
+                                        <Label check>
+                                          {label}
+                                        </Label>
+                                        </FormGroup>
+                                        {errors[`sectionType_${index}`] && (
+                                          <FormFeedback>
+                                            {errors[`sectionType_${index}`]?.message}
+                                          </FormFeedback>
+                                        )}
+                                    </Col>
+                                  ))} 
+                                </Row>
                                 <Row className="justify-content-between align-items-center">
-                                  {[
-                                    "firstimage",
-                                    "secondimage",
-                                    "thirdimage",
-                                    "forthimage",
-                                    "fifthimage",
-                                  ].map((imgKey, imgIndex) => (
-                                    <Col md={12} key={imgIndex}>
+                                  {["firstimage","secondimage"].map((imgKey, imgIndex) => {
+                                    if(imgKey == "secondimage" &&
+                                      (hideSecondImage[index] === "Mock + Design View" || hideSecondImage[index] === "Only Mock View")
+                                    ){
+                                      return null;
+                                    }
+                                    return (
+                                      <Col md={12} key={imgIndex}>
                                       <div className="form-inline mt-2">
                                         <div className="search-box">
                                           <div className="position-relative">
@@ -550,33 +512,24 @@ function domastic() {
                                                 )
                                               }
                                               className="form-control "
-                                              placeholder={`Search Image ${
-                                                imgIndex + 1
-                                              }`}
-                                              // value={search}
+                                              placeholder={`Search Image ${imgIndex + 1}`}
+                                              value={search[`imageSection_${index}_${imgKey}`]}
                                             />
                                             <i className="bx bx-search search-icon"></i>
                                           </div>
                                         </div>
                                       </div>
-                                      {search[
-                                        `imageSection_${index}_${imgKey}`
-                                      ] &&
-                                        (visibleDivs[
-                                          `imageSection_${index}_${imgKey}`
-                                        ] === "search_all_data" ? (
+                                      {search[`imageSection_${index}_${imgKey}`] &&
+                                        (visibleDivs[`imageSection_${index}_${imgKey}`] === "search_all_data" ? (
                                           <div className="c-search-data mt-2 mb-2">
                                             <div className="row">
-                                              {designUploadList &&
-                                              Array.isArray(designUploadList) &&
-                                              designUploadList?.length > 0 ? (
-                                                designUploadList?.map(
+                                              {TBLData &&
+                                              Array.isArray(TBLData) &&
+                                              TBLData?.length > 0 ? (
+                                                TBLData?.map(
                                                   (el, i) => {
                                                     return (
-                                                      <div
-                                                        className="col-xl-11 col-sm-6 d-flex custom-hover"
-                                                        key={i}
-                                                      >
+                                                      <div className="col-xl-11 col-sm-6 d-flex custom-hover" key={i}>
                                                         <Link
                                                           to={""}
                                                           onClick={(e) =>
@@ -623,25 +576,16 @@ function domastic() {
                                               </div>
                                               <div className="post-description">
                                                 <h4>
-                                                  {
-                                                    selectedDesignNo[
-                                                      `imageSection_${index}_${imgKey}`
-                                                    ]
-                                                  }
+                                                  {selectedDesignNo[`imageSection_${index}_${imgKey}`]}
                                                 </h4>
                                               </div>
                                               <div className="stats">
-                                                {productView[
-                                                  `imageSection_${index}_${imgKey}`
-                                                ]?.primary_color_code && (
+                                                {productView[`imageSection_${index}_${imgKey}`]?.primary_color_code && (
                                                   <Link
                                                     to=""
                                                     className="stat-item"
                                                     style={{
-                                                      backgroundColor:
-                                                        productView[
-                                                          `imageSection${index}_${imgKey}`
-                                                        ]?.primary_color_code,
+                                                      backgroundColor:productView[`imageSection_${index}_${imgKey}`]?.primary_color_code,
                                                       fontSize: "18px",
                                                       width: "17px",
                                                       height: "17px",
@@ -652,9 +596,7 @@ function domastic() {
                                                     onClick={(e) =>
                                                       handleChangePrimary(
                                                         e,
-                                                        productView[
-                                                          `imageSection_${index}_${imgKey}`
-                                                        ],
+                                                        productView[`imageSection_${index}_${imgKey}`],
                                                         `imageSection_${index}_${imgKey}`,
                                                         index,
                                                         imgKey,
@@ -665,20 +607,12 @@ function domastic() {
                                                     <span className="" />
                                                   </Link>
                                                 )}
-                                                {productView[
-                                                  `imageSection_${index}_${imgKey}`
-                                                ]?.color &&
+                                                {productView[`imageSection_${index}_${imgKey}`]?.color &&
                                                   Array.isArray(
-                                                    productView[
-                                                      `imageSection_${index}_${imgKey}`
-                                                    ]?.color
+                                                    productView[`imageSection_${index}_${imgKey}`]?.color
                                                   ) &&
-                                                  productView[
-                                                    `imageSection_${index}_${imgKey}`
-                                                  ]?.color?.length > 0 &&
-                                                  productView[
-                                                    `imageSection_${index}_${imgKey}`
-                                                  ]?.color?.map((cl, cinx) => {
+                                                  productView[`imageSection_${index}_${imgKey}`]?.color?.length > 0 &&
+                                                  productView[`imageSection_${index}_${imgKey}`]?.color?.map((cl, cinx) => {
                                                     return (
                                                       <Link
                                                         to=""
@@ -714,41 +648,8 @@ function domastic() {
                                           </div>
                                         ))}
                                     </Col>
-                                  ))}
-                                  <Col md="12" sm="12" className="mb-1">
-                                    <Label for="role">Image Select</Label>
-                                    <Controller
-                                      id={`image_${index}`}
-                                      name={`image_${index}`}
-                                      control={control}
-                                      rules={{
-                                        required: "This field is required",
-                                      }}
-                                      render={({
-                                        field: { onChange, value },
-                                      }) => (
-                                        <Select
-                                          isClearable
-                                          options={options[index]}
-                                          className="react-select"
-                                          classNamePrefix="select"
-                                          onChange={(selectedOption) => {
-                                            onChange(selectedOption);
-                                            handleSelectedImage(
-                                              selectedOption,
-                                              `image_${index}`
-                                            );
-                                          }}
-                                          value={value ? value : null}
-                                        />
-                                      )}
-                                    />
-                                    {errors[`image_${index}`] && (
-                                      <FormFeedback>
-                                        {errors[`image_${index}`]?.message}
-                                      </FormFeedback>
-                                    )}
-                                  </Col>
+                                    )
+                                  })}
                                   {fields.length === index+1 && (
                                     <Col md={12} className="md-0 mt-2 mb-2 d-flex justify-content-end" >
                                       <Button className="btn-icon" color="danger" outline onClick={(e) => handleRemove(e,index)} >
@@ -767,121 +668,87 @@ function domastic() {
                                   paddingTop: "1rem",
                                 }}
                               >
-                                <Row
-                                  key={field.id}
-                                  className="justify-content-between align-items-center gy-1"
-                                >
-                                  {[
-                                    "firstimage",
-                                    "secondimage",
-                                    "thirdimage",
-                                    "forthimage",
-                                    "fifthimage",
-                                  ].map((imgKey, imgIndex) => (
-                                    <>
-                                      <Col
-                                        md={6}
-                                        key={imgIndex}
-                                        style={{
-                                          marginTop: "0px",
-                                          padding: "2px",
-                                        }}
-                                      >
+                                <Row key={field.id}className="justify-content-between align-items-center gy-1">
+                                  {["firstimage","secondimage"].map((imgKey, imgIndex) => {
+                                    if(imgKey == "secondimage" &&
+                                      (hideSecondImage[index] === "Mock + Design View" || hideSecondImage[index] === "Only Mock View")
+                                    ){
+                                      return null;
+                                    }
+                                    return (
+                                      <>
+                                      {hideSecondImage[index] !== "Only Mock View" && imagePreviews[`imageSection_${index}_${imgKey}`] && (
+                                      <Col md={6} key={imgIndex}style={{ marginTop: "0px", padding: "2px"}}>
                                         <div>
-                                          {imagePreviews[
-                                            `imageSection_${index}_${imgKey}`
-                                          ] && (
                                             <div className="img-dis">
-                                              <img
-                                                src={
-                                                  imagePreviews[
-                                                    `imageSection_${index}_${imgKey}`
-                                                  ]
-                                                }
-                                                alt={`Preview ${imgIndex + 1}`}
+                                              <img src={imagePreviews[`imageSection_${index}_${imgKey}`]} alt={`Preview ${imgIndex + 1}`}
                                                 style={{
                                                   width: "100%",
                                                   border: "1px solid black",
                                                 }}
                                               />
-                                              <p>
-                                                {
-                                                  imageNames[
-                                                    `imageSection_${index}_${imgKey}`
-                                                  ]
-                                                }
-                                              </p>
+                                              <p>{imageNames[`imageSection_${index}_${imgKey}`]}</p>
                                             </div>
-                                          )}
                                         </div>
                                       </Col>
-                                      {imgIndex === 0 &&
-                                      imagePreviews[
-                                        `imageSection_${index}_${imgKey}`
-                                      ] ? (
-                                        <Col
-                                          md={6}
-                                          key={imgIndex + 1}
-                                          style={{
-                                            marginTop: "5px",
-                                            padding: "2px",
-                                          }}
-                                        >
+                                      )}
+                                      {hideSecondImage[index] === "Mock + Design View"  &&
+                                      imagePreviews[`imageSection_${index}_${imgKey}`] ? (
+                                        <Col md={6} key={imgIndex + 1} style={{ marginTop: "5px", padding: "2px"}}>
                                           <div className="c-main_div img-dis">
-                                            <img
-                                              src={imagepath}
-                                              alt=""
-                                              className="c-mask-image"
-                                              style={{
-                                                border: "1px solid black",
-                                              }}
-                                            />
+                                            <img src={imagepath} alt="" className="c-mask-image" style={{ border: "1px solid black"}}/>
                                             <div
                                               className="c-pattern-background-image-second"
                                               style={{
-                                                backgroundImage: `url(${
-                                                  rowBackgrounds[
-                                                    `image_${index}`
-                                                  ]?.value
-                                                })`,
+                                                backgroundImage: `url(${imagePreviews[`imageSection_${index}_${imgKey}`]})`,
                                               }}
                                             ></div>
-                                            <p>
-                                              {rowImageName[`image_${index}`]}
-                                            </p>
+                                            <p>{imageNames[`imageSection_${index}_${imgKey}`]}</p>
+                                          </div>
+                                        </Col>
+                                      ) : (
+                                        ""
+                                      )}
+                                      {hideSecondImage[index] === "Only Mock View" &&
+                                      imagePreviews[`imageSection_${index}_${imgKey}`] ? (
+                                        <Col md={6} key={imgIndex + 1} style={{ marginTop: "5px", padding: "2px"}}>
+                                          <div className="c-main_div img-dis">
+                                            <img src={imagepath} alt="" className="c-mask-image" style={{ border: "1px solid black"}}/>
+                                            <div
+                                              className="c-pattern-background-image-second"
+                                              style={{
+                                                backgroundImage: `url(${imagePreviews[`imageSection_${index}_${imgKey}`]})`,
+                                              }}
+                                            ></div>
+                                            <p>{imageNames[`imageSection_${index}_${imgKey}`]}</p>
                                           </div>
                                         </Col>
                                       ) : (
                                         ""
                                       )}
                                     </>
-                                  ))}
+                                    )
+                                  })}
                                 </Row>
                               </Col>
                             </div>
                           ))}
                           <div className="mt-3">
                             {resDriveUploadDomestic?.isLoading ? (
-                              <Button
-                                className="btn btn-primary w-100 waves-effect waves-light "
-                                color="primary"
-                              >
+                              <Button className="btn btn-primary w-100 waves-effect waves-light " color="primary">
                                 <Spinner className="spinner-border-sm">
                                   Loading...
                                 </Spinner>
                               </Button>
                             ) : (
-                              <div className="d-flex justify-content-end">
+                              <div className="d-flex justify-content-end gap-4">
                                 <Button
                                   color="primary"
-                                  className="me-5"
+                                  className=""
                                   onClick={() =>
                                     append({
-                                      firstimage: "",
-                                      secondimage: "",
-                                      thirdimage: "",
-                                      forthimage: "",
-                                      fifthimage: "",
+                                      "firstimage":"",
+                                      "secondimage": "",
                                     })
                                   }
                                 >
@@ -891,7 +758,7 @@ function domastic() {
                                   </span>
                                 </Button>
                                 <Button type="submit" color="primary">
-                                  <span className="align-middle d-sm-inline-block d-none">
+                                  <span className="align-middle d-sm-inline-block">
                                     Create PDF
                                   </span>
                                 </Button>
