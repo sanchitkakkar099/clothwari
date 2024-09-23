@@ -154,19 +154,26 @@ function ViewMyOrders() {
             "Customer Code",
             "Marketing Person Name",
             "Sales Order Number",
-            "Design Number"
+            "Design Number",
+            "Designer Name"
           ],
         ];
         if(Array.isArray(responseTBLData)){
           responseTBLData?.forEach((data) => {
-          const designs = data?.cartItem?.map((tag) => tag?.designNo).join(", ");
-            csvDataTemp.push([
-              data?.customerName,
-              data?.customerCode,
-              data?.marketingPersonName,
-              data?.salesOrderNumber,
-              designs,
-            ]);
+            const designs = data?.cartItem?.map((tag) => {
+              return [
+                data?.customerName,
+                data?.customerCode,
+                data?.marketingPersonName,
+                data?.salesOrderNumber,
+                tag?.designNo,
+                tag?.uploadedByDesign
+              ];
+            });
+            
+            designs.forEach((design) => {
+              csvDataTemp.push(design);
+            });
           });
         }else{
           console.log("Error in array")
@@ -228,7 +235,7 @@ function ViewMyOrders() {
                 </button>
                 <CSVLink
                   data={csvData}
-                  filename="data.csv"
+                  filename="clothwari_order_details.csv"
                   className="hidden"
                   ref={btnRef}
                   target="_blank"
