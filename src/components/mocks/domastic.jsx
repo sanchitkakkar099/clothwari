@@ -18,7 +18,6 @@ import {
 } from "reactstrap";
 import "./mock.css";
 import { Plus, X } from "react-feather";
-import Select from "react-select";
 import {
   useDesignUploadListMutation,
   useDriveByIdQuery,
