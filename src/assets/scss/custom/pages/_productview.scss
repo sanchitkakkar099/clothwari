@@ -67,6 +67,7 @@ margin-bottom: 2px;
 .product_details .stats {
 margin: 10px;
 display: flex;
+flex-flow: wrap;
 }
 .product_details .stats .stat-item {
 display: inline-block;
