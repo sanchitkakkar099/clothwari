@@ -5,7 +5,7 @@ import { useNavigate,Link, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useDesignUploadApprovalListMutation, useDesignUploadListMutation, useMultipleFileUploadMutation } from "../../service";
 import { getDesignUploadApproval } from "../../redux/designUploadSlice";
-import { getCurrentPage } from "../../redux/designApprovalSlice";
+import { getCurrentPage, getEditedReqBy } from "../../redux/designApprovalSlice";
 import toast from "react-hot-toast";
 import { ChevronDown, ChevronUp, Download, Edit, Eye, Image, MoreVertical, Trash } from "react-feather";
 import { Button, DropdownItem, DropdownMenu, DropdownToggle, Input, UncontrolledDropdown } from "reactstrap";
@@ -24,6 +24,7 @@ function DesignApprovalList() {
   const dispatch = useDispatch()
   const userInfo = useSelector((state) => state?.authState.userInfo)
   const latestCurrentPage = useSelector((state) => state?.designApprovalState?.currentPage);
+  const editReqBy = useSelector((state) => state?.designApprovalState?.editedReqBy);
   // const [reqDesign,resDesign] = useDesignUploadListMutation()
   const [reqDesign,resDesign] = useDesignUploadApprovalListMutation()
   const designUploadList = useSelector((state) => state?.designUploadState.getDesignUploadApprovalList)
@@ -36,11 +37,10 @@ function DesignApprovalList() {
   const [currentPage, setCurrentPage] = useState(latestCurrentPage)
   const pageSize = 10
   const [totalCount, setTotalCount] = useState(0)
-
   // filter
   const [filterName, setFilterName] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [filterUploadedBy, setFilterUploadedBy] = useState('');
+  const [filterUploadedBy, setFilterUploadedBy] = useState(editReqBy);
   const [displayFields, setDisplayFields] = useState({})
   const [displayVariations, setDisplayVariations] = useState([])
 
@@ -71,7 +71,7 @@ function DesignApprovalList() {
       // dispatch(getDesignUploadApproval(resDesign?.data?.data?.docs));
       setTBLEditData(resDesign?.data?.data?.editDesign?.docs);
       setTBLData(resDesign?.data?.data?.Design);
-      setTotalCount(resDesign?.data?.data?.editDesign?.totalDocs)
+      setTotalCount(resDesign?.data?.data?.editDesign?.totalDocs ? resDesign?.data?.data?.editDesign?.totalDocs : resDesign?.data?.data?.totalDocs)
       if(sortConfig?.key && sortConfig?.direction){
         setSortConfig({ key:sortConfig?.key, direction:sortConfig?.direction });
       }
@@ -256,6 +256,7 @@ function DesignApprovalList() {
 
   const handleUploadedByFilter = (e) => {
     setFilterUploadedBy(e.target.value)
+    dispatch(getEditedReqBy(e.target.value));
   }
 
   const handleDateFilter = (tag, date) => {
@@ -393,7 +394,6 @@ function DesignApprovalList() {
                       setCurrentPage(page)}
                     }
                     TBLData={TBLEditData}
-                    setCurrentPage={setCurrentPage}
                   />
               </div>
             </div>

@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initState = {
-    currentPage:1
+    currentPage:1,
+    editedReqBy:''
 };
 
 export const designApprovalSlice = createSlice({
@@ -10,12 +11,16 @@ export const designApprovalSlice = createSlice({
   reducers: {
     getCurrentPage: (state, { payload }) => {
       state.currentPage = payload;
+    },
+    getEditedReqBy: (state, { payload }) => {
+      state.editedReqBy = payload;
     }
   },
 });
 
 export const {
-    getCurrentPage
+    getCurrentPage,
+    getEditedReqBy
 } = designApprovalSlice.actions;
 
 export default designApprovalSlice.reducer;
