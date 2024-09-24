@@ -155,7 +155,8 @@ function ViewMyOrders() {
             "Marketing Person Name",
             "Sales Order Number",
             "Design Number",
-            "Designer Name"
+            "Designer Name",
+            "Quantity"
           ],
         ];
         if(Array.isArray(responseTBLData)){
@@ -167,7 +168,8 @@ function ViewMyOrders() {
                 data?.marketingPersonName,
                 data?.salesOrderNumber,
                 tag?.designNo,
-                tag?.uploadedByDesign
+                tag?.uploadedByDesign,
+                tag?.quantityPerCombo
               ];
             });
             
