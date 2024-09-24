@@ -107,6 +107,7 @@
     border-radius: 40%;
     transition: background-color 0.3s ease;
     cursor: pointer;
+    height: fit-content;
 }
   
   .c-text_rotate-first div{
