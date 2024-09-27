@@ -71,7 +71,7 @@ function DesignApprovalList() {
       // dispatch(getDesignUploadApproval(resDesign?.data?.data?.docs));
       setTBLEditData(resDesign?.data?.data?.editDesign?.docs);
       setTBLData(resDesign?.data?.data?.Design);
-      setTotalCount(resDesign?.data?.data?.editDesign?.totalDocs ? resDesign?.data?.data?.editDesign?.totalDocs : resDesign?.data?.data?.totalDocs)
+      setTotalCount(resDesign?.data?.data?.editDesign?.totalDocs )
       if(sortConfig?.key && sortConfig?.direction){
         setSortConfig({ key:sortConfig?.key, direction:sortConfig?.direction });
       }
