@@ -181,7 +181,8 @@ function international() {
     e.preventDefault()
     const object = {
       "pdf_extract_img": data?.thumbnail[0]?.pdf_extract_img,
-      "designNo": data?.designNo
+      "designNo": data?.designNo,
+      "designName": data?.name
     }
     const existingVal = getValues("imageSection")[index];
     const variationCopys = getValues("imageSection");
@@ -235,7 +236,8 @@ function international() {
       if (variationObj?.variation_thumbnail[0]?.pdf_extract_img) {
         const object = {
           "pdf_extract_img": variationObj?.variation_thumbnail[0]?.pdf_extract_img,
-          "designNo": variationObj?.variation_designNo
+          "designNo": variationObj?.variation_designNo,
+          "designName": variationObj?.variation_name
         }
         if(object){
           const updatedFields = [...variationCopys];
@@ -267,7 +269,8 @@ function international() {
     e.preventDefault();
     const object = {
       "pdf_extract_img": data?.thumbnail[0]?.pdf_extract_img,
-      "designNo": data?.designNo
+      "designNo": data?.designNo,
+      "designName": data?.name
     }
     const existingVal = getValues("imageSection")[index];
     const variationCopys = getValues("imageSection");
