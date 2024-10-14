@@ -1173,7 +1173,7 @@ function AddDesign() {
                                   value={value ? value : null}
                                   onKeyDown={(e) => {
                                     if (e.key === 'Backspace' || e.key === 'Delete') {
-                                      e.stopPropagation();  
+                                      e.preventDefault();  
                                     }
                                   }}                                                                  
                                 />
