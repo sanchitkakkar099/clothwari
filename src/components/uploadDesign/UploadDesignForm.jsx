@@ -929,11 +929,7 @@ function AddDesign() {
                             id="image"
                             name="image"
                             control={control}
-                            rules={(locationState?.isEdit &&
-                              userInfo?.permissions?.some(
-                                (el) =>
-                                  el === "Uploaded Design Replace"
-                              )) ? { required: "field is required" } : {}}
+                            rules={{ required: "field is required" }}
                             render={({ field: { onChange, value } }) => (
                               <Input
                                 multiple
@@ -1018,11 +1014,7 @@ function AddDesign() {
                             id="thumbnail"
                             name="thumbnail"
                             control={control}
-                            rules={(locationState?.isEdit &&
-                              userInfo?.permissions?.some(
-                                (el) =>
-                                  el === "Uploaded Design Replace"
-                              )) ? { required: "field is required" } : {}}
+                            rules={{ required: "field is required" }}
                             render={({ field: { onChange, value } }) => (
                               <Input
                                 multiple
@@ -1287,11 +1279,7 @@ function AddDesign() {
                                     id={`variations.${finx}.variation_image`}
                                     name={`variations.${finx}.variation_image`}
                                     control={control}
-                                    rules={(locationState?.isEdit &&
-                                      userInfo?.permissions?.some(
-                                        (el) =>
-                                          el === "Uploaded Design Replace"
-                                      )) ? { required: "field is required" } : {}}
+                                    rules={{ required: "field is required" }}
                                     render={({
                                       field: { onChange, value },
                                     }) => (
@@ -1422,11 +1410,7 @@ function AddDesign() {
                                     id={`variations.${finx}.variation_thumbnail`}
                                     name={`variations.${finx}.variation_thumbnail`}
                                     control={control}
-                                    rules={(locationState?.isEdit &&
-                                      userInfo?.permissions?.some(
-                                        (el) =>
-                                          el === "Uploaded Design Replace"
-                                      )) ? { required: "field is required" } : {}}
+                                    rules={{ required: "field is required" }}
                                     render={({
                                       field: { onChange, value },
                                     }) => (
