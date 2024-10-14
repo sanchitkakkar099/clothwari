@@ -28,7 +28,10 @@ import { getSalesPerson } from "../../redux/salesPersonSlice";
 import { getCurrentPage, getDrive } from "../../redux/driveSlice";
 import PDFICON from "../../assets/images/pdf_icon.svg";
 import Pagination from "../common/Pagination";
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc'; 
 const cookies = new Cookies();
+dayjs.extend(utc);
 
 function DriveList() {
   const dispatch = useDispatch();
@@ -261,14 +264,15 @@ function DriveList() {
                         <th>PDF</th>
                         <th>Name</th>
                         <th>Uploaded By</th>
+                        <th>Created At</th>
                         <th>Action</th>
                       </tr>
                       <tr>
                         <td></td>
                         <td><input type="text" value={filterName} onChange={(e) => handleNameFilter(e)}/> </td>
                         <td><input type="text" value={filterUploadedBy} onChange={(e) => handleUploadedByFilter(e)}/></td>
+                        <td>MM/DD/YYYY</td>
                         <td></td>
-
                       </tr>
                     </thead>
                     <tbody>
@@ -279,6 +283,7 @@ function DriveList() {
                           <td><img src={PDFICON} alt="PDFICON" height={30} width={30}/></td>
                           <td>{ele?.pdfName}</td>
                           <td>{ele?.userId?.name}</td>
+                          <td>{ele?.createdAt ? dayjs.utc(ele?.createdAt).format("MM/DD/YYYY") : ""}</td>
                           <td>
                           {(userInfo?.role === 'Super Admin' || userInfo?.role === 'Client' || userInfo?.permissions?.some(el => el === "Drive") || (userInfo?.role === "SalesPerson" && userInfo?.permissions?.includes("Download PDF")))  ?
                               <UncontrolledDropdown>
