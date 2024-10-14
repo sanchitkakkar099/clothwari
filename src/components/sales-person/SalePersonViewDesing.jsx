@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   useCategoryDropdownListQuery,
   useDesignUploadListMutation,
@@ -21,6 +21,7 @@ import { setSelectedStaffList } from "../../redux/adminSlice";
 import { setSelectedCategoryList } from "../../redux/categorySlice";
 import { Input } from "reactstrap";
 import MultiSelect from "../common/MultiSelect";
+import "../../components/uploadDesign/dropdown-filter.css";
 import { getCurrentPage } from "../../redux/salesPersonSlice";
 // Extend Day.js with the plugins
 dayjs.extend(utc);
@@ -28,6 +29,7 @@ dayjs.extend(utc);
 
 function SalesPersonViewDesign() {
   const dispatch = useDispatch();
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const userInfo = useSelector((state) => state?.authState.userInfo);
@@ -60,6 +62,8 @@ function SalesPersonViewDesign() {
   const [categoryDropdown, setCategoryDropdown] = useState([]);
   const [staffDropdown,setStaffDropdown] = useState([])
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMultiTagSearch, setIsMultiTagSearch] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [search, setSearch] = useState("");
   const [searchPage, setSearchPage] = useState("");
@@ -97,13 +101,26 @@ function SalesPersonViewDesign() {
   useEffect(() => {
     setCategorySearch(selectedCategoryList);
   },[selectedCategoryList]);
-      
 
   useEffect(() => {
-    if (search || startDate || tagsSearch || categorySearch || selectedStaff) {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);   
+
+  useEffect(() => {
+    if (search || startDate || tagsSearch || categorySearch || selectedStaff || isMultiTagSearch) {
       reqDesign({
         page: currentPage,
         limit: pageSize,
+        isMultiTagSearch:isMultiTagSearch,
         search: search,
         date_filter: startDate ? dayjs(startDate).format() : "",
         tags: tagsSearch,
@@ -116,6 +133,7 @@ function SalesPersonViewDesign() {
       reqDesign({
         page: currentPage,
         limit: pageSize,
+        isMultiTagSearch:isMultiTagSearch,
         search: "",
         date_filter: "",
         tags: [],
@@ -123,7 +141,7 @@ function SalesPersonViewDesign() {
         category: [],
       });
     }
-  }, [currentPage, search, startDate, tagsSearch, selectedStaff, categorySearch]);
+  }, [currentPage, search, startDate, tagsSearch, selectedStaff, categorySearch, isMultiTagSearch]);
 
   useEffect(() => {
     if (resDesign?.isSuccess) {
@@ -157,6 +175,7 @@ function SalesPersonViewDesign() {
     reqDesign({
       page: currentPage,
       limit: pageSize,
+      isMultiTagSearch:isMultiTagSearch,
       search: search,
       date_filter: startDate ? dayjs(startDate).format() : "",
       tags: tagsSearch,
@@ -173,6 +192,7 @@ function SalesPersonViewDesign() {
     reqDesign({
       page: pageNumber,
       limit: pageSize,
+      isMultiTagSearch:isMultiTagSearch,
       search: search,
       date_filter: startDate ? dayjs(startDate).format() : "",
       tags: tagsSearch,
@@ -216,6 +236,7 @@ function SalesPersonViewDesign() {
     reqDesign({
       page: currentPage,
       limit: pageSize,
+      isMultiTagSearch:isMultiTagSearch,
       search: search,
       date_filter: dayjs(date).format(),
       category: Array.isArray(categorySearch)
@@ -258,6 +279,7 @@ function SalesPersonViewDesign() {
     reqDesign({
       page: currentPage,
       limit: pageSize,
+      isMultiTagSearch:isMultiTagSearch,
       search: search,
       date_filter: dayjs(startDate).format(),
       tags: selected,
@@ -282,6 +304,7 @@ function SalesPersonViewDesign() {
     reqDesign({
       page: currentPage,
       limit: pageSize,
+      isMultiTagSearch:isMultiTagSearch,
       search: search,
       date_filter: dayjs(startDate).format(),
       uploadedBy:Array.isArray(selectedStaff) ? selectedStaff?.map(el => el?.value) : [],
@@ -289,6 +312,10 @@ function SalesPersonViewDesign() {
         ? categorySearch?.map((el) => el?.value)
         : [],
     });
+  };
+
+  const handleSorting = (e) => {
+    setIsMultiTagSearch(!isMultiTagSearch);
   };
 
   return (
@@ -393,6 +420,44 @@ function SalesPersonViewDesign() {
                             onChange={handleTagSelection}
                             selected={tagsSearch}
                           />
+                          <div className="position-absolute" style={{top: '24%', right: '3%'}} >
+                            <div className="filter-dropdown" ref={dropdownRef}>
+                              <span onClick={() => setIsOpen(!isOpen)}>
+                                {" "}
+                                <i className="mdi mdi-filter me-1"></i> 
+                              </span>
+                              {isOpen && (
+                                <div
+                                  className="filter-dropdown-content"
+                                  id="dropdownContent"
+                                >
+                                  <div className="filter-section">
+                                    <h4>Order</h4>
+                                      <label className="option">
+                                        <input
+                                          type="radio"
+                                          name="sorting"
+                                          value={"single"}
+                                          checked={!isMultiTagSearch}
+                                          onChange={(e) => handleSorting(e)}
+                                        />{" "}
+                                          Single tag by Search
+                                        </label>
+                                        <label className="option">
+                                          <input
+                                            type="radio"
+                                            name="sorting"
+                                            value={"multiple"}
+                                            checked={isMultiTagSearch}
+                                            onChange={(e) => handleSorting(e)}
+                                          />{" "}
+                                          Multiple tags by Search
+                                        </label>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                         </div>
                       </div>
                     </div>
