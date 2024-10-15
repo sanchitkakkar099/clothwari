@@ -71,7 +71,7 @@ function ClientCart() {
         ...resCartById?.data?.data,
         marketingPersonName:userInfo?.role === "SalesPerson" ? userInfo?.name : {label:resCartById?.data?.data?.marketingPersonName,value:resCartById?.data?.data?.marketerId},
         marketerId:userInfo?.role === "SalesPerson" ? userInfo?._id : "",
-        customerName:userInfo?.role === "Client" ? userInfo?.name : {label:resCartById?.data?.data?.customerName,value:resCartById?.data?.data?.clientId},
+        customerName:userInfo?.role === "Client" ? userInfo?.name : {label:resCartById?.data?.data?.customerName,value:resCartById?.data?.data?.clientId, customerCode:resCartById?.data?.data?.customerCode},
         clientId:userInfo?.role === "Client" ? userInfo?._id : resCartById?.data?.data?.clientId,
         cartItem:resCartById?.data?.data?.cartItem?.map(el => ({
           ...el,
