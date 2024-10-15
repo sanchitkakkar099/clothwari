@@ -51,6 +51,8 @@ function OrderDetials() {
       accessorKey: "bulkOrderDeliveryDate",
     },
     { header: "Shipment Sample Date", accessorKey: "shipmentSampleDate" },
+    { header: "Selvage", accessorKey: "selvage" },
+    { header: "Client remarks", accessorKey: "remarks" },
   ];
 
   const [searchTerms, setSearchTerms] = useState(

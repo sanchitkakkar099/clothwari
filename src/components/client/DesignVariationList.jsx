@@ -184,7 +184,7 @@ function DesignVariationList() {
                           </button>
                         </div>
                       ) : (
-                        (userInfo?.role === "Client" || userInfo?.role === "SalesPerson") &&
+                        (userInfo?.role === "Client" || userInfo?.role === "SalesPerson" || userInfo?.role === 'Super Admin' || ( userInfo?.role === 'Admin' && userInfo?.permissions?.includes("Order Create"))) &&
                         <div className="d-flex justify-content-center  m-3">
                           <button
                             className="btn btn-primary"
@@ -275,7 +275,7 @@ function DesignVariationList() {
                           </button>
                         </div>
                       ) : (
-                        (userInfo?.role === "Client" || userInfo?.role === "SalesPerson") &&
+                        (userInfo?.role === "Client" || userInfo?.role === "SalesPerson" || userInfo?.role === 'Super Admin' || ( userInfo?.role === 'Admin' && userInfo?.permissions?.includes("Order Create"))) &&
                         <div className="d-flex justify-content-center  m-3">
                           <button
                             className="btn btn-primary"

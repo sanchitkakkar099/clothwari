@@ -11,6 +11,7 @@ import { XCircle } from "react-feather";
 import ReactSelect from "react-select";
 import { generateOrderNumber } from "../../utils/orderNumberGenerator";
 import dayjs from "dayjs";
+import { useDebounce } from "../../hook/useDebpunce";
 
 function ClientCart() {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ function ClientCart() {
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
     watch,
     reset
   } = useForm({
@@ -38,7 +40,7 @@ function ClientCart() {
       customerName:userInfo?.role === "Client" ? userInfo?.name : "",
       clientId:userInfo?.role === "Client" ? userInfo?._id : "",
       salesOrderNumber:generateOrderNumber(userInfo?.name),
-      customerCode:"CN1234",
+      customerCode: userInfo?.role === "Client" ? userInfo?.customerCode : "",
       cartItem:selectedBagItems
     }
   });
@@ -56,6 +58,12 @@ function ClientCart() {
 
   const resClientDropDown = useClientDropDownListQuery()
   const resSalesPersonDropDown = useSalesPersonDropDownQuery()
+
+  const debounceValue1 = useDebounce(watch('customerName'),500)
+
+  useEffect(() => {
+    setValue('customerCode',debounceValue1?.customerCode)
+  },[debounceValue1])
 
   useEffect(() => {
     if (resCartById?.isSuccess && resCartById?.data?.data) {
@@ -76,7 +84,7 @@ function ClientCart() {
   },[resCartById?.isSuccess])
   useEffect(() => {
     if(resClientDropDown?.isSuccess && resClientDropDown?.data){
-      const clientList = resClientDropDown?.data?.data?.map(el => ({label:el?.name,value:el?._id}))
+      const clientList = resClientDropDown?.data?.data?.map(el => ({label:el?.name,value:el?._id, customerCode:el?.customerCode}))
       setClientDropDown(clientList)
     }
   },[resClientDropDown?.isSuccess]) 
@@ -100,10 +108,10 @@ function ClientCart() {
     if(location?.state?.isEdit){
       const payload = { 
         ...data,
-        customerName:userInfo?.role === "SalesPerson" ? data?.customerName?.label : data?.customerName,
-        clientId:userInfo?.role === "SalesPerson" ? data?.customerName?.value : data?.clientId,
-        marketerId: userInfo?.role === "Client" ? data?.marketingPersonName?.value : data?.marketerId,
-        marketingPersonName: userInfo?.role === "Client" ? data?.marketingPersonName?.label : data?.marketingPersonName,
+        customerName: (userInfo?.role === "SalesPerson" || userInfo?.role === "Admin" || userInfo?.role === "Super Admin") ? data?.customerName?.label : data?.customerName,
+        clientId: (userInfo?.role === "SalesPerson" || userInfo?.role === "Admin" || userInfo?.role === "Super Admin") ? data?.customerName?.value : data?.clientId,
+        marketerId: (userInfo?.role === "Client" || userInfo?.role === "Admin" || userInfo?.role === "Super Admin") ? data?.marketingPersonName?.value : data?.marketerId,
+        marketingPersonName: (userInfo?.role === "Client" || userInfo?.role === "Admin" || userInfo?.role === "Super Admin") ? data?.marketingPersonName?.label : data?.marketingPersonName,
         cartItem:data?.cartItem?.map((el => ({
           ...el,
           bulkOrderDeliveryDate:dayjs(el?.bulkOrderDeliveryDate).format(),
@@ -118,11 +126,11 @@ function ClientCart() {
     }else{
       const payload = { 
         ...data,
-        byClient:userInfo?.role === "Client" ? true : false,
-        customerName:userInfo?.role === "SalesPerson" ? data?.customerName?.label : data?.customerName,
-        clientId:userInfo?.role === "SalesPerson" ? data?.customerName?.value : data?.clientId,
-        marketerId: userInfo?.role === "Client" ? data?.marketingPersonName?.value : data?.marketerId,
-        marketingPersonName: userInfo?.role === "Client" ? data?.marketingPersonName?.label : data?.marketingPersonName,
+        byClient: userInfo?.role === "Client" ? true : false,
+        customerName: (userInfo?.role === "SalesPerson" || userInfo?.role === "Admin" || userInfo?.role === "Super Admin") ? data?.customerName?.label : data?.customerName,
+        clientId: (userInfo?.role === "SalesPerson" || userInfo?.role === "Admin" || userInfo?.role === "Super Admin") ? data?.customerName?.value : data?.clientId,
+        marketerId: (userInfo?.role === "Client" || userInfo?.role === "Admin" || userInfo?.role === "Super Admin") ? data?.marketingPersonName?.value : data?.marketerId,
+        marketingPersonName: (userInfo?.role === "Client" || userInfo?.role === "Admin" || userInfo?.role === "Super Admin") ? data?.marketingPersonName?.label : data?.marketingPersonName,
         cartItem:data?.cartItem?.map((el => ({
           ...el,
           bulkOrderDeliveryDate:dayjs(el?.bulkOrderDeliveryDate).format(),
@@ -228,7 +236,7 @@ function ClientCart() {
                             <label className="form-label" htmlFor="name">
                               Customer Name
                             </label>
-                            {userInfo?.role === "SalesPerson" ?
+                            {(userInfo?.role === "SalesPerson" || userInfo?.role === 'Super Admin' || ( userInfo?.role === 'Admin' && userInfo?.permissions?.includes("Order Create")) )?
                             <Controller
                               id={"customerName"}
                               name={"customerName"}
@@ -734,6 +742,70 @@ function ClientCart() {
                             )}
                           </div>
                         </div>
+                        <div className="col-md-6">
+                              <div className="mb-3">
+                                  <label className="form-label" htmlFor="selvage">
+                                    Selvage
+                                  </label>
+                                  <Controller
+                                      id={`cartItem.${index}.selvage`}
+                                      name={`cartItem.${index}.selvage`}
+                                      control={control}
+                                      rules={{
+                                          required: "Selvage is required",
+                                      }}
+                                      render={({ field }) => (
+                                          <input
+                                              {...field}
+                                              type="text"
+                                              className="form-control"
+                                              placeholder="Enter Selvage"
+                                          />
+                                      )}
+                                  />
+                                  {errors?.cartItem && (
+                                    <FormFeedback>
+                                      {
+                                        errors?.cartItem[index]
+                                          ?.selvage?.message
+                                      }
+                                    </FormFeedback>
+                                  )}
+                              </div>
+                          </div>
+                      </div>
+                      <div className="row">
+                          <div className="col-md-6">
+                              <div className="mb-3">
+                                  <label className="form-label" htmlFor="remarks">
+                                    Remarks
+                                  </label>
+                                  <Controller
+                                      id={`cartItem.${index}.remarks`}
+                                      name={`cartItem.${index}.remarks`}
+                                      control={control}
+                                      rules={{
+                                          required: "Remarks is required",
+                                      }}
+                                      render={({ field }) => (
+                                          <input
+                                              {...field}
+                                              type="text"
+                                              className="form-control"
+                                              placeholder="Enter Remarks"
+                                          />
+                                      )}
+                                  />
+                                  {errors?.cartItem && (
+                                    <FormFeedback>
+                                      {
+                                        errors?.cartItem[index]
+                                          ?.remarks?.message
+                                      }
+                                    </FormFeedback>
+                                  )}
+                              </div>
+                          </div>
                       </div>
                       </div>
                       ))}
