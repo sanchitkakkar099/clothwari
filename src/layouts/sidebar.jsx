@@ -102,9 +102,9 @@ function SidebarComponent() {
                 {(
                     userInfo?.role === 'Super Admin' 
                     || 
-                    (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download"))
+                    (userInfo?.role === 'Admin' && userInfo?.permissions?.some(el  => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Uploaded Design Download"))
                     || 
-                    (userInfo?.role === 'Designer' && userInfo?.permissions?.some(el  => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Upload Design Download"))    
+                    (userInfo?.role === 'Designer' && userInfo?.permissions?.some(el  => el === "Upload Design Create" || el === "Upload Design View" || el === "Upload Design Edit" || el === "Uploaded Design Download"))    
 
                 ) &&
                 <li>

@@ -481,7 +481,7 @@ function UploadDesignListV2() {
                                 <span className="align-middle">Edit</span>
                               </DropdownItem>
                             }
-                            {(userInfo?.role === 'Super Admin' && userInfo?.permissions?.includes("Upload Design Download")) &&
+                            {(userInfo?.role === 'Super Admin' && userInfo?.permissions?.includes("Uploaded Design Download")) &&
                             <DropdownItem
                                 href="#!"
                               >
