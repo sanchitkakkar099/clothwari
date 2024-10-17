@@ -481,9 +481,10 @@ function UploadDesignListV2() {
                                 <span className="align-middle">Edit</span>
                               </DropdownItem>
                             }
-                            {(userInfo?.role === 'Super Admin' && userInfo?.permissions?.includes("Uploaded Design Download")) &&
+                            {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.includes("Uploaded Design Download")) &&
                             <DropdownItem
                                 href="#!"
+                                onClick={(e) => onEditAction(e,ele?._id)}
                               >
                                 <Download className="me-50" size={15} />{" "}
                                 <span className="align-middle">Download</span>

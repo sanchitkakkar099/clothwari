@@ -1653,6 +1653,7 @@ function AddDesign() {
                             {" "}
                             <i className="bx bx-x mr-1"></i> Cancel{" "}
                           </Link>
+                          {(userInfo?.role === 'Super Admin' || userInfo?.permissions?.some((el) => el === "Upload Design Create") ||  userInfo?.permissions?.some((el) => el === "Upload Design Edit")) &&
                           <button
                             type="submit"
                             className="btn btn-success m-1"
@@ -1660,6 +1661,7 @@ function AddDesign() {
                           >
                             <i className=" bx bx-file me-1"></i> Save{" "}
                           </button>
+                          }
                         </div>
                       </div>
                     </Form>
