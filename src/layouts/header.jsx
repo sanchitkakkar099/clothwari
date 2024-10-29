@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { lazy } from "react";
 import Logosm from "../assets/images/users/logo.jpg";
 import Avatar1 from "../assets/images/users/logo.jpg";
 import Avatar3 from "../assets/images/users/avatar-3.jpg";
@@ -8,7 +9,8 @@ import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { setTimer, setUserInfo, setUserToken } from "../redux/authSlice";
 import { useClientBagListByAdminMutation, useGetBagNotificationQuery, useLoginAsAdminMutation, useLogoutUserMutation, useNotificationReadMutation } from "../service";
-import TimeElapsedApp from "../components/TimeElapsed";
+// import TimeElapsedApp from "../components/TimeElapsed";
+const TimeElapsedApp = lazy(() => import("../components/TimeElapsed"));
 import SessionTimer from "../components/SessionTimer";
 import { Bell, FilePlus, ShoppingCart } from "react-feather";
 import SimpleBar from "simplebar-react";
@@ -107,7 +109,7 @@ function HeaderComponent() {
   };
 
   const [isDropdownVisible, setDropdownVisible] = useState(false);
-  console.log('isDropdownVisible',isDropdownVisible);
+  // console.log('isDropdownVisible',isDropdownVisible);
   const dropdownRef = useRef(null);
   const settingRef = useRef(null);
 
