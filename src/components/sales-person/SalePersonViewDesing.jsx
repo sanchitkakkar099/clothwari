@@ -47,9 +47,12 @@ function SalesPersonViewDesign() {
   const designUploadList = useSelector(
     (state) => state?.designUploadState.designUploadList
   );
+
+  // console.log("designUploadList",designUploadList);
   const selectedBagItems = useSelector(
     (state) => state?.clientState.selectedBagItems
   );
+
   const [designID, setDesignId] = useState(null);
   const [variationImg, setVariationImg] = useState(null);
 
@@ -72,6 +75,8 @@ function SalesPersonViewDesign() {
 
   const [selectedStaff, setSelectedStaff] = useState([]);
 
+  const isMultifromViewDesign = location?.state?.isMultiTagSearch;
+  // console.log("isMultifromVieDesign",isMultifromViewDesign);
 
   useEffect(() => {
     if (location?.state?.currentPage) {
@@ -115,12 +120,13 @@ function SalesPersonViewDesign() {
     };
   }, []);   
 
+  // console.log("tagsSearch",tagsSearch);
   useEffect(() => {
-    if (search || startDate || tagsSearch || categorySearch || selectedStaff || isMultiTagSearch) {
+    if (search || startDate || tagsSearch || categorySearch || selectedStaff || (isMultiTagSearch || isMultifromViewDesign)) {
       reqDesign({
         page: currentPage,
         limit: pageSize,
-        isMultiTagSearch:isMultiTagSearch,
+        isMultiTagSearch:(isMultiTagSearch || isMultifromViewDesign),
         search: search,
         date_filter: startDate ? dayjs(startDate).format() : "",
         tags: tagsSearch,
@@ -133,7 +139,7 @@ function SalesPersonViewDesign() {
       reqDesign({
         page: currentPage,
         limit: pageSize,
-        isMultiTagSearch:isMultiTagSearch,
+        isMultiTagSearch:(isMultiTagSearch || isMultifromViewDesign),
         search: "",
         date_filter: "",
         tags: [],
@@ -175,7 +181,7 @@ function SalesPersonViewDesign() {
     reqDesign({
       page: currentPage,
       limit: pageSize,
-      isMultiTagSearch:isMultiTagSearch,
+      isMultiTagSearch:(isMultiTagSearch || isMultifromViewDesign),
       search: search,
       date_filter: startDate ? dayjs(startDate).format() : "",
       tags: tagsSearch,
@@ -192,7 +198,7 @@ function SalesPersonViewDesign() {
     reqDesign({
       page: pageNumber,
       limit: pageSize,
-      isMultiTagSearch:isMultiTagSearch,
+      isMultiTagSearch:(isMultiTagSearch || isMultifromViewDesign),
       search: search,
       date_filter: startDate ? dayjs(startDate).format() : "",
       tags: tagsSearch,
@@ -236,7 +242,7 @@ function SalesPersonViewDesign() {
     reqDesign({
       page: currentPage,
       limit: pageSize,
-      isMultiTagSearch:isMultiTagSearch,
+      isMultiTagSearch: (isMultiTagSearch || isMultifromViewDesign),
       search: search,
       date_filter: dayjs(date).format(),
       category: Array.isArray(categorySearch)
@@ -249,7 +255,9 @@ function SalesPersonViewDesign() {
     e.preventDefault();
     navigate("/design-selection", {
       state: {
+        isMultiTagSearch:(isMultiTagSearch || isMultifromViewDesign),
         data: el,
+        designdata:resDesign?.data?.data?.docs,
         currentPage: currentPage,
         tag: "sales",
         tagsSearch: tagsSearch,
@@ -272,6 +280,7 @@ function SalesPersonViewDesign() {
       dispatch(getTag(resTag?.data?.data?.docs));
     }
   }, [resTag]);
+
 
   const handleTagSelection = (selected) => {
     dispatch(setSelectedTagList(selected))
@@ -317,7 +326,7 @@ function SalesPersonViewDesign() {
   const handleSorting = (e) => {
     setIsMultiTagSearch(!isMultiTagSearch);
   };
-
+//  console.log("isMultiTagSearch",isMultiTagSearch); 
   return (
     <div className="page-content">
       <div className="container-fluid">

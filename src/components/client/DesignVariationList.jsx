@@ -13,6 +13,10 @@ function DesignVariationList() {
 
   const { data } = location?.state;
 
+  const designUploadList = useSelector(
+    (state) => state?.designUploadState.designUploadList
+  );
+
   const handleAddToBag = (el) => {
     dispatch(addedBagItems({
       id: el._id,
@@ -72,10 +76,13 @@ function DesignVariationList() {
     if(location?.state?.tag === "sales"){
       navigate('/pdf-maker-view-design',{
         state:{
+          designUploadList,
+          designdata:location?.state?.designdata,
           currentPage:location?.state?.currentPage,
           tagsSearch:location?.state?.tagsSearch,
           startDate:location?.state?.startDate,
           search:location?.state?.search,
+          isMultiTagSearch: location?.state?.isMultiTagSearch,
         }
       })
     }
@@ -89,8 +96,10 @@ function DesignVariationList() {
         }
       })
     }
-   
   }
+  // console.log("isMultiTagSearch in view design",location?.state?.isMultiTagSearch);
+  // console.log('design data',location?.state?.tagsSearch);
+  // console.log("location?.state?.currentPage",designUploadList);
   return (
     <>
       {(userInfo?.role === "Client" || userInfo?.role === "SalesPerson" || (userInfo?.role === 'Super Admin' || userInfo?.permissions?.some(el  => el === "Drive"))) ? (
